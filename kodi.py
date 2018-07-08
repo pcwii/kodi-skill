@@ -1,7 +1,7 @@
 """
 A helper library of functions for interacting with the Kodi JSON-RPC API.
 """
-from __future__ import absolute_import, print_function, division
+
 
 
 def find_films_matching(kodi, search):
