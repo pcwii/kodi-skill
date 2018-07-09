@@ -1,7 +1,11 @@
 # This skill is under development and remains a WIP
 # ***Not usable at this time***
 #**************************************************
-#
+# Wish List
+# 1. play / stop / pause / resume functions for movies. - WIP
+# 2. Search for movies - WIP
+# 3. Cursor control (up, down, left, right, select, back - WIP
+# 4. Notifications - WIP
 # Kodi Skill for Mycroft AI
 
 This is an attempt to create a skill for the new [MycroftAI](https://mycroft.ai) which can search for, play and control Kodi instances via Kodi's JSON-RPC API.
