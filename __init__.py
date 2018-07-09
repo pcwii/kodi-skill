@@ -18,6 +18,7 @@ class KodiSkill(MycroftSkill):
         super(KodiSkill, self).__init__(name="KodiSkill")
         # self.settings["ipstring"] = ""
         self.kodi_instance = Kodi('192.168.0.32')
+        self.notifier_bool = False
 
     def initialize(self):
         self.load_data_files(dirname(__file__))
@@ -57,24 +58,39 @@ class KodiSkill(MycroftSkill):
             require("ResumeKeyword").require("FilmKeyword").build()
         self.register_intent(resume_film_intent, self.handle_resume_film_intent)
 
+        notification_on_intent = IntentBuilder("NotifyOnIntent"). \
+            require("NotificationKeyword").require("OnKeyword"). \
+            require("KodiKeyword").build()
+        self.register_intent(notification_on_intent, self.handle_notification_on_intent)
+
+        notification_off_intent = IntentBuilder("NotifyOffIntent"). \
+            require("NotificationKeyword").require("OffKeyword"). \
+            require("KodiKeyword").build()
+        self.register_intent(notification_off_intent, self.handle_notification_off_intent)
+
         move_kodi_intent = IntentBuilder("MoveKodiIntent"). \
-            require("MoveKeyword").require("KodiKeyword").\
+            require("MoveKeyword").require("CursorKeyword").\
             require("DirectionKeyword").build()
         self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)
 
+
+
     def handle_listen(self, message):
         voice_payload = "Listening"
-        self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI Message", message=voice_payload, displaytime=2000)
+        if self.notifier_bool:
+            self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI Message", message=voice_payload, displaytime=2000)
 
     def handle_utterance(self, message):
         utterance = message.data.get('utterances')
         voice_payload = utterance
-        self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI Message", message=voice_payload, displaytime=2000)
+        if self.notifier_bool:
+            self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI Message", message=voice_payload, displaytime=2000)
 
     def handle_speak(self, message):
         speak = message.data.get('utterance')
         voice_payload = speak
-        self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI Message", message=voice_payload, displaytime=2000)
+        if self.notifier_bool:
+            self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI Message", message=voice_payload, displaytime=2000)
 
     def handle_play_film_intent(self, message):
         self.play_film_by_search(self.kodi, message.metadata['Film'])
@@ -93,6 +109,14 @@ class KodiSkill(MycroftSkill):
 
     def handle_resume_film_intent(self, message):
         self.kodi_instance.playpause_playback()
+
+    def handle_notification_on_intent(self, message):
+        self.notifier_bool = True
+        self.speak_dialog("notification", data={"result": "On"})
+
+    def handle_notification_off_intent(self, message):
+        self.notifier_bool = False
+        self.speak_dialog("notification", data={"result": "Off"})
 
     def handle_move_kodi_intent(self, message):
         direction = message.data.get("DirectionKeyword")
