@@ -79,7 +79,15 @@ class KodiSkill(MycroftSkill):
         kodi.playpause_playback()
 
     def handle_move_kodi_intent(self, message):
-        kodi.Input.Down()
+        direction = message.data.get("DirectionKeyword")
+        if direction == "up":
+            kodi.Input.Up()
+        if direction == "down":
+            kodi.Input.Down()
+        if direction == "left":
+            kodi.Input.Left()
+        if direction == "right":
+            kodi.Input.Right()
 
 
     # Mycroft Actions, speaking etc. #
