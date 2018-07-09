@@ -55,6 +55,10 @@ class KodiSkill(MycroftSkill):
             require("ResumeKeyword").require("FilmKeyword").build()
         self.register_intent(resume_film_intent, self.handle_resume_film_intent)
 
+        move_kodi_intent = IntentBuilder("MoveKodiIntent"). \
+            require("MoveKeyword").require("KodiKeyword").\
+            require("DirectionKeyword").build()
+        self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)
 
     def handle_play_film_intent(self, message):
         #self.play_film_by_search(self.kodi, message.metadata['Film'])
@@ -73,6 +77,10 @@ class KodiSkill(MycroftSkill):
 
     def handle_resume_film_intent(self, message):
         kodi.playpause_playback()
+
+    def handle_move_kodi_intent(self, message):
+        kodi.Input.Down()
+
 
     # Mycroft Actions, speaking etc. #
     def speak_multi_film_match(self, search, results):
