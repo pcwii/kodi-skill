@@ -1,5 +1,4 @@
 from os.path import dirname
-
 from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill
 from mycroft.util.log import getLogger
@@ -7,7 +6,7 @@ from mycroft.util.log import getLogger
 from kodipydent import Kodi
 import kodi
 
-_author__ = 'Stuart Mumford'
+_author__ = 'PCWii'
 
 LOGGER = getLogger(__name__)
 
@@ -19,11 +18,15 @@ class KodiSkill(MycroftSkill):
 
     def __init__(self):
         super(KodiSkill, self).__init__(name="KodiSkill")
-
+        self.settings["ipstring"] = ""
         self.kodi = Kodi('192.168.0.32')
 
     def initialize(self):
         self.load_data_files(dirname(__file__))
+
+        # Check and then monitor for credential changes
+        self.settings.set_changed_callback(self.on_websettings_changed)
+        self.on_websettings_changed()
 
         self.register_regex("film (?P<Film>.*)")
         self.register_regex("movie (?P<Film>.*)")
@@ -32,39 +35,43 @@ class KodiSkill(MycroftSkill):
         self.register_regex("matching (?P<Film>.*)")
         self.register_regex("including (?P<Film>.*)")
 
-        self.build_play_film_intent()
-        self.build_film_search_intent()
+        play_film_intent = IntentBuilder("PlayFilmIntent"). \
+            require("PlayKeyword").require("FilmKeyword").build()
+        self.register_intent(play_film_intent, self.handle_play_film_intent)
 
-    def build_play_film_intent(self):
-        play_films_intent = IntentBuilder("PlayFilmsIntent").require("PlayFilmKeywords").require("Film").build()
+        search_film_intent = IntentBuilder("SearchFilmIntent"). \
+            require("SearchKeyword").require("FilmKeyword").build()
+        self.register_intent(search_film_intent, self.handle_search_film_intent)
 
-        self.register_intent(play_films_intent,
-                             self.handle_play_film_intent)
+        stop_film_intent = IntentBuilder("StopFilmIntent"). \
+            require("StopKeyword").require("FilmKeyword").build()
+        self.register_intent(stop_film_intent, self.handle_stop_film_intent)
+
+        pause_film_intent = IntentBuilder("PauseFilmIntent"). \
+            require("PauseKeyword").require("FilmKeyword").build()
+        self.register_intent(pause_film_intent, self.handle_pause_film_intent)
+
+        resume_film_intent = IntentBuilder("ResumeFilmIntent"). \
+            require("ResumeKeyword").require("FilmKeyword").build()
+        self.register_intent(resume_film_intent, self.handle_resume_film_intent)
+
 
     def handle_play_film_intent(self, message):
-        kodi.play_film_by_search(self.kodi, message.metadata['Film'])
+        #self.play_film_by_search(self.kodi, message.metadata['Film'])
+        str_remainder = str(message.utterance_remainder())
+        self.play_film_by_search(str_remainder)
 
-    def build_film_search_intent(self):
-        find_films_intent = IntentBuilder("SearchFilmsIntent").require("SearchFilmKeywords").require("Film").build()
-
-        self.register_intent(find_films_intent, self.handle_film_search_intent)
-
-    def handle_film_search_intent(self, message):
+    def handle_search_film_intent(self, message):
         results = kodi.find_films_matching(self.kodi, message.metadata['Film'])
         self.speak_multi_film_match(message.metadata['Film'], results)
 
-    def build_stop_intent(self):
-        stop_intent = IntentBuilder("StopIntent").require("StopKeywords").build()
-        self.register_intent(stop_intent, self.handle_stop_intent)
-
-    def handle_stop_intent(self, message):
+    def handle_stop_film_intent(self, message):
         kodi.stop_playback()
 
-    def build_playpause_intent(self):
-        playpause_intent = IntentBuilder("PlayPauseIntent").require("PlayPauseKeywords").build()
-        self.register_intent(playpause_intent, self.handle_playpause_intent)
+    def handle_pause_film_intent(self, message):
+        kodi.playpause_playback()
 
-    def handle_playpause_intent(self, message):
+    def handle_resume_film_intent(self, message):
         kodi.playpause_playback()
 
     # Mycroft Actions, speaking etc. #
