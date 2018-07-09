@@ -26,7 +26,9 @@ def play_film_by_search(kodi_id, film_search):
     if len(results) == 1:
         play_film(kodi_id, results[0]['movieid'])
     elif len(results):
-        print("I found multiple results: ") # film_search, results)
+        print("I found multiple results: " + str(len(results)))  # film_search, results)
+        play_index = 3
+        play_film(kodi_id, results[play_index - 1]['movieid'])
     else:
         print("I found no results for the search: {}.".format(film_search))
 
@@ -37,7 +39,7 @@ def play_film_by_search(kodi_id, film_search):
 
 movie_id = find_films_matching(my_kodi_instance, "iron man")
 print(movie_id)
-play_film_by_search(my_kodi_instance, "iron man 2")
+play_film_by_search(my_kodi_instance, "iron man")
 
 
 # print(movie_id)

@@ -4,7 +4,6 @@ from mycroft.skills.core import MycroftSkill
 from mycroft.util.log import getLogger
 
 from kodipydent import Kodi
-from . import kodi
 
 _author__ = 'PCWii'
 
@@ -80,8 +79,8 @@ class KodiSkill(MycroftSkill):
 
     def handle_play_film_intent(self, message):
         self.play_film_by_search(self.kodi, message.metadata['Film'])
-        #str_remainder = str(message.utterance_remainder())
-        #self.play_film_by_search(str_remainder)
+        # str_remainder = str(message.utterance_remainder())
+        # self.play_film_by_search(str_remainder)
 
     def handle_search_film_intent(self, message):
         results = kodi.find_films_matching(self.kodi, message.metadata['Film'])
@@ -116,7 +115,27 @@ class KodiSkill(MycroftSkill):
         self.set_context('MoveKeyword', move_kw)
         self.set_context('MoveKeyword', kodi_kw)
 
-    # Mycroft Actions, speaking etc. #
+    # Kodi specific functions for searching and playing movies
+    def find_films_matching(kodi_id, search):
+        """
+        Find all Movies Matching the search
+        """
+        my_movies = kodi_id.VideoLibrary.GetMovies()['result']['movies']
+        results = []
+        for m in my_movies:
+            if search in m['label'].lower():
+                results.append(m)
+        return results
+
+    def play_film(kodi_id, movieid):
+        """
+        Play a movie by id.
+        """
+        kodi_id.Playlist.Clear(playlistid=1)
+        kodi_id.Playlist.Add(playlistid=1, item={'movieid': movieid})
+        kodi_id.Player.Open(item={'playlistid': 1})
+
+
     def speak_multi_film_match(self, search, results):
         """
         Tell the user about a list of results.
@@ -127,26 +146,16 @@ class KodiSkill(MycroftSkill):
 
         self.speak(output)
 
-    def play_film_by_search(self, film_search):
-        """
-        Search for films using the query, then play if only one result,
-        otherwise tell the user about the results.
-
-        Parameters
-        ----------
-
-        mycroft : `MycroftSkill` instance
-            The current Mycroft instance.
-
-        film_search : `string` A string to search the library for.
-        """
-        results = kodi.find_films_matching(film_search)
+    def play_film_by_search(kodi_id, film_search):
+        results = find_films_matching(kodi_id, film_search)
         if len(results) == 1:
-            kodi.play_film(results[0]['movieid'])
+            play_film(kodi_id, results[0]['movieid'])
         elif len(results):
-            self.speak_multi_film_match(film_search, results)
+            print("I found multiple results: " + str(len(results)))  # film_search, results)
+            play_index = 3
+            play_film(kodi_id, results[play_index - 1]['movieid'])
         else:
-            self.speak("I found no results for the search: {}.".format(film_search))
+            print("I found no results for the search: {}.".format(film_search))
 
     def stop():
         pass
