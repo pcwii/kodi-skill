@@ -18,15 +18,15 @@ class KodiSkill(MycroftSkill):
 
     def __init__(self):
         super(KodiSkill, self).__init__(name="KodiSkill")
-        self.settings["ipstring"] = ""
+        # self.settings["ipstring"] = ""
         self.kodi_instance = Kodi('192.168.0.32')
 
     def initialize(self):
         self.load_data_files(dirname(__file__))
 
         # Check and then monitor for credential changes
-        self.settings.set_changed_callback(self.on_websettings_changed)
-        self.on_websettings_changed()
+        # self.settings.set_changed_callback(self.on_websettings_changed)
+        # self.on_websettings_changed()
 
         self.register_regex("film (?P<Film>.*)")
         self.register_regex("movie (?P<Film>.*)")
