@@ -14,7 +14,6 @@ class KodiSkill(MycroftSkill):
     """
     A Skill to control playback on a Kodi instance via the json-rpc interface.
     """
-
     def __init__(self):
         super(KodiSkill, self).__init__(name="KodiSkill")
         # self.settings["ipstring"] = ""

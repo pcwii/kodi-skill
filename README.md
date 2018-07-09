@@ -7,26 +7,23 @@
 # 3. Cursor control (up, down, left, right, select, back - WIP
 # 4. Notifications - WIP
 # Kodi Skill for Mycroft AI
+## kodi-skill
+Control KODI open source media center with Mycroft
 
-This is an attempt to create a skill for the new [MycroftAI](https://mycroft.ai) which can search for, play and control Kodi instances via Kodi's JSON-RPC API.
-
-This uses [kodipydent](https://github.com/haikuginger/kodipydent) to interface with the Kodi JSON-RPC interface.
-
-
-## Installation
-
-You will need to install kodipydent:
-
-    pip install kodipydent
-
-inside the correct virtualenv for mycroft, and then clone this repo into `~/.mycroft/third_party_skills`.
-
-
-## Features
-
-Currently this skill can do the following things (with some variation):
-
-    Mycroft, play film The Matrix
-    Mycroft, search for films containing Matrix
-
-If it tries to play a film and there is multiple matches it will read out the search results you asked for and then let you refine your query.
+## Description 
+Utilize the kodi API and Python library for controlling the KODI open source media center with Mycroft.
+## Examples 
+* "turn kodi notifications on"
+* "turn kodi notifications off"
+* "move cursor up / down / left / right"
+* "play film The Matrix"
+* "search for films containing Matrix"
+## Credits
+PCWii
+## Require 
+platform_picroft 
+## Other Requirements
+- [Mycroft](https://docs.mycroft.ai/installing.and.running/installation)
+- kodipydent
+## Further Reading
+- [KODI API](https://kodi.wiki/index.php?title=JSON-RPC_API/v6)
