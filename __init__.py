@@ -111,11 +111,10 @@ class KodiSkill(MycroftSkill):
         if direction == "back":
             self.kodi_instance.Input.Back()
         move_kw = message.data.get('MoveKeyword')
-        self.set_context('MoveKeyword', move_kw)
         kodi_kw = message.data.get('KodiKeyword')
+        self.speak("o, k, next", expect_response=True)
+        self.set_context('MoveKeyword', move_kw)
         self.set_context('MoveKeyword', kodi_kw)
-        self.speak("ok, next", expect_response=True)
-
 
     # Mycroft Actions, speaking etc. #
     def speak_multi_film_match(self, search, results):
