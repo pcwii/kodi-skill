@@ -112,7 +112,7 @@ class KodiSkill(MycroftSkill):
             self.kodi_instance.Input.Back()
         move_kw = message.data.get('MoveKeyword')
         kodi_kw = message.data.get('KodiKeyword')
-        self.speak("o, k, next", expect_response=True)
+        self.speak("o-k, next", expect_response=True)
         self.set_context('MoveKeyword', move_kw)
         self.set_context('MoveKeyword', kodi_kw)
 
