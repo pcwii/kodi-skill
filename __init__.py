@@ -4,7 +4,7 @@ from mycroft.skills.core import MycroftSkill
 from mycroft.util.log import getLogger
 
 from kodipydent import Kodi
-import kodi
+from . import kodi
 
 _author__ = 'PCWii'
 
