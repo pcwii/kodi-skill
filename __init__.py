@@ -19,7 +19,7 @@ class KodiSkill(MycroftSkill):
     def __init__(self):
         super(KodiSkill, self).__init__(name="KodiSkill")
         self.settings["ipstring"] = ""
-        self.kodi = Kodi('192.168.0.32')
+        self.kodi_instance = Kodi('192.168.0.32')
 
     def initialize(self):
         self.load_data_files(dirname(__file__))
@@ -34,6 +34,10 @@ class KodiSkill(MycroftSkill):
         self.register_regex("containing (?P<Film>.*)")
         self.register_regex("matching (?P<Film>.*)")
         self.register_regex("including (?P<Film>.*)")
+
+        self.add_event('recognizer_loop:wakeword', self.handle_listen)
+        self.add_event('recognizer_loop:utterance', self.handle_utterance)
+        self.add_event('speak', self.handle_speak)
 
         play_film_intent = IntentBuilder("PlayFilmIntent"). \
             require("PlayKeyword").require("FilmKeyword").build()
@@ -60,35 +64,48 @@ class KodiSkill(MycroftSkill):
             require("DirectionKeyword").build()
         self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)
 
+    def handle_listen(self, message):
+        voice_payload = "Listening"
+        self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI Message", message=voice_payload, displaytime=2000)
+
+    def handle_utterance(self, message):
+        utterance = message.data.get('utterances')
+        voice_payload = utterance
+        self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI Message", message=voice_payload, displaytime=2000)
+
+    def handle_speak(self, message):
+        speak = message.data.get('utterance')
+        voice_payload = speak
+        self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI Message", message=voice_payload, displaytime=2000)
+
     def handle_play_film_intent(self, message):
-        #self.play_film_by_search(self.kodi, message.metadata['Film'])
+        # self.play_film_by_search(self.kodi, message.metadata['Film'])
         str_remainder = str(message.utterance_remainder())
-        self.play_film_by_search(str_remainder)
+        # self.play_film_by_search(str_remainder)
 
     def handle_search_film_intent(self, message):
         results = kodi.find_films_matching(self.kodi, message.metadata['Film'])
-        self.speak_multi_film_match(message.metadata['Film'], results)
+        # self.speak_multi_film_match(message.metadata['Film'], results)
 
     def handle_stop_film_intent(self, message):
-        kodi.stop_playback()
+        self.kodi_instance.stop_playback()
 
     def handle_pause_film_intent(self, message):
-        kodi.playpause_playback()
+        self.kodi_instance.playpause_playback()
 
     def handle_resume_film_intent(self, message):
-        kodi.playpause_playback()
+        self.kodi_instance.playpause_playback()
 
     def handle_move_kodi_intent(self, message):
         direction = message.data.get("DirectionKeyword")
         if direction == "up":
-            kodi.Input.Up()
+            self.kodi_instance.Input.Up()
         if direction == "down":
-            kodi.Input.Down()
+            self.kodi_instance.Input.Down()
         if direction == "left":
-            kodi.Input.Left()
+            self.kodi_instance.Input.Left()
         if direction == "right":
-            kodi.Input.Right()
-
+            self.kodi.Input.Right()
 
     # Mycroft Actions, speaking etc. #
     def speak_multi_film_match(self, search, results):
