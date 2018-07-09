@@ -1,3 +1,7 @@
+# This skill is under development and remains a WIP
+# ***Not usable at this time***
+#**************************************************
+#
 # Kodi Skill for Mycroft AI
 
 This is an attempt to create a skill for the new [MycroftAI](https://mycroft.ai) which can search for, play and control Kodi instances via Kodi's JSON-RPC API.
