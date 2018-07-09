@@ -20,7 +20,7 @@ class KodiSkill(MycroftSkill):
     def __init__(self):
         super(KodiSkill, self).__init__(name="KodiSkill")
 
-        self.kodi = Kodi('10.21.5.180')
+        self.kodi = Kodi('192.168.0.32')
 
     def initialize(self):
         self.load_data_files(dirname(__file__))

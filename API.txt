@@ -1,0 +1,502 @@
+|
+|---Playlist
+|   |
+|   |---Swap(playlistid, position1, position2[, username, password])
+|   |       Swap items in the playlist. Does not work for picture playlists (aka slideshows).
+|   |
+|   |---GetItems(playlistid[, limits, properties, username, sort, password])
+|   |       Get all items from playlist
+|   |
+|   |---Add(playlistid, item[, username, password])
+|   |       Add item(s) to playlist
+|   |
+|   |---Insert(playlistid, position, item[, username, password])
+|   |       Insert item(s) into playlist. Does not work for picture playlists (aka slideshows).
+|   |
+|   |---GetProperties(properties, playlistid[, username, password])
+|   |       Retrieves the values of the given properties
+|   |
+|   |---Clear(playlistid[, username, password])
+|   |       Clear playlist
+|   |
+|   |---GetPlaylists([, username, password])
+|   |       Returns all existing playlists
+|   |
+|   |---Remove(playlistid, position[, username, password])
+|   |       Remove item from playlist. Does not work for picture playlists (aka slideshows).
+|
+|---Files
+|   |
+|   |---PrepareDownload(path[, username, password])
+|   |       Provides a way to download a given file (e.g. providing an URL to the real file location)
+|   |
+|   |---GetDirectory(directory[, limits, properties, username, media, sort, password])
+|   |       Get the directories and files in the given directory
+|   |
+|   |---GetSources(media[, limits, username, sort, password])
+|   |       Get the sources of the media windows
+|   |
+|   |---SetFileDetails(media, file[, username, resume, lastplayed, password, playcount])
+|   |       Update the given specific file with the given details
+|   |
+|   |---GetFileDetails(file[, properties, username, media, password])
+|   |       Get details for a specific file
+|
+|---Player
+|   |
+|   |---SetSpeed(playerid, speed[, username, password])
+|   |       Set the speed of the current playback
+|   |
+|   |---GoTo(playerid, to[, username, password])
+|   |       Go to previous/next/specific item in the playlist
+|   |
+|   |---SetPartymode(partymode, playerid[, username, password])
+|   |       Turn partymode on or off
+|   |
+|   |---SetRepeat(repeat, playerid[, username, password])
+|   |       Set the repeat mode of the player
+|   |
+|   |---Zoom(zoom, playerid[, username, password])
+|   |       Zoom current picture
+|   |
+|   |---SetAudioStream(playerid, stream[, username, password])
+|   |       Set the audio stream played by the player
+|   |
+|   |---SetSubtitle(subtitle, playerid[, username, password, enable])
+|   |       Set the subtitle displayed by the player
+|   |
+|   |---Open([, username, options, password, item])
+|   |       Start playback of either the playlist with the given ID, a slideshow with the pictures from the given directory or a single file or an item from the database.
+|   |
+|   |---Rotate(playerid[, username, value, password])
+|   |       Rotates current picture
+|   |
+|   |---Move(direction, playerid[, username, password])
+|   |       If picture is zoomed move viewport left/right/up/down otherwise skip previous/next
+|   |
+|   |---GetPlayers([, username, media, password])
+|   |       Get a list of available players
+|   |
+|   |---Seek(value, playerid[, username, password])
+|   |       Seek through the playing item
+|   |
+|   |---GetActivePlayers([, username, password])
+|   |       Returns all active players
+|   |
+|   |---GetItem(playerid[, properties, username, password])
+|   |       Retrieves the currently played item
+|   |
+|   |---Stop(playerid[, username, password])
+|   |       Stops playback
+|   |
+|   |---SetVideoStream(playerid, stream[, username, password])
+|   |       Set the video stream played by the player
+|   |
+|   |---GetProperties(properties, playerid[, username, password])
+|   |       Retrieves the values of the given properties
+|   |
+|   |---PlayPause(playerid[, username, password, play])
+|   |       Pauses or unpause playback and returns the new state
+|   |
+|   |---SetShuffle(playerid, shuffle[, username, password])
+|   |       Shuffle/Unshuffle items in the player
+|
+|---Settings
+|   |
+|   |---GetSettings([, username, filter, level, password])
+|   |       Retrieves all settings
+|   |
+|   |---GetSections([, properties, username, level, password])
+|   |       Retrieves all setting sections
+|   |
+|   |---GetSettingValue(setting[, username, password])
+|   |       Retrieves the value of a setting
+|   |
+|   |---GetCategories([, properties, username, level, section, password])
+|   |       Retrieves all setting categories
+|   |
+|   |---ResetSettingValue(setting[, username, password])
+|   |       Resets the value of a setting
+|   |
+|   |---SetSettingValue(value, setting[, username, password])
+|   |       Changes the value of a setting
+|
+|---JSONRPC
+|   |
+|   |---Permission([, username, password])
+|   |       Retrieve the clients permissions
+|   |
+|   |---Introspect([, username, filter, getdescriptions, password, getmetadata, filterbytransport])
+|   |       Enumerates all actions and descriptions
+|   |
+|   |---NotifyAll(sender, message[, data, username, password])
+|   |       Notify all other connected clients
+|   |
+|   |---Ping([, username, password])
+|   |       Ping responder
+|   |
+|   |---Version([, username, password])
+|   |       Retrieve the JSON-RPC protocol version.
+|
+|---XBMC
+|   |
+|   |---GetInfoBooleans(booleans[, username, password])
+|   |       Retrieve info booleans about Kodi and the system
+|   |
+|   |---GetInfoLabels(labels[, username, password])
+|   |       Retrieve info labels about Kodi and the system
+|
+|---Application
+|   |
+|   |---Quit([, username, password])
+|   |       Quit application
+|   |
+|   |---SetVolume(volume[, username, password])
+|   |       Set the current volume
+|   |
+|   |---GetProperties(properties[, username, password])
+|   |       Retrieves the values of the given properties
+|   |
+|   |---SetMute(mute[, username, password])
+|   |       Toggle mute/unmute
+|
+|---Input
+|   |
+|   |---Down([, username, password])
+|   |       Navigate down in GUI
+|   |
+|   |---Right([, username, password])
+|   |       Navigate right in GUI
+|   |
+|   |---ShowCodec([, username, password])
+|   |       Show codec information of the playing item
+|   |
+|   |---Left([, username, password])
+|   |       Navigate left in GUI
+|   |
+|   |---ShowOSD([, username, password])
+|   |       Show the on-screen display for the current player
+|   |
+|   |---Back([, username, password])
+|   |       Goes back in GUI
+|   |
+|   |---Info([, username, password])
+|   |       Shows the information dialog
+|   |
+|   |---Select([, username, password])
+|   |       Select current item in GUI
+|   |
+|   |---ShowPlayerProcessInfo([, username, password])
+|   |       Show player process information of the playing item, like video decoder, pixel format, pvr signal strength, ...
+|   |
+|   |---ExecuteAction(action[, username, password])
+|   |       Execute a specific action
+|   |
+|   |---Home([, username, password])
+|   |       Goes to home window in GUI
+|   |
+|   |---Up([, username, password])
+|   |       Navigate up in GUI
+|   |
+|   |---ContextMenu([, username, password])
+|   |       Shows the context menu
+|   |
+|   |---SendText(text[, username, password, done])
+|   |       Send a generic (unicode) text
+|
+|---Profiles
+|   |
+|   |---GetCurrentProfile([, properties, username, password])
+|   |       Retrieve the current profile
+|   |
+|   |---LoadProfile(profile[, username, prompt, password])
+|   |       Load the specified profile
+|   |
+|   |---GetProfiles([, limits, properties, username, sort, password])
+|   |       Retrieve all profiles
+|
+|---System
+|   |
+|   |---Reboot([, username, password])
+|   |       Reboots the system running Kodi
+|   |
+|   |---Shutdown([, username, password])
+|   |       Shuts the system running Kodi down
+|   |
+|   |---Hibernate([, username, password])
+|   |       Puts the system running Kodi into hibernate mode
+|   |
+|   |---GetProperties(properties[, username, password])
+|   |       Retrieves the values of the given properties
+|   |
+|   |---EjectOpticalDrive([, username, password])
+|   |       Ejects or closes the optical disc drive (if available)
+|   |
+|   |---Suspend([, username, password])
+|   |       Suspends the system running Kodi
+|
+|---Favourites
+|   |
+|   |---AddFavourite(title, type[, windowparameter, username, window, path, password, thumbnail])
+|   |       Add a favourite with the given details
+|   |
+|   |---GetFavourites([, properties, username, password, type])
+|   |       Retrieve all favourites
+|
+|---AudioLibrary
+|   |
+|   |---GetGenres([, limits, properties, username, sort, password])
+|   |       Retrieve all genres
+|   |
+|   |---GetRoles([, limits, properties, username, sort, password])
+|   |       Retrieve all contributor roles
+|   |
+|   |---GetRecentlyAddedSongs([, albumlimit, properties, username, limits, password, sort])
+|   |       Retrieve recently added songs
+|   |
+|   |---SetSongDetails(songid[, year, musicbrainzalbumid, genre, album, artist, votes, lastplayed, password, musicbrainztrackid, playcount, musicbrainzartistid, comment, track, username, albumartist, musicbrainzalbumartistid, userrating, rating, duration, disc, title])
+|   |       Update the given song with the given details
+|   |
+|   |---GetRecentlyAddedAlbums([, limits, properties, username, sort, password])
+|   |       Retrieve recently added albums
+|   |
+|   |---GetSongs([, limits, properties, username, allroles, filter, sort, password, includesingles])
+|   |       Retrieve all songs from specified album, artist or genre
+|   |
+|   |---GetRecentlyPlayedSongs([, limits, properties, username, sort, password])
+|   |       Retrieve recently played songs
+|   |
+|   |---Scan([, showdialogs, username, directory, password])
+|   |       Scans the audio sources for new library items
+|   |
+|   |---GetSongDetails(songid[, properties, username, password])
+|   |       Retrieve details about a specific song
+|   |
+|   |---GetRecentlyPlayedAlbums([, limits, properties, username, sort, password])
+|   |       Retrieve recently played albums
+|   |
+|   |---SetArtistDetails(artistid[, username, formed, description, mood, born, genre, died, artist, disbanded, instrument, style, password, yearsactive])
+|   |       Update the given artist with the given details
+|   |
+|   |---Clean([, showdialogs, username, password])
+|   |       Cleans the audio library from non-existent items
+|   |
+|   |---GetAlbumDetails(albumid[, properties, username, password])
+|   |       Retrieve details about a specific album
+|   |
+|   |---GetArtistDetails(artistid[, properties, username, password])
+|   |       Retrieve details about a specific artist
+|   |
+|   |---GetAlbums([, limits, properties, username, allroles, filter, sort, password, includesingles])
+|   |       Retrieve all albums from specified artist (and role) or that has songs of the specified genre
+|   |
+|   |---GetProperties(properties[, username, password])
+|   |       Retrieves the values of the music library properties
+|   |
+|   |---Export([, username, options, password])
+|   |       Exports all items from the audio library
+|   |
+|   |---SetAlbumDetails(albumid[, username, description, albumlabel, mood, year, genre, type, artist, votes, userrating, rating, style, theme, password, title])
+|   |       Update the given album with the given details
+|   |
+|   |---GetArtists([, limits, properties, username, allroles, albumartistsonly, filter, sort, password])
+|   |       Retrieve all artists. For backward compatibility by default this implicity does not include those that only contribute other roles, however absolutely all artists can be returned using allroles=true
+|
+|---Addons
+|   |
+|   |---GetAddonDetails(addonid[, properties, username, password])
+|   |       Gets the details of a specific addon
+|   |
+|   |---GetAddons([, limits, properties, username, content, enabled, installed, password, type])
+|   |       Gets all available addons
+|   |
+|   |---SetAddonEnabled(enabled, addonid[, username, password])
+|   |       Enables/Disables a specific addon
+|   |
+|   |---ExecuteAddon(addonid[, username, params, password, wait])
+|   |       Executes the given addon with the given parameters (if possible)
+|
+|---Textures
+|   |
+|   |---RemoveTexture(textureid[, username, password])
+|   |       Remove the specified texture
+|   |
+|   |---GetTextures([, properties, username, filter, password])
+|   |       Retrieve all textures
+|
+|---GUI
+|   |
+|   |---ShowNotification(title, message[, image, username, password, displaytime])
+|   |       Shows a GUI notification
+|   |
+|   |---GetStereoscopicModes([, username, password])
+|   |       Returns the supported stereoscopic modes of the GUI
+|   |
+|   |---GetProperties(properties[, username, password])
+|   |       Retrieves the values of the given properties
+|   |
+|   |---SetFullscreen(fullscreen[, username, password])
+|   |       Toggle fullscreen/GUI
+|   |
+|   |---ActivateWindow(window[, username, parameters, password])
+|   |       Activates the given window
+|   |
+|   |---SetStereoscopicMode(mode[, username, password])
+|   |       Sets the stereoscopic mode of the GUI to the given mode
+|
+|---VideoLibrary
+|   |
+|   |---GetTags(type[, limits, properties, username, sort, password])
+|   |       Retrieve all tags
+|   |
+|   |---GetMusicVideoDetails(musicvideoid[, properties, username, password])
+|   |       Retrieve details about a specific music video
+|   |
+|   |---GetEpisodeDetails(episodeid[, properties, username, password])
+|   |       Retrieve details about a specific tv show episode
+|   |
+|   |---GetSeasonDetails(seasonid[, properties, username, password])
+|   |       Retrieve details about a specific tv show season
+|   |
+|   |---GetMovieSets([, limits, properties, username, sort, password])
+|   |       Retrieve all movie sets
+|   |
+|   |---GetMusicVideos([, limits, properties, username, filter, sort, password])
+|   |       Retrieve all music videos
+|   |
+|   |---RemoveEpisode(episodeid[, username, password])
+|   |       Removes the given episode from the library
+|   |
+|   |---GetEpisodes([, limits, properties, username, filter, tvshowid, season, sort, password])
+|   |       Retrieve all tv show episodes
+|   |
+|   |---GetMovieSetDetails(setid[, properties, username, movies, password])
+|   |       Retrieve details about a specific movie set
+|   |
+|   |---RemoveMusicVideo(musicvideoid[, username, password])
+|   |       Removes the given music video from the library
+|   |
+|   |---GetSeasons([, limits, properties, username, tvshowid, sort, password])
+|   |       Retrieve all tv seasons
+|   |
+|   |---SetMovieSetDetails(setid[, username, art, password, title])
+|   |       Update the given movie set with the given details
+|   |
+|   |---Export([, username, options, password])
+|   |       Exports all items from the video library
+|   |
+|   |---RefreshMovie(movieid[, username, ignorenfo, password, title])
+|   |       Refresh the given movie in the library
+|   |
+|   |---RemoveTVShow(tvshowid[, username, password])
+|   |       Removes the given tv show from the library
+|   |
+|   |---GetGenres(type[, limits, properties, username, sort, password])
+|   |       Retrieve all genres
+|   |
+|   |---SetSeasonDetails(seasonid[, userrating, username, art, password])
+|   |       Update the given season with the given details
+|   |
+|   |---GetRecentlyAddedEpisodes([, limits, properties, username, sort, password])
+|   |       Retrieve all recently added tv episodes
+|   |
+|   |---GetInProgressTVShows([, limits, properties, username, sort, password])
+|   |       Retrieve all in progress tvshows
+|   |
+|   |---SetMovieDetails(movieid[, plot, runtime, uniqueid, art, year, mpaa, ratings, director, genre, country, plotoutline, votes, imdbnumber, lastplayed, trailer, top250, password, originaltitle, sorttitle, playcount, showlink, username, tagline, dateadded, resume, tag, studio, premiered, set, userrating, rating, fanart, writer, thumbnail, title])
+|   |       Update the given movie with the given details
+|   |
+|   |---GetRecentlyAddedMovies([, limits, properties, username, sort, password])
+|   |       Retrieve all recently added movies
+|   |
+|   |---RefreshMusicVideo(musicvideoid[, username, password, ignorenfo, title])
+|   |       Refresh the given music video in the library
+|   |
+|   |---Scan([, showdialogs, username, directory, password])
+|   |       Scans the video sources for new library items
+|   |
+|   |---RefreshEpisode(episodeid[, username, password, ignorenfo, title])
+|   |       Refresh the given episode in the library
+|   |
+|   |---RefreshTVShow(tvshowid[, username, refreshepisodes, password, ignorenfo, title])
+|   |       Refresh the given tv show in the library
+|   |
+|   |---SetTVShowDetails(tvshowid[, plot, runtime, lastplayed, uniqueid, art, tag, ratings, genre, episodeguide, votes, imdbnumber, originaltitle, password, mpaa, sorttitle, playcount, username, dateadded, studio, premiered, userrating, rating, status, fanart, thumbnail, title])
+|   |       Update the given tvshow with the given details
+|   |
+|   |---SetEpisodeDetails(episodeid[, plot, productioncode, runtime, uniqueid, episode, ratings, director, firstaired, votes, lastplayed, season, password, originaltitle, playcount, dateadded, username, art, resume, userrating, rating, fanart, writer, thumbnail, title])
+|   |       Update the given episode with the given details
+|   |
+|   |---GetMovieDetails(movieid[, properties, username, password])
+|   |       Retrieve details about a specific movie
+|   |
+|   |---Clean([, showdialogs, username, password])
+|   |       Cleans the video library from non-existent items
+|   |
+|   |---GetTVShows([, limits, properties, username, filter, sort, password])
+|   |       Retrieve all tv shows
+|   |
+|   |---SetMusicVideoDetails(musicvideoid[, plot, runtime, art, year, tag, genre, album, track, lastplayed, resume, password, playcount, artist, username, dateadded, director, studio, premiered, userrating, rating, fanart, thumbnail, title])
+|   |       Update the given music video with the given details
+|   |
+|   |---RemoveMovie(movieid[, username, password])
+|   |       Removes the given movie from the library
+|   |
+|   |---GetMovies([, limits, properties, username, filter, sort, password])
+|   |       Retrieve all movies
+|   |
+|   |---GetTVShowDetails(tvshowid[, properties, username, password])
+|   |       Retrieve details about a specific tv show
+|   |
+|   |---GetRecentlyAddedMusicVideos([, limits, properties, username, sort, password])
+|   |       Retrieve all recently added music videos
+|
+|---PVR
+|   |
+|   |---Record([, username, channel, password, record])
+|   |       Toggle recording of a channel
+|   |
+|   |---GetProperties(properties[, username, password])
+|   |       Retrieves the values of the given properties
+|   |
+|   |---GetTimerDetails(timerid[, properties, username, password])
+|   |       Retrieves the details of a specific timer
+|   |
+|   |---DeleteTimer(timerid[, username, password])
+|   |       Deletes a onetime timer or a timer rule
+|   |
+|   |---AddTimer(broadcastid[, username, password, timerrule])
+|   |       Adds a timer to record the given show one times or a timer rule to record all showings of the given show
+|   |
+|   |---GetRecordingDetails(recordingid[, properties, username, password])
+|   |       Retrieves the details of a specific recording
+|   |
+|   |---Scan([, username, password])
+|   |       Starts a channel scan
+|   |
+|   |---GetBroadcastDetails(broadcastid[, properties, username, password])
+|   |       Retrieves the details of a specific broadcast
+|   |
+|   |---GetChannelGroups(channeltype[, limits, username, password])
+|   |       Retrieves the channel groups for the specified type
+|   |
+|   |---GetChannelDetails(channelid[, username, properties, password])
+|   |       Retrieves the details of a specific channel
+|   |
+|   |---GetBroadcasts(channelid[, limits, username, properties, password])
+|   |       Retrieves the program of a specific channel
+|   |
+|   |---GetRecordings([, limits, properties, username, password])
+|   |       Retrieves the recordings
+|   |
+|   |---GetChannelGroupDetails(channelgroupid[, username, password, channels])
+|   |       Retrieves the details of a specific channel group
+|   |
+|   |---GetTimers([, limits, properties, username, password])
+|   |       Retrieves the timers
+|   |
+|   |---GetChannels(channelgroupid[, limits, properties, username, password])
+|   |       Retrieves the channel list
+|   |
+|   |---ToggleTimer(broadcastid[, username, password, timerrule])
+|   |       Creates or deletes a onetime timer or timer rule for a given show. If it exists, it will be deleted. If it does not exist, it will be created
