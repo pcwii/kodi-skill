@@ -4,6 +4,7 @@ from mycroft.skills.core import MycroftSkill
 from mycroft.util.log import getLogger
 
 from kodipydent import Kodi
+import re
 
 _author__ = 'PCWii'
 
@@ -77,25 +78,26 @@ class KodiSkill(MycroftSkill):
     def handle_listen(self, message):
         voice_payload = "Listening"
         if self.notifier_bool:
-            self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI Message", message=voice_payload, displaytime=2000)
+            self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=2500)
 
     def handle_utterance(self, message):
         utterance = message.data.get('utterances')
         voice_payload = utterance
         if self.notifier_bool:
-            self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI Message", message=voice_payload, displaytime=2000)
+            self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=2500)
 
     def handle_speak(self, message):
         speak = message.data.get('utterance')
         voice_payload = speak
         if self.notifier_bool:
-            self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI Message", message=voice_payload, displaytime=2000)
+            self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=2500)
 
     def handle_play_film_intent(self, message):
         utt_string = str(message.data.get('utterances'))
         film_kw = message.data.get("FilmKeyword")
         start_index = utt_string.find(film_kw) + len(film_kw) + 1
         movie_name = utt_string[start_index:]
+        http://192.168.197.69/noVNC/vnc.html?path=../vnc/1&autoconnect=1&minimal=1&view_only=1
         self.speak_dialog("play.film", data={"result": movie_name})
         self.play_film_by_search(self.kodi_instance, movie_name)
 
