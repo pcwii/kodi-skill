@@ -48,7 +48,7 @@ def play_film_by_search(kodi_id, film_search):
 # print(my_kodi_instance)
 # play_film_by_search("wonder woman")
 
-mystring = "play the movie thor the dark world"
+mystring = "play the movie iron man"
 keyword = "movie"
 start_index = mystring.find(keyword) + len(keyword) + 1
 print(start_index)
