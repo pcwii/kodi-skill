@@ -141,8 +141,8 @@ class KodiSkill(MycroftSkill):
             self.kodi_instance.Input.Back()
         move_kw = message.data.get('MovieKeyword')
         cursor_kw = message.data.get('CursorKeyword')
-        self.set_context('MoveKeyword', move_kw)
-        self.set_context('CursorKeyword', cursor_kw)
+        self.set_context('MoveKeyword', move_kw[0])
+        self.set_context('CursorKeyword', cursor_kw[0])
         self.speak_dialog("direction", data={"result": direction}, expect_response=True)
         
     # Kodi specific functions for searching and playing movies
