@@ -101,13 +101,13 @@ class KodiSkill(MycroftSkill):
         # self.speak_multi_film_match(message.metadata['Film'], results)
 
     def handle_stop_film_intent(self, message):
-        self.kodi_instance.stop_playback()
+        self.kodi_instance.Player.Stop()
 
     def handle_pause_film_intent(self, message):
-        self.kodi_instance.playpause_playback()
+        self.kodi_instance.Player.PlayPause()
 
     def handle_resume_film_intent(self, message):
-        self.kodi_instance.playpause_playback()
+        self.kodi_instance.Player.PlayPause()
 
     def handle_notification_on_intent(self, message):
         self.notifier_bool = True
@@ -135,7 +135,7 @@ class KodiSkill(MycroftSkill):
         kodi_kw = message.data.get('KodiKeyword')
         self.speak("o-k, next", expect_response=True)
         self.set_context('MoveKeyword', move_kw)
-        self.set_context('MoveKeyword', kodi_kw)
+        self.set_context('KodiKeyword', kodi_kw)
 
     # Kodi specific functions for searching and playing movies
     def find_films_matching(kodi_id, search):
