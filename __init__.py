@@ -139,12 +139,12 @@ class KodiSkill(MycroftSkill):
             self.kodi_instance.Input.Select()
         if direction == "back":
             self.kodi_instance.Input.Back()
-        move_kw = message.data.get('MoveKeyword')
-        kodi_kw = message.data.get('KodiKeyword')
-        self.speak("o-k, next", expect_response=True)
+        move_kw = message.data.get('MovieKeyword')
+        cursor_kw = message.data.get('CursorKeyword')
         self.set_context('MoveKeyword', move_kw)
-        self.set_context('KodiKeyword', kodi_kw)
-
+        self.set_context('CursorKeyword', cursor_kw)
+        self.speak("o-k", expect_response=True)
+        
     # Kodi specific functions for searching and playing movies
     def find_films_matching(self, kodi_id, search):
         """
