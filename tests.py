@@ -41,7 +41,8 @@ def play_film_by_search(kodi_id, film_search):
 # print(movie_id)
 # play_film_by_search(my_kodi_instance, "iron man")
 
-my_kodi_instance.Player.PlayPause(playerid=1)
+# my_kodi_instance.Player.PlayPause(playerid=1)
+print(my_kodi_instance)
 
 # print(movie_id)
 # print(my_kodi_instance)
