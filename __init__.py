@@ -97,7 +97,7 @@ class KodiSkill(MycroftSkill):
         start_index = utt_string.find(film_kw) + len(film_kw) + 1
         movie_name = utt_string[start_index:]
         self.speak_dialog("play.film", data={"result": movie_name})
-        self.play_film_by_search(self.kodi_instance, movie_name)
+        self.play_film_by_search(movie_name)
 
     def handle_search_film_intent(self, message):
         utt_string = str(message.data.get('utterances'))
@@ -105,7 +105,7 @@ class KodiSkill(MycroftSkill):
         start_index = utt_string.find(film_kw) + len(film_kw) + 1
         movie_name = utt_string[start_index:]
         self.speak_dialog("find.film", data={"result": movie_name})
-        results = self.find_films_matching(self.kodi_instance, movie_name)
+        results = self.find_films_matching(movie_name)
         self.speak_multi_film_match(message.data.get['Film'], results)
 
     def handle_stop_film_intent(self, message):
