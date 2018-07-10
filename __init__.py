@@ -92,13 +92,11 @@ class KodiSkill(MycroftSkill):
             self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI Message", message=voice_payload, displaytime=2000)
 
     def handle_play_film_intent(self, message):
-        self.play_film_by_search(self.kodi, message.metadata['Film'])
-        # str_remainder = str(message.utterance_remainder())
-        # self.play_film_by_search(str_remainder)
+        self.play_film_by_search(self.kodi_instance, message.metadata['Film'])
 
     def handle_search_film_intent(self, message):
-        results = kodi.find_films_matching(self.kodi, message.metadata['Film'])
-        # self.speak_multi_film_match(message.metadata['Film'], results)
+        results = self.find_films_matching(self.kodi_instance, message.metadata['Film'])
+        self.speak_multi_film_match(message.metadata['Film'], results)
 
     def handle_stop_film_intent(self, message):
         self.kodi_instance.Player.Stop(playerid=1)
