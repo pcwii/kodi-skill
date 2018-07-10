@@ -74,7 +74,6 @@ class KodiSkill(MycroftSkill):
             require("DirectionKeyword").build()
         self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)
 
-
     def handle_listen(self, message):
         voice_payload = "Listening"
         if self.notifier_bool:
@@ -168,7 +167,6 @@ class KodiSkill(MycroftSkill):
         kodi_id.Playlist.Add(playlistid=1, item={'movieid': movieid})
         kodi_id.Player.Open(item={'playlistid': 1})
 
-
     def speak_multi_film_match(self, search, results):
         """
         Tell the user about a list of results.
@@ -191,8 +189,7 @@ class KodiSkill(MycroftSkill):
             if self.notifier_bool:
                 self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
 
-
-    def stop():
+    def stop(self):
         pass
 
 
