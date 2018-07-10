@@ -74,7 +74,6 @@ class KodiSkill(MycroftSkill):
         self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)
 
 
-
     def handle_listen(self, message):
         voice_payload = "Listening"
         if self.notifier_bool:
