@@ -1,4 +1,4 @@
-* https://kodi.wiki/index.php?title=JSON-RPC_API/v6#GUI.ShowNotification
+* https://kodi.wiki/index.php?title=JSON-RPC_API/v6
 |
 |---Playlist
 |   |
