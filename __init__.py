@@ -101,7 +101,7 @@ class KodiSkill(MycroftSkill):
         # self.speak_multi_film_match(message.metadata['Film'], results)
 
     def handle_stop_film_intent(self, message):
-        self.kodi_instance.Player.Stop()
+        self.kodi_instance.Player.Stop(playerid=1)
 
     def handle_pause_film_intent(self, message):
         self.kodi_instance.Player.PlayPause(playerid=1)
