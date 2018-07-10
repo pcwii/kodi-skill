@@ -97,7 +97,6 @@ class KodiSkill(MycroftSkill):
         film_kw = message.data.get("FilmKeyword")
         start_index = utt_string.find(film_kw) + len(film_kw) + 1
         movie_name = utt_string[start_index:]
-        http://192.168.197.69/noVNC/vnc.html?path=../vnc/1&autoconnect=1&minimal=1&view_only=1
         self.speak_dialog("play.film", data={"result": movie_name})
         self.play_film_by_search(self.kodi_instance, movie_name)
 
