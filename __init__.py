@@ -95,7 +95,8 @@ class KodiSkill(MycroftSkill):
         utt_string = str(message.data.get('utterances'))
         film_kw = message.data.get("FilmKeyword")
         start_index = utt_string.find(film_kw) + len(film_kw) + 1
-        movie_name = utt_string[start_index:]
+        # movie_name = utt_string[start_index:]
+        movie_name = utt_string
         self.speak_dialog("play.film", data={"result": movie_name})
         self.play_film_by_search(self.kodi_instance, movie_name)
 
