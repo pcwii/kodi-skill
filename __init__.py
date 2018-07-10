@@ -135,7 +135,9 @@ class KodiSkill(MycroftSkill):
             self.kodi_instance.Input.Left()
         if direction == "right":
             self.kodi_instance.Input.Right()
-        if direction == "select" or direction == "enter":
+        if direction == "select":
+            self.kodi_instance.Input.Select()
+        if direction == "enter":
             self.kodi_instance.Input.Select()
         if direction == "back":
             self.kodi_instance.Input.Back()
