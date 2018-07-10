@@ -37,10 +37,11 @@ def play_film_by_search(kodi_id, film_search):
 # my_kodi_instance.GUI.ShowNotification(title="Mycroft.AI Message", message="Hello This is a Test!", displaytime=2000)
 
 
-movie_id = find_films_matching(my_kodi_instance, "iron man")
-print(movie_id)
-play_film_by_search(my_kodi_instance, "iron man")
+# movie_id = find_films_matching(my_kodi_instance, "iron man")
+# print(movie_id)
+# play_film_by_search(my_kodi_instance, "iron man")
 
+my_kodi_instance.Player.PlayPause(playerid=1)
 
 # print(movie_id)
 # print(my_kodi_instance)

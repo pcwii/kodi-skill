@@ -104,10 +104,10 @@ class KodiSkill(MycroftSkill):
         self.kodi_instance.Player.Stop()
 
     def handle_pause_film_intent(self, message):
-        self.kodi_instance.Player.PlayPause()
+        self.kodi_instance.Player.PlayPause(playerid=1)
 
     def handle_resume_film_intent(self, message):
-        self.kodi_instance.Player.PlayPause()
+        self.kodi_instance.Player.PlayPause(playerid=1)
 
     def handle_notification_on_intent(self, message):
         self.notifier_bool = True
