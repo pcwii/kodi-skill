@@ -154,7 +154,9 @@ class KodiSkill(MycroftSkill):
         my_movies = kodi_id.VideoLibrary.GetMovies()['result']['movies']
         results = []
         for m in my_movies:
-            if search in m['label'].lower():
+            m_name = m['label'].lower()
+            m_clean = re.sub('[^0-9a-zA-Z]+', ' ', m_name)                                 
+            if search in m_name:
                 results.append(m)
         return results
 
