@@ -39,7 +39,7 @@ def play_film_by_search(kodi_id, film_search):
 
 # movie_id = find_films_matching(my_kodi_instance, "iron man")
 # print(movie_id)
-play_film_by_search(my_kodi_instance, "thor the dark world")
+# play_film_by_search(my_kodi_instance, "thor the dark world")
 
 # my_kodi_instance.Player.PlayPause(playerid=1)
 # print(my_kodi_instance)
@@ -47,3 +47,10 @@ play_film_by_search(my_kodi_instance, "thor the dark world")
 # print(movie_id)
 # print(my_kodi_instance)
 # play_film_by_search("wonder woman")
+
+mystring = "play the movie thor the dark world"
+keyword = "movie"
+start_index = mystring.find(keyword) + len(keyword) + 1
+print(start_index)
+movie_name = mystring[start_index:]
+print(movie_name)
