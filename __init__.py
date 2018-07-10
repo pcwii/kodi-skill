@@ -143,7 +143,7 @@ class KodiSkill(MycroftSkill):
         cursor_kw = message.data.get('CursorKeyword')
         self.set_context('MoveKeyword', move_kw)
         self.set_context('CursorKeyword', cursor_kw)
-        self.speak("o-k", expect_response=True)
+        self.speak_dialog("direction", data={"result": direction, expect_response=True)
         
     # Kodi specific functions for searching and playing movies
     def find_films_matching(self, kodi_id, search):
@@ -173,7 +173,6 @@ class KodiSkill(MycroftSkill):
         output = "I found the following movies matching {}: ".format(search)
         for film in results:
             output += "{}, ".format(film['label'])
-
         self.speak(output)
 
     def play_film_by_search(self, kodi_id, film_search):
@@ -181,11 +180,11 @@ class KodiSkill(MycroftSkill):
         if len(results) == 1:
             self.play_film(kodi_id, results[0]['movieid'])
         elif len(results):
-            print("I found multiple results: " + str(len(results)))  # film_search, results)
-            play_index = 3
+            # print("I found multiple results: " + str(len(results)))  # film_search, results)
+            play_index = 1
             self.play_film(kodi_id, results[play_index - 1]['movieid'])
         else:
-            print("I found no results for the search: {}.".format(film_search))
+            # print("I found no results for the search: {}.".format(film_search))
 
     def stop():
         pass
