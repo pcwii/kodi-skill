@@ -92,7 +92,7 @@ class KodiSkill(MycroftSkill):
             self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI sp", message=voice_payload, displaytime=2500)
 
     def handle_play_film_intent(self, message):
-        utt_string = str(message.data.get('utterances'))
+        utt_string = message.data.get('utterances')
         film_kw = message.data.get("FilmKeyword")
         start_index = utt_string.find(film_kw) + len(film_kw) + 1
         # movie_name = utt_string[start_index:]
