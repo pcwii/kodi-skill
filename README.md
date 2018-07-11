@@ -14,11 +14,12 @@ Utilize the kodi API and Python library for controlling the KODI open source med
 * "re-start the movie"
 * "stop the movie"
 * "search for films containing Matrix"
+## Conversational Context
 * If mycroft.ai locates more than one movie that matches your request it will permit you to itterate through your requests
 * using conversational context.
 * eg. "hey mycroft:"
 * Request: "play the move Iron Man"
-* Response: "I have located multiple movies with the name Iron Man, would you like me to list them?"
+* Response: "I have located 3 movies with the name Iron Man, would you like me to list them?"
 * Request: "yes" / "no"
 * Response: "Iron Man, say play to play or next to skip"
 * Request: "next" / "skip"
