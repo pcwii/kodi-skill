@@ -4,13 +4,11 @@ import re
 my_kodi_instance = Kodi('192.168.0.32')
 
 
-def find_films_matching(kodi_id,search):
+def find_films_matching(kodi_id, search):
     my_movies = kodi_id.VideoLibrary.GetMovies()['result']['movies']
     print(my_movies)
     results = []
     for m in my_movies:
-        index_movie = re.sub('\W', ' ', m['label'].lower())
-        index_movie = re.sub(' +', ' ', index_movie)
         print(index_movie)
         if search in index_movie:
             results.append(m)
