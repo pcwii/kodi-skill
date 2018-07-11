@@ -181,11 +181,13 @@ class KodiSkill(MycroftSkill):
         if len(results) == 1:
             self.play_film(kodi_id, results[0]['movieid'])
         elif len(results):
-            # print("I found multiple results: " + str(len(results)))  # film_search, results)
-            play_index = 1
-            self.play_film(kodi_id, results[play_index - 1]['movieid'])
+            msg_payload ="I found multiple results: " + str(len(results))
+            self.speak(msg_payload)
+            if self.notifier_bool:
+                self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
         else:
             msg_payload = "I found no results for the search: {}.".format(film_search)
+            self.speak(msg_payload)
             if self.notifier_bool:
                 self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
 
