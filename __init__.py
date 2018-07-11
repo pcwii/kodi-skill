@@ -198,14 +198,15 @@ class KodiSkill(MycroftSkill):
             if self.notifier_bool:
                 self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
 
-    @intent_handler(IntentBuilder('NavigateYesIntent').require("YesKeyword").require('Navigate'))
+    @intent_handler(IntentBuilder('NavigateYesIntent').require("YesKeyword").require('Navigate').build())
     @adds_context('ParseList')
     def handle_navigate_yes_intent(self, message):
         msg_payload = self.movie_list[self.movie_index] + ", To Skip, say, Next or, Skip, Say Select, to play this movie, or, Cancel" \
                                            " to stop searching"
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
 
-    @intent_handler(IntentBuilder('SkipIntent').require("NextKeyword").require('ParseList').optionally('Navigate'))
+    @intent_handler(IntentBuilder('SkipIntent').require("NextKeyword").require('ParseList').optionally('Navigate'). \
+                    build())
     def handle_navigate_yes_intent(self, message):
         self.movie_index += 1
         if self.movie_index < len(self.movie_list):
@@ -216,7 +217,7 @@ class KodiSkill(MycroftSkill):
             self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
     @intent_handler(IntentBuilder('NavigateCancelIntent').require("CancelKeyword").require('Navigate'). \
-                    optionally('ParseList'))
+                    optionally('ParseList').build())
     @removes_context('Navigate')
     @removes_context('ParseList')
     def handle_navigate_yes_intent(self, message):
