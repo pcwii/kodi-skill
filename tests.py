@@ -1,13 +1,18 @@
 from kodipydent import Kodi
+import re
 
 my_kodi_instance = Kodi('192.168.0.32')
 
 
 def find_films_matching(kodi_id,search):
     my_movies = kodi_id.VideoLibrary.GetMovies()['result']['movies']
+    print(my_movies)
     results = []
     for m in my_movies:
-        if search in m['label'].lower():
+        index_movie = re.sub('\W', ' ', m['label'].lower())
+        index_movie = re.sub(' +', ' ', index_movie)
+        print(index_movie)
+        if search in index_movie:
             results.append(m)
     return results
 
@@ -48,9 +53,11 @@ def play_film_by_search(kodi_id, film_search):
 # print(my_kodi_instance)
 # play_film_by_search("wonder woman")
 
-mystring = "play the movie iron man"
+mystring = "play the movie spider-man homecoming"
+mystring = re.sub('\W', ' ', mystring)
 keyword = "movie"
 start_index = mystring.find(keyword) + len(keyword) + 1
 print(start_index)
 movie_name = mystring[start_index:]
 print(movie_name)
+play_film_by_search(my_kodi_instance, movie_name)
