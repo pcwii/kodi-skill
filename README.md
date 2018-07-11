@@ -1,11 +1,3 @@
-# This skill is under development and remains a WIP
-# ***Not usable at this time***
-#**************************************************
-# Wish List
-# 1. play / stop / pause / resume functions for movies. - WIP
-# 2. Search for movies - WIP
-# 3. Cursor control (up, down, left, right, select, back - WIP
-# 4. Notifications - WIP
 # Kodi Skill for Mycroft AI
 ## kodi-skill
 Control KODI open source media center with Mycroft
@@ -15,9 +7,24 @@ Utilize the kodi API and Python library for controlling the KODI open source med
 ## Examples 
 * "turn kodi notifications on"
 * "turn kodi notifications off"
-* "move cursor up / down / left / right"
+* "move the cursor up / down / left / right / back / select" (Conversational Context)
 * "play film The Matrix"
+* "play the movie spider man homecoming"
+* "pause the movie"
+* "re-start the movie"
+* "stop the movie"
 * "search for films containing Matrix"
+* If mycroft.ai locates more than one movie that matches your request it will permit you to itterate through your requests
+* using conversational context.
+* eg. "hey mycroft:"
+* Request: "play the move Iron Man"
+* Response: "I have located multiple movies with the name Iron Man, would you like me to list them?"
+* Request: "yes" / "no"
+* Response: "Iron Man, say play to play or next to skip"
+* Request: "next" / "skip"
+* Response: "Iron Man 2"
+* Request: "play" / "select"
+* Response: "o-k, attempting to play, Iron Man 2"
 ## Credits
 PCWii
 ## Require 
