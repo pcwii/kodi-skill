@@ -5,11 +5,15 @@ my_kodi_instance = Kodi('192.168.0.32')
 
 
 def find_films_matching(kodi_id, search):
+    """
+     Find all Movies Matching the search
+     """
     my_movies = kodi_id.VideoLibrary.GetMovies()['result']['movies']
-    print(my_movies)
     results = []
+    print(search)
     for m in my_movies:
-        print(index_movie)
+        index_movie = re.sub('\W', ' ', m['label'].lower())
+        index_movie = re.sub(' +', ' ', index_movie)
         if search in index_movie:
             results.append(m)
     return results
@@ -27,11 +31,10 @@ def play_film(kodi_id, movieid):
 def play_film_by_search(kodi_id, film_search):
     results = find_films_matching(kodi_id, film_search)
     if len(results) == 1:
-        play_film(kodi_id, results[0]['movieid'])
+        print('Found 1 Movie')
+        # play_film(kodi_id, results[0]['movieid'])
     elif len(results):
         print("I found multiple results: " + str(len(results)))  # film_search, results)
-        play_index = 3
-        play_film(kodi_id, results[play_index - 1]['movieid'])
     else:
         print("I found no results for the search: {}.".format(film_search))
 
@@ -51,11 +54,8 @@ def play_film_by_search(kodi_id, film_search):
 # print(my_kodi_instance)
 # play_film_by_search("wonder woman")
 
-mystring = "play the movie spider-man homecoming"
+mystring = "play the movie captain america the first avenger"
 mystring = re.sub('\W', ' ', mystring)
-keyword = "movie"
-start_index = mystring.find(keyword) + len(keyword) + 1
-print(start_index)
-movie_name = mystring[start_index:]
+movie_name = re.sub('(movie|film) (?P<Film>.*)', mystring[])
 print(movie_name)
 play_film_by_search(my_kodi_instance, movie_name)

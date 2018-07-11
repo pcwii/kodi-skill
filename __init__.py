@@ -2,6 +2,7 @@ from os.path import dirname
 from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill
 from mycroft.util.log import getLogger
+from mycroft.skills.context import adds_context, removes_context
 
 from kodipydent import Kodi
 import re
@@ -176,6 +177,7 @@ class KodiSkill(MycroftSkill):
             output += "{}, ".format(film['label'])
         self.speak(output)
 
+    @adds_context('Navigate')
     def play_film_by_search(self, kodi_id, film_search):
         results = self.find_films_matching(kodi_id, film_search)
         if len(results) == 1:
@@ -190,6 +192,11 @@ class KodiSkill(MycroftSkill):
             self.speak(msg_payload)
             if self.notifier_bool:
                 self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
+
+    @intent_handler(IntentBuilder('NavigateYesIntent').require("YesKeyword").require('Navigate'))
+    @adds_context('ParseList')
+    def handle_navigate_yes_intent(self, message):
+
 
     def stop(self):
         pass
