@@ -21,6 +21,7 @@ class KodiSkill(MycroftSkill):
         # self.settings["ipstring"] = ""
         self.kodi_instance = Kodi('192.168.0.32')
         self.notifier_bool = False
+        self.movie_list = []
 
     def initialize(self):
         self.load_data_files(dirname(__file__))
@@ -183,19 +184,22 @@ class KodiSkill(MycroftSkill):
         if len(results) == 1:
             self.play_film(kodi_id, results[0]['movieid'])
         elif len(results):
-            msg_payload ="I found multiple results: " + str(len(results))
-            self.speak(msg_payload)
+            self.movie_list = results
+            msg_payload = "I found, " + str(len(results)) + ", results, would you like me to list them?"
+            self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
             if self.notifier_bool:
                 self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
         else:
             msg_payload = "I found no results for the search: {}.".format(film_search)
-            self.speak(msg_payload)
+            self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
             if self.notifier_bool:
                 self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
 
     @intent_handler(IntentBuilder('NavigateYesIntent').require("YesKeyword").require('Navigate'))
     @adds_context('ParseList')
     def handle_navigate_yes_intent(self, message):
+        msg_payload = "I found no results for the search: {}.".format(film_search)
+        self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
 
 
     def stop(self):
