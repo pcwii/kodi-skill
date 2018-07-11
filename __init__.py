@@ -98,7 +98,7 @@ class KodiSkill(MycroftSkill):
         movie_name = message.data.get("Film")
         movie_name = re.sub('\W', ' ', movie_name)
         movie_name = re.sub(' +', ' ', movie_name)
-        self.speak_dialog("play.film", data={"result": movie_name})
+        # self.speak_dialog("play.film", data={"result": movie_name})
         self.play_film_by_search(self.kodi_instance, movie_name)
 
     def handle_search_film_intent(self, message):
@@ -183,6 +183,7 @@ class KodiSkill(MycroftSkill):
     def play_film_by_search(self, kodi_id, film_search):
         results = self.find_films_matching(kodi_id, film_search)
         if len(results) == 1:
+            self.speak_dialog("play.film", data={"result": movie_name})
             self.play_film(kodi_id, results[0]['movieid'])
         elif len(results):
             self.movie_list = results
