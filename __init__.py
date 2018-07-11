@@ -22,6 +22,7 @@ class KodiSkill(MycroftSkill):
         self.kodi_instance = Kodi('192.168.0.32')
         self.notifier_bool = False
         self.movie_list = []
+        self.movie_index = 0
 
     def initialize(self):
         self.load_data_files(dirname(__file__))
@@ -185,6 +186,7 @@ class KodiSkill(MycroftSkill):
             self.play_film(kodi_id, results[0]['movieid'])
         elif len(results):
             self.movie_list = results
+            self.movie_index = 0
             msg_payload = "I found, " + str(len(results)) + ", results, would you like me to list them?"
             self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
             if self.notifier_bool:
@@ -198,9 +200,27 @@ class KodiSkill(MycroftSkill):
     @intent_handler(IntentBuilder('NavigateYesIntent').require("YesKeyword").require('Navigate'))
     @adds_context('ParseList')
     def handle_navigate_yes_intent(self, message):
-        msg_payload = "I found no results for the search: {}.".format(film_search)
+        msg_payload = self.movie_list[self.movie_index] + ", To Skip, say, Next or, Skip, Say Select, to play this movie, or, Cancel" \
+                                           " to stop searching"
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
 
+    @intent_handler(IntentBuilder('SkipIntent').require("NextKeyword").require('ParseList').optionally('Navigate'))
+    def handle_navigate_yes_intent(self, message):
+        self.movie_index += 1
+        if self.movie_index < len(self.movie_list):
+            msg_payload = self.movie_list[self.movie_index]
+            self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
+        else:
+            msg_payload = "there are no more movies in the list"
+            self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
+
+    @intent_handler(IntentBuilder('NavigateCancelIntent').require("CancelKeyword").require('Navigate'). \
+                    optionally('ParseList'))
+    @removes_context('Navigate')
+    @removes_context('ParseList')
+    def handle_navigate_yes_intent(self, message):
+        msg_payload = 'Canceled'
+        self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
     def stop(self):
         pass
