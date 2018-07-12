@@ -202,9 +202,17 @@ class KodiSkill(MycroftSkill):
     @adds_context('ParseList')
     def handle_navigate_yes_intent(self, message):
         msg_payload = str(self.movie_list[self.movie_index]['label']) + ", To Skip, say Next, Say Select, to" \
-                                                               " play this movie, or Cancel to stop searching"
+                                                               " play, or Cancel, to stop"
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
 
+    @intent_handler(IntentBuilder('NavigatePlayIntent').require("SelectKeyword").require('ParseList').
+                    optionally('Navigate').build())
+    @removes_context('ParseList')
+    @removes_context('Navigate')
+    def handle_navigate_play_intent(self, message):
+        self.play_film(self.kodi_instance, self.movie_list[self.movie_index]['movieid'])
+        msg_payload = "Attempting to play, " + str(self.movie_list[self.movie_index]['label'])
+        self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
     @intent_handler(IntentBuilder('SkipIntent').require("NextKeyword").require('ParseList').optionally('Navigate').
                     build())
