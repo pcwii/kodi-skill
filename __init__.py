@@ -152,7 +152,7 @@ class KodiSkill(MycroftSkill):
             self.set_context('CursorKeyword', cursor_kw)
             self.speak_dialog("direction", data={"result": direction}, expect_response=True)
         if cancel_kw:
-            self.speak_dialog("direction", data={"result": direction}, expect_response=False)
+            self.speak_dialog("direction", data={"result": cancel_kw}, expect_response=False)
 
     # Kodi specific functions for searching and playing movies
     def find_films_matching(self, kodi_id, search):
