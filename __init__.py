@@ -109,7 +109,7 @@ class KodiSkill(MycroftSkill):
         movie_name = re.sub(' +', ' ', movie_name)
         self.speak_dialog("find.film", data={"result": movie_name})
         results = self.find_films_matching(self.kodi_instance, movie_name)
-        self.speak_multi_film_match(self, message.data.get['Film'], results)
+        self.speak_multi_film_match(self, message.data.get('Film'), results)
         # self.speak_multi_film_match(message.data.get['Film'], results)
 
     def handle_stop_film_intent(self, message):
