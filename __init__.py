@@ -173,9 +173,9 @@ class KodiSkill(MycroftSkill):
         Play a movie by id.
         """
         kodi_id.Playlist.Clear(playlistid=1)
-        time.sleep(500)  # add delay to avoid socket timeout
+        time.sleep(0.5)  # add delay to avoid socket timeout
         kodi_id.Playlist.Add(playlistid=1, item={'movieid': movieid})
-        time.sleep(500)  # add delay to avoid socket timeout
+        time.sleep(0.5)  # add delay to avoid socket timeout
         kodi_id.Player.Open(item={'playlistid': 1})
 
     def speak_multi_film_match(self, search, results):
