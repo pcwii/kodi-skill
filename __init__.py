@@ -1,4 +1,6 @@
 from os.path import dirname
+import time
+
 from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill, intent_handler, intent_file_handler
 from mycroft.util.log import getLogger
@@ -167,7 +169,9 @@ class KodiSkill(MycroftSkill):
         Play a movie by id.
         """
         kodi_id.Playlist.Clear(playlistid=1)
+        time.sleep(500)  # add delay to avoid socket timeout
         kodi_id.Playlist.Add(playlistid=1, item={'movieid': movieid})
+        time.sleep(500)  # add delay to avoid socket timeout
         kodi_id.Player.Open(item={'playlistid': 1})
 
     def speak_multi_film_match(self, search, results):

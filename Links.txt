@@ -1,2 +1,4 @@
+https://kodi.wiki/index.php?title=JSON-RPC_API/v6
+https://kodi.wiki/view/JSON-RPC_API/v8
 https://mycroft.ai/documentation/skills/conversational-context/
 https://regex101.com/
