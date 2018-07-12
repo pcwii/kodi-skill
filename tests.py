@@ -32,7 +32,7 @@ def play_film_by_search(kodi_id, film_search):
     results = find_films_matching(kodi_id, film_search)
     if len(results) == 1:
         print('Found 1 Movie')
-        # play_film(kodi_id, results[0]['movieid'])
+        play_film(kodi_id, results[0]['movieid'])
     elif len(results):
         print("I found multiple results: " + str(len(results)))  # film_search, results)
     else:
@@ -43,9 +43,9 @@ def play_film_by_search(kodi_id, film_search):
 # my_kodi_instance.GUI.ShowNotification(title="Mycroft.AI Message", message="Hello This is a Test!", displaytime=2000)
 
 
-movie_id = find_films_matching(my_kodi_instance, "iron man")
-print(movie_id)
-# play_film_by_search(my_kodi_instance, "thor the dark world")
+# movie_id = find_films_matching(my_kodi_instance, "iron man")
+# print(movie_id)
+play_film_by_search(my_kodi_instance, "ant man")
 
 # my_kodi_instance.Player.PlayPause(playerid=1)
 # print(my_kodi_instance)
@@ -58,4 +58,4 @@ print(movie_id)
 # mystring = re.sub('\W', ' ', mystring)
 # movie_name = re.sub('(movie|film) (?P<Film>.*)', mystring[])
 # print(movie_name)
-#play_film_by_search(my_kodi_instance, movie_name)
+# play_film_by_search(my_kodi_instance, movie_name)

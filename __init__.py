@@ -193,11 +193,7 @@ class KodiSkill(MycroftSkill):
     def play_film_by_search(self, kodi_id, film_search):
         results = self.find_films_matching(kodi_id, film_search)
         if len(results) == 1:
-            self.movie_list = results
-            self.movie_index = 0
-            # self.speak_dialog("play.film", data={"result": movie_name})
             self.play_film(kodi_id, results[0]['movieid'])
-            self.play_film(self.kodi_instance, self.movie_list[self.movie_index]['movieid'])
         elif len(results):
             self.movie_list = results
             self.movie_index = 0
