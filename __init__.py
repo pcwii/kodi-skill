@@ -76,7 +76,7 @@ class KodiSkill(MycroftSkill):
 
         move_kodi_intent = IntentBuilder("MoveKodiIntent"). \
             require("MoveKeyword").require("CursorKeyword").\
-            require("DirectionKeyword").build()
+            optionally("DirectionKeyword").optionally('CancelKeyword').build()
         self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)
 
     def handle_listen(self, message):
@@ -130,26 +130,30 @@ class KodiSkill(MycroftSkill):
 
     def handle_move_kodi_intent(self, message):
         direction = message.data.get("DirectionKeyword")
-        if direction == "up":
-            self.kodi_instance.Input.Up()
-        if direction == "down":
-            self.kodi_instance.Input.Down()
-        if direction == "left":
-            self.kodi_instance.Input.Left()
-        if direction == "right":
-            self.kodi_instance.Input.Right()
-        if direction == "select":
-            self.kodi_instance.Input.Select()
-        if direction == "enter":
-            self.kodi_instance.Input.Select()
-        if direction == "back":
-            self.kodi_instance.Input.Back()
-        move_kw = message.data.get('MoveKeyword')
-        cursor_kw = message.data.get('CursorKeyword')
-        self.set_context('MoveKeyword', move_kw)
-        self.set_context('CursorKeyword', cursor_kw)
-        self.speak_dialog("direction", data={"result": direction}, expect_response=True)
-        
+        cancel_kw = message.data.gat("CancelKeyword")
+        if direction:
+            if direction == "up":
+                self.kodi_instance.Input.Up()
+            if direction == "down":
+                self.kodi_instance.Input.Down()
+            if direction == "left":
+                self.kodi_instance.Input.Left()
+            if direction == "right":
+                self.kodi_instance.Input.Right()
+            if direction == "select":
+                self.kodi_instance.Input.Select()
+            if direction == "enter":
+                self.kodi_instance.Input.Select()
+            if direction == "back":
+                self.kodi_instance.Input.Back()
+            move_kw = message.data.get('MoveKeyword')
+            cursor_kw = message.data.get('CursorKeyword')
+            self.set_context('MoveKeyword', move_kw)
+            self.set_context('CursorKeyword', cursor_kw)
+            self.speak_dialog("direction", data={"result": direction}, expect_response=True)
+        if cancel_kw:
+            self.speak_dialog("direction", data={"result": direction}, expect_response=False)
+
     # Kodi specific functions for searching and playing movies
     def find_films_matching(self, kodi_id, search):
         """
