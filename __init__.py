@@ -220,8 +220,7 @@ class KodiSkill(MycroftSkill):
                     optionally('ParseList').build())
     @removes_context('Navigate')
     @removes_context('ParseList')
-
-    def handle_navigate_no_intent(self, message):
+    def handle_navigate_cancel_intent(self, message):
         msg_payload = 'Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
