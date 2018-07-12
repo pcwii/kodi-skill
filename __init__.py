@@ -130,7 +130,7 @@ class KodiSkill(MycroftSkill):
 
     def handle_move_kodi_intent(self, message):
         direction = message.data.get("DirectionKeyword")
-        cancel_kw = message.data.gat("CancelKeyword")
+        cancel_kw = message.data.get("CancelKeyword")
         if direction:
             if direction == "up":
                 self.kodi_instance.Input.Up()
