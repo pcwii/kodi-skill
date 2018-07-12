@@ -109,7 +109,8 @@ class KodiSkill(MycroftSkill):
         movie_name = re.sub(' +', ' ', movie_name)
         self.speak_dialog("find.film", data={"result": movie_name})
         results = self.find_films_matching(self.kodi_instance, movie_name)
-        self.speak_multi_film_match(message.data.get['Film'], results)
+        self.speak_multi_film_match(self, message.data.get['Film'], results)
+        # self.speak_multi_film_match(message.data.get['Film'], results)
 
     def handle_stop_film_intent(self, message):
         self.kodi_instance.Player.Stop(playerid=1)
@@ -179,6 +180,7 @@ class KodiSkill(MycroftSkill):
         kodi_id.Playlist.Add(playlistid=1, item={'movieid': movieid})
         time.sleep(1)  # add delay to avoid socket timeout
         kodi_id.Player.Open(item={'playlistid': 1})
+
 
     def speak_multi_film_match(self, search, results):
         """
