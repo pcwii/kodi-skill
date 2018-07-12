@@ -201,8 +201,8 @@ class KodiSkill(MycroftSkill):
     @intent_handler(IntentBuilder('NavigateYesIntent').require("YesKeyword").require('Navigate').build())
     @adds_context('ParseList')
     def handle_navigate_yes_intent(self, message):
-        msg_payload = self.movie_list[self.movie_index] + ", To Skip, say, Next or, Skip, Say Select, to play this " \
-                                                          "movie, or, Cancel to stop searching"
+        msg_payload = str(self.movie_list[self.movie_index]) + ", To Skip, say, Next or, Skip, Say Select, to" \
+                                                               " play this movie, or, Cancel to stop searching"
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
 
     @intent_handler(IntentBuilder('SkipIntent').require("NextKeyword").require('ParseList').optionally('Navigate').
@@ -210,7 +210,7 @@ class KodiSkill(MycroftSkill):
     def handle_navigate_skip_intent(self, message):
         self.movie_index += 1
         if self.movie_index < len(self.movie_list):
-            msg_payload = self.movie_list[self.movie_index]
+            msg_payload = str(self.movie_list[self.movie_index])
             self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
         else:
             msg_payload = "there are no more movies in the list"
