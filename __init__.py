@@ -172,6 +172,7 @@ class KodiSkill(MycroftSkill):
         """
         Play a movie by id.
         """
+        self.speak('debug, play film ')
         kodi_id.Playlist.Clear(playlistid=1)
         time.sleep(0.5)  # add delay to avoid socket timeout
         kodi_id.Playlist.Add(playlistid=1, item={'movieid': movieid})
