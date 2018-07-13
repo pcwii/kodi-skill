@@ -33,12 +33,12 @@ class KodiSkill(MycroftSkill):
         # self.settings.set_changed_callback(self.on_websettings_changed)
         # self.on_websettings_changed()
 
-        self.register_regex("film (?P<Film>.*)")
-        self.register_regex("movie (?P<Film>.*)")
-        self.register_regex("with (?P<Film>.*)")
-        self.register_regex("containing (?P<Film>.*)")
-        self.register_regex("matching (?P<Film>.*)")
-        self.register_regex("including (?P<Film>.*)")
+        #self.register_regex("film (?P<Film>.*)")
+        #self.register_regex("movie (?P<Film>.*)")
+        #self.register_regex("with (?P<Film>.*)")
+        #self.register_regex("containing (?P<Film>.*)")
+        #self.register_regex("matching (?P<Film>.*)")
+        #self.register_regex("including (?P<Film>.*)")
 
         self.add_event('recognizer_loop:wakeword', self.handle_listen)
         self.add_event('recognizer_loop:utterance', self.handle_utterance)
