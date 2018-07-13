@@ -59,3 +59,26 @@ play_film_by_search(my_kodi_instance, "ant man")
 # movie_name = re.sub('(movie|film) (?P<Film>.*)', mystring[])
 # print(movie_name)
 # play_film_by_search(my_kodi_instance, movie_name)
+
+"""
+unused code blocks below
+"""
+
+#    def speak_multi_film_match(self, search, results):  # Tell the user about the list of results
+#        output = "I found the following movies matching {}: ".format(search)
+#        for film in results:
+#            output += "{}, ".format(film['label'])
+#        self.speak(output)
+
+#    def handle_search_film_intent(self, message):
+#        movie_name = message.data.get("Film")
+#        movie_name = re.sub('\W', ' ', movie_name)
+#        movie_name = re.sub(' +', ' ', movie_name)
+#        # self.speak_dialog("find.film", data={"result": movie_name})
+#        results = self.find_films_matching(self.kodi_instance, movie_name)
+#        self.speak_multi_film_match(self, message.data.get('Film'), results)
+#        # self.speak_multi_film_match(message.data.get['Film'], results)
+
+#        search_film_intent = IntentBuilder("SearchFilmIntent"). \
+#            require("SearchKeyword").require("Film").build()
+#        self.register_intent(search_film_intent, self.handle_search_film_intent)
