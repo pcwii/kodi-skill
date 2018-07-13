@@ -48,9 +48,9 @@ class KodiSkill(MycroftSkill):
             require("PlayKeyword").require("Film").build()
         self.register_intent(play_film_intent, self.handle_play_film_intent)
 
-        search_film_intent = IntentBuilder("SearchFilmIntent"). \
-            require("SearchKeyword").require("Film").build()
-        self.register_intent(search_film_intent, self.handle_search_film_intent)
+#        search_film_intent = IntentBuilder("SearchFilmIntent"). \
+#            require("SearchKeyword").require("Film").build()
+#        self.register_intent(search_film_intent, self.handle_search_film_intent)
 
         stop_film_intent = IntentBuilder("StopFilmIntent"). \
             require("StopKeyword").require("FilmKeyword").build()
@@ -96,21 +96,20 @@ class KodiSkill(MycroftSkill):
         if self.notifier_bool:
             self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI sp", message=voice_payload, displaytime=2500)
 
-    def handle_play_film_intent(self, message): # executed first on voice command
+    def handle_play_film_intent(self, message):  # executed first on voice command
         movie_name = message.data.get("Film")
         movie_name = re.sub('\W', ' ', movie_name)
         movie_name = re.sub(' +', ' ', movie_name)
-        # self.speak_dialog("play.film", data={"result": movie_name})
         self.play_film_by_search(self.kodi_instance, movie_name)
 
-    def handle_search_film_intent(self, message):
-        movie_name = message.data.get("Film")
-        movie_name = re.sub('\W', ' ', movie_name)
-        movie_name = re.sub(' +', ' ', movie_name)
-        # self.speak_dialog("find.film", data={"result": movie_name})
-        results = self.find_films_matching(self.kodi_instance, movie_name)
-        self.speak_multi_film_match(self, message.data.get('Film'), results)
-        # self.speak_multi_film_match(message.data.get['Film'], results)
+#    def handle_search_film_intent(self, message):
+#        movie_name = message.data.get("Film")
+#        movie_name = re.sub('\W', ' ', movie_name)
+#        movie_name = re.sub(' +', ' ', movie_name)
+#        # self.speak_dialog("find.film", data={"result": movie_name})
+#        results = self.find_films_matching(self.kodi_instance, movie_name)
+#        self.speak_multi_film_match(self, message.data.get('Film'), results)
+#        # self.speak_multi_film_match(message.data.get['Film'], results)
 
     def handle_stop_film_intent(self, message):
         self.kodi_instance.Player.Stop(playerid=1)
@@ -181,7 +180,6 @@ class KodiSkill(MycroftSkill):
         time.sleep(1)  # add delay to avoid socket timeout
         kodi_id.Player.Open(item={'playlistid': 1})
 
-
     def speak_multi_film_match(self, search, results):
         """
         Tell the user about a list of results.
@@ -233,8 +231,8 @@ class KodiSkill(MycroftSkill):
             msg_payload = str(self.movie_list[self.movie_index]['label'])
             self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
         else:
-            removes_context('Navigate')
-            removes_context('ParseList')
+            @removes_context('Navigate')
+            @removes_context('ParseList')
             msg_payload = "there are no more movies in the list"
             self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
