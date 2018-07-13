@@ -77,13 +77,11 @@ class KodiSkill(MycroftSkill):
 
     def movie_regex(self, message):
         regex = r"(movie|film) (?P<Film>.*)"
-        utt_str = "play the movie guardians of the galaxy"
+        utt_str = message
         matches = re.finditer(regex, utt_str, re.MULTILINE | re.DOTALL)
-        for matchNum, match in enumerate(matches):
-            groupNum = 2
-            my_movie = "{group}".format(groupNum=groupNum, start=match.start(groupNum),
-                                        end=match.end(groupNum),
-                                        group=match.group(groupNum))
+        for match_num, match in enumerate(matches):
+            group_num = 2
+            my_movie = "{group}".format(group=match.group(group_num))
         my_movie = re.sub('\W', ' ', my_movie)
         my_movie = re.sub(' +', ' ', my_movie)
         return my_movie
