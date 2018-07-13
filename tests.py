@@ -47,10 +47,22 @@ def play_film_by_search(kodi_id, film_search):
 # print(movie_id)
 #play_film_by_search(my_kodi_instance, "ant man")
 
-p = re.compile("(movie|film) (?P<Film>.*)")
-print(p.match("movie"))
+regex = r"(movie|film) (?P<Film>.*)"
+utt_str = "play the movie guardians of the galaxy"
+matches = re.finditer(regex, utt_str, re.MULTILINE | re.DOTALL)
+for matchNum, match in enumerate(matches):
+    matchNum = matchNum + 1
+    groupNum = 2
+    my_movie = "{group}".format(groupNum=groupNum, start=match.start(groupNum),
+                                                                    end=match.end(groupNum),
+                                                                    group=match.group(groupNum))
+    print(my_movie)
+    #for groupNum in range(0, len(match.groups())):
+    #    groupNum = groupNum + 1
 
-(movie|film) (?P<Film>.*)
+     #   print("Group {groupNum} found at {start}-{end}: {group}".format(groupNum=groupNum, start=match.start(groupNum),
+#                                                                        end=match.end(groupNum),
+#                                                                        group=match.group(groupNum)))
 
 
 # my_kodi_instance.Player.PlayPause(playerid=1)

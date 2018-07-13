@@ -75,6 +75,17 @@ class KodiSkill(MycroftSkill):
             optionally("DirectionKeyword").optionally('CancelKeyword').build()
         self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)
 
+    def movie_regex(self, message):
+        regex = r"(movie|film) (?P<Film>.*)"
+        utt_str = "play the movie guardians of the galaxy"
+        matches = re.finditer(regex, utt_str, re.MULTILINE | re.DOTALL)
+        for matchNum, match in enumerate(matches):
+            groupNum = 2
+            my_movie = "{group}".format(groupNum=groupNum, start=match.start(groupNum),
+                                        end=match.end(groupNum),
+                                        group=match.group(groupNum))
+        return my_movie
+
     def handle_listen(self, message):
         voice_payload = "Listening"
         if self.notifier_bool:
@@ -93,7 +104,8 @@ class KodiSkill(MycroftSkill):
             self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI sp", message=voice_payload, displaytime=2500)
 
     def handle_play_film_intent(self, message):  # executed with original voice command
-        movie_name = message.data.get("Film")
+        # movie_name = message.data.get("Film")
+        movie_name = self.movie_regex(message.data.get('utterance'))
         self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI debug:1", message=message.data.get('utterance'),
                                                 displaytime=3000)
         time.sleep(5)
