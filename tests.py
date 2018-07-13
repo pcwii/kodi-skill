@@ -45,7 +45,13 @@ def play_film_by_search(kodi_id, film_search):
 
 # movie_id = find_films_matching(my_kodi_instance, "iron man")
 # print(movie_id)
-play_film_by_search(my_kodi_instance, "ant man")
+#play_film_by_search(my_kodi_instance, "ant man")
+
+p = re.compile("(movie|film) (?P<Film>.*)")
+print(p.match("movie"))
+
+
+
 
 # my_kodi_instance.Player.PlayPause(playerid=1)
 # print(my_kodi_instance)

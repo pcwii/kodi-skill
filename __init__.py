@@ -97,13 +97,13 @@ class KodiSkill(MycroftSkill):
         self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI debug:1", message=message.data.get('utterance'),
                                                 displaytime=3000)
         time.sleep(5)
-        self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI debug:1", message=movie_name, displaytime=3000)
-        time.sleep(5)
-        movie_name = re.sub('\W', ' ', movie_name)
         self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI debug:2", message=movie_name, displaytime=3000)
         time.sleep(5)
-        movie_name = re.sub(' +', ' ', movie_name)
+        movie_name = re.sub('\W', ' ', movie_name)
         self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI debug:3", message=movie_name, displaytime=3000)
+        time.sleep(5)
+        movie_name = re.sub(' +', ' ', movie_name)
+        self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI debug:4", message=movie_name, displaytime=3000)
         self.play_film_by_search(self.kodi_instance, movie_name)
 
     def handle_stop_film_intent(self, message):
