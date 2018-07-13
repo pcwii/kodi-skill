@@ -96,7 +96,7 @@ class KodiSkill(MycroftSkill):
         if self.notifier_bool:
             self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI sp", message=voice_payload, displaytime=2500)
 
-    def handle_play_film_intent(self, message):
+    def handle_play_film_intent(self, message): # executed first on voice command
         movie_name = message.data.get("Film")
         movie_name = re.sub('\W', ' ', movie_name)
         movie_name = re.sub(' +', ' ', movie_name)
@@ -107,7 +107,7 @@ class KodiSkill(MycroftSkill):
         movie_name = message.data.get("Film")
         movie_name = re.sub('\W', ' ', movie_name)
         movie_name = re.sub(' +', ' ', movie_name)
-        self.speak_dialog("find.film", data={"result": movie_name})
+        # self.speak_dialog("find.film", data={"result": movie_name})
         results = self.find_films_matching(self.kodi_instance, movie_name)
         self.speak_multi_film_match(self, message.data.get('Film'), results)
         # self.speak_multi_film_match(message.data.get['Film'], results)
@@ -192,13 +192,13 @@ class KodiSkill(MycroftSkill):
         self.speak(output)
 
     @adds_context('Navigate')
-    def play_film_by_search(self, kodi_id, film_search):
+    def play_film_by_search(self, kodi_id, film_search):  # called from handle_play_film_intent
         results = self.find_films_matching(kodi_id, film_search)
+        self.movie_list = results
+        self.movie_index = 0
         if len(results) == 1:
             self.play_film(kodi_id, results[0]['movieid'])
         elif len(results):
-            self.movie_list = results
-            self.movie_index = 0
             msg_payload = "I found, " + str(len(results)) + ", results, would you like me to list them?"
             self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
             if self.notifier_bool:
