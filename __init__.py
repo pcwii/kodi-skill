@@ -94,7 +94,8 @@ class KodiSkill(MycroftSkill):
 
     def handle_play_film_intent(self, message):  # executed first on voice command
         movie_name = message.data.get("Film")
-        self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI debug:1", message=message, displaytime=3000)
+        self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI debug:1", message=message.data.get('utterance'),
+                                                displaytime=3000)
         time.sleep(5)
         self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI debug:1", message=movie_name, displaytime=3000)
         time.sleep(5)
