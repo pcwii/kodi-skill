@@ -1,1 +1,1 @@
-(movie|film) (?P<Film>.*)
+movie(?P<Film>.*)

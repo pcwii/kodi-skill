@@ -50,7 +50,7 @@ def play_film_by_search(kodi_id, film_search):
 p = re.compile("(movie|film) (?P<Film>.*)")
 print(p.match("movie"))
 
-
+(movie|film) (?P<Film>.*)
 
 
 # my_kodi_instance.Player.PlayPause(playerid=1)
