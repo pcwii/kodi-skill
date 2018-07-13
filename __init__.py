@@ -84,6 +84,8 @@ class KodiSkill(MycroftSkill):
             my_movie = "{group}".format(groupNum=groupNum, start=match.start(groupNum),
                                         end=match.end(groupNum),
                                         group=match.group(groupNum))
+        my_movie = re.sub('\W', ' ', my_movie)
+        my_movie = re.sub(' +', ' ', my_movie)
         return my_movie
 
     def handle_listen(self, message):
@@ -106,16 +108,6 @@ class KodiSkill(MycroftSkill):
     def handle_play_film_intent(self, message):  # executed with original voice command
         # movie_name = message.data.get("Film")
         movie_name = self.movie_regex(message.data.get('utterance'))
-        self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI debug:1", message=message.data.get('utterance'),
-                                                displaytime=3000)
-        time.sleep(5)
-        self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI debug:2", message=movie_name, displaytime=3000)
-        time.sleep(5)
-        movie_name = re.sub('\W', ' ', movie_name)
-        self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI debug:3", message=movie_name, displaytime=3000)
-        time.sleep(5)
-        movie_name = re.sub(' +', ' ', movie_name)
-        self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI debug:4", message=movie_name, displaytime=3000)
         self.play_film_by_search(self.kodi_instance, movie_name)
 
     def handle_stop_film_intent(self, message):
