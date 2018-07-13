@@ -95,13 +95,13 @@ class KodiSkill(MycroftSkill):
     def handle_play_film_intent(self, message):  # executed first on voice command
         movie_name = message.data.get("Film")
         self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI debug:1", message=movie_name, displaytime=3000)
-        time.sleep(5000)
+        time.sleep(5)
         movie_name = re.sub('\W', ' ', movie_name)
         self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI debug:2", message=movie_name, displaytime=3000)
-        time.sleep(5000)
+        time.sleep(5)
         movie_name = re.sub(' +', ' ', movie_name)
         self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI debug:3", message=movie_name, displaytime=3000)
-        time.sleep(5000)
+        time.sleep(5)
         self.play_film_by_search(self.kodi_instance, movie_name)
 
     def handle_stop_film_intent(self, message):
