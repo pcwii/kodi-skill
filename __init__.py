@@ -231,7 +231,7 @@ class KodiSkill(MycroftSkill):
             msg_payload = str(self.movie_list[self.movie_index]['label'])
             self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
         else:
-            self.stop_list_itterator(self)
+            self.stop_list_itterator()
 
     @removes_context('Navigate')
     @removes_context('ParseList')
