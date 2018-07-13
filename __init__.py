@@ -101,7 +101,6 @@ class KodiSkill(MycroftSkill):
         time.sleep(5)
         movie_name = re.sub(' +', ' ', movie_name)
         self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI debug:3", message=movie_name, displaytime=3000)
-        time.sleep(5)
         self.play_film_by_search(self.kodi_instance, movie_name)
 
     def handle_stop_film_intent(self, message):
