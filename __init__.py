@@ -87,12 +87,12 @@ class KodiSkill(MycroftSkill):
             kodi_user = self.settings.get("kodi_user", "")
             kodi_pass = self.settings.get("kodi_pass", "")
             try:
-                if ip_string and kodi_port and kodi_user and kodi_pass:
-                    ip_string = self.settings["ip_string"]
+                if kodi_ip and kodi_port and kodi_user and kodi_pass:
+                    kodi_ip = self.settings["kodi_ip"]
                     kodi_port = self.settings["kodi_port"]
                     kodi_user = self.settings["kodi_user"]
                     kodi_pass = self.settings["kodi_pass"]
-                    self.kodi_instance = Kodi(ip_string)
+                    self.kodi_instance = Kodi(kodi_ip)
                     self._is_setup = True
             except Exception as e:
                 LOG.error(e)
