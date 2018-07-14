@@ -20,7 +20,7 @@
                         "type": "number",
                         "label": "Kodi Port Number",
                         "value": "8080"
-                    }
+                    },
                     {
                         "name": "kodi_user",
                         "type": "text",
