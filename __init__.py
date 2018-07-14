@@ -104,19 +104,19 @@ class KodiSkill(MycroftSkill):
     def handle_listen(self, message):
         voice_payload = "Listening"
         if self.notifier_bool:
-            self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=2500)
+            self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
 
     def handle_utterance(self, message):
         utterance = message.data.get('utterances')
         voice_payload = utterance
         if self.notifier_bool:
-            self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI utt", message=voice_payload, displaytime=2500)
+            self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
 
     def handle_speak(self, message):
         speak = message.data.get('utterance')
         voice_payload = speak
         if self.notifier_bool:
-            self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI sp", message=voice_payload, displaytime=2500)
+            self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
 
     def handle_play_film_intent(self, message):  # executed with original voice command
         # movie_name = message.data.get("Film")
