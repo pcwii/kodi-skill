@@ -26,7 +26,7 @@ class KodiSkill(MycroftSkill):
         self.settings["kodi_user"] = ""
         self.settings["kodi_pass"] = ""
         self._is_setup = False
-        self.kodi_instance = Kodi(ip_string)
+
         self.notifier_bool = False
         self.movie_list = []
         self.movie_index = 0
