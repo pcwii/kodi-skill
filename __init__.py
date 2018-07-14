@@ -87,7 +87,7 @@ class KodiSkill(MycroftSkill):
             kodi_user = self.settings.get("kodi_user", "")
             kodi_pass = self.settings.get("kodi_pass", "")
             try:
-                if kodi_ip and kodi_port and kodi_user and kodi_pass:
+                if kodi_ip and kodi_port:
                     kodi_ip = self.settings["kodi_ip"]
                     kodi_port = self.settings["kodi_port"]
                     kodi_user = self.settings["kodi_user"]
