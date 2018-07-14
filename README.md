@@ -28,7 +28,7 @@ Utilize the kodi API and Python library for controlling the KODI open source med
 ## Credits
 PCWii
 ## Require 
-platform_picroft 
+Tested on platform_picroft (others untested) 
 ## Other Requirements
 - [Mycroft](https://docs.mycroft.ai/installing.and.running/installation)
 - kodipydent
