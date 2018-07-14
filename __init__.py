@@ -10,6 +10,7 @@ from kodipydent import Kodi
 import re
 
 _author__ = 'PCWii'
+# Release - 20180713
 
 LOGGER = getLogger(__name__)
 
@@ -20,8 +21,12 @@ class KodiSkill(MycroftSkill):
     """
     def __init__(self):
         super(KodiSkill, self).__init__(name="KodiSkill")
-        # self.settings["ipstring"] = ""
-        self.kodi_instance = Kodi('192.168.0.32')
+        self.settings["kodi_ip"] = "127.0.0.1"
+        self.settings["kodi_port"] = "8080"
+        self.settings["kodi_user"] = ""
+        self.settings["kodi_pass"] = ""
+        self._is_setup = False
+        self.kodi_instance = Kodi(ip_string)
         self.notifier_bool = False
         self.movie_list = []
         self.movie_index = 0
@@ -29,9 +34,9 @@ class KodiSkill(MycroftSkill):
     def initialize(self):
         self.load_data_files(dirname(__file__))
 
-        # Check and then monitor for credential changes
-        # self.settings.set_changed_callback(self.on_websettings_changed)
-        # self.on_websettings_changed()
+        #  Check and then monitor for credential changes
+        self.settings.set_changed_callback(self.on_websettings_changed)
+        self.on_websettings_changed()
 
         #self.register_regex("film (?P<Film>.*)")
         #self.register_regex("movie (?P<Film>.*)")
@@ -74,6 +79,23 @@ class KodiSkill(MycroftSkill):
             require("MoveKeyword").require("CursorKeyword").\
             optionally("DirectionKeyword").optionally('CancelKeyword').build()
         self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)
+
+    def on_websettings_changed(self):
+        if not self._is_setup:
+            kodi_ip = self.settings.get("kodi_ip", "127.0.0.1")
+            kodi_port = self.settings.get("kodi_port", "8080")
+            kodi_user = self.settings.get("kodi_user", "")
+            kodi_pass = self.settings.get("kodi_pass", "")
+            try:
+                if ip_string and kodi_port and kodi_user and kodi_pass:
+                    ip_string = self.settings["ip_string"]
+                    kodi_port = self.settings["kodi_port"]
+                    kodi_user = self.settings["kodi_user"]
+                    kodi_pass = self.settings["kodi_pass"]
+                    self.kodi_instance = Kodi(ip_string)
+                    self._is_setup = True
+            except Exception as e:
+                LOG.error(e)
 
     def movie_regex(self, message):
         regex = r"(movie|film) (?P<Film>.*)"

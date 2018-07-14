@@ -1,0 +1,41 @@
+{
+    "name": "Kodi Media Center Skill",
+    "skillMetadata": {
+        "sections": [
+            {
+                "name": "Settings",
+                "fields": [
+                    {
+                        "type": "label",
+                        "label": "Complete the data for the following settings. If you have no password leave it blank."
+                    },
+                    {
+                        "name": "kodi_ip",
+                        "type": "text",
+                        "label": "IP Address of the Kodi Media Center",
+                        "value": "127.0.0.1"
+                    },
+                    {
+                        "name": "kodi_port",
+                        "type": "number",
+                        "label": "Kodi Port Number",
+                        "value": "8080"
+                    }
+                    {
+                        "name": "kodi_user",
+                        "type": "text",
+                        "label": "User Name of your device",
+                        "value": ""
+                    },
+                    {
+                        "name": "kodi_pass",
+                        "type": "password",
+                        "label": "Password of your device",
+                        "value": ""
+                    }
+
+                ]
+            }
+        ]
+    }
+}
