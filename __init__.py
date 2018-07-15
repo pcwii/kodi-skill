@@ -43,7 +43,7 @@ class KodiSkill(MycroftSkill):
         self.add_event('speak', self.handle_speak)
 
         play_film_intent = IntentBuilder("PlayFilmIntent"). \
-            require("PlayKeyword").require("Film").build()
+            require("PlayKeyword").require("FilmKeyword").build()
         self.register_intent(play_film_intent, self.handle_play_film_intent)
 
         stop_film_intent = IntentBuilder("StopFilmIntent"). \
