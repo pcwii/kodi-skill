@@ -219,14 +219,9 @@ class KodiSkill(MycroftSkill):
     @removes_context('ParseList')
     @removes_context('Navigate')
     def handle_navigate_play_intent(self, message):  # Play was spoken, calls play_film
-        # ordinal_kw = message.data.get("OrdinalKeyword")
-        # if not ordinal_kw:
         msg_payload = "Attempting to play, " + str(self.movie_list[self.movie_index]['label'])
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
         self.play_film(self.kodi_instance, self.movie_list[self.movie_index]['movieid'])
-        # if self.notifier_bool:
-        #    self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=ordinal_kw, displaytime=2500)
-        # self.speak(ordinal_kw)
 
     @intent_handler(IntentBuilder('SkipIntent').require("NextKeyword").require('ParseList').optionally('Navigate').
                     build())
