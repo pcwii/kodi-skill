@@ -190,13 +190,13 @@ class KodiSkill(MycroftSkill):
     @removes_context('Navigate')
     def play_film(self, kodi_id, movieid):  # play the movie based on movie ID
         kodi_id.Playlist.Clear(playlistid=1)
-        time.sleep(1)  # add delay to avoid socket timeout
+        # time.sleep(1)  # add delay to avoid socket timeout
         kodi_id.Playlist.Add(playlistid=1, item={'movieid': movieid})
-        time.sleep(1)  # add delay to avoid socket timeout
+        # time.sleep(1)  # add delay to avoid socket timeout
         try:
             json_response = requests.post(self.kodi_path, data=self.kodi_payload, headers=self.json_header)  # start directly with json request
         except:
-            time.sleep(0.5)  #ignore timeout error
+            time.sleep(0.5)  # ignore timeout error
 
     @adds_context('Navigate')
     def play_film_by_search(self, kodi_id, film_search):  # called from, handle_play_film_intent
