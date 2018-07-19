@@ -193,8 +193,7 @@ class KodiSkill(MycroftSkill):
         time.sleep(1)  # add delay to avoid socket timeout
         kodi_id.Playlist.Add(playlistid=1, item={'movieid': movieid})
         time.sleep(1)  # add delay to avoid socket timeout
-        # kodi_id.Player.Open(item={'playlistid': 1})
-        json_response = requests.post(url, data=payload, headers=headers)
+        json_response = requests.post(url, data=payload, headers=headers)  # start directly with json request
 
     @adds_context('Navigate')
     def play_film_by_search(self, kodi_id, film_search):  # called from, handle_play_film_intent
