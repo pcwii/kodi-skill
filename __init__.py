@@ -199,7 +199,7 @@ class KodiSkill(MycroftSkill):
             self.json_response = requests.post(self.kodi_path, data=self.kodi_payload, headers=self.json_header)  # start directly with json request
         except:
             time.sleep(0.5)  # ignore timeout error
-            self.speek("jason error")
+            self.speak("jason error")
 
     @adds_context('Navigate')
     def play_film_by_search(self, kodi_id, film_search):  # called from, handle_play_film_intent
@@ -269,7 +269,7 @@ class KodiSkill(MycroftSkill):
                                       headers=self.json_header)  # start directly with json request
         except:
             time.sleep(0.5)  # ignore timeout error
-            self.speek("jason error")
+            self.speak("jason error")
 
 
     def stop(self):
