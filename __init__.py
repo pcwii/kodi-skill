@@ -7,6 +7,7 @@ from mycroft.util.log import getLogger
 from mycroft.skills.context import adds_context, removes_context
 
 from kodipydent import Kodi
+import requests
 import re
 
 _author__ = 'PCWii'
@@ -25,6 +26,9 @@ class KodiSkill(MycroftSkill):
         self.settings["kodi_port"] = "8080"
         self.settings["kodi_user"] = ""
         self.settings["kodi_pass"] = ""
+        self.kodi_path = ""
+        self.kodi_payload = ""
+        self.json_header = {'content-type': 'application/json'}
         self._is_setup = False
 
         self.notifier_bool = False
@@ -86,6 +90,8 @@ class KodiSkill(MycroftSkill):
                     kodi_user = self.settings["kodi_user"]
                     kodi_pass = self.settings["kodi_pass"]
                     self.kodi_instance = Kodi(kodi_ip)
+                    self.kodi_path = "http://"+kodi_ip+":"+kodi_port+"/jsonrpc"
+                    self.kodi_payload = '{"jsonrpc":"2.0","method":"player.open", "params": {"item":{"playlistid":1}}}'
                     self._is_setup = True
             except Exception as e:
                 LOG.error(e)
@@ -187,7 +193,8 @@ class KodiSkill(MycroftSkill):
         time.sleep(1)  # add delay to avoid socket timeout
         kodi_id.Playlist.Add(playlistid=1, item={'movieid': movieid})
         time.sleep(1)  # add delay to avoid socket timeout
-        kodi_id.Player.Open(item={'playlistid': 1})
+        # kodi_id.Player.Open(item={'playlistid': 1})
+        json_response = requests.post(url, data=payload, headers=headers)
 
     @adds_context('Navigate')
     def play_film_by_search(self, kodi_id, film_search):  # called from, handle_play_film_intent
