@@ -194,7 +194,7 @@ class KodiSkill(MycroftSkill):
         # time.sleep(1)  # add delay to avoid socket timeout
         kodi_id.Playlist.Add(playlistid=1, item={'movieid': movieid})
         # time.sleep(1)  # add delay to avoid socket timeout
-        self.kodi_payload = '{"jsonrpc":"2.0","method":"player.open", "params": {"item":{"playlistid":1}},}'
+        self.kodi_payload = '{"jsonrpc":"2.0","method":"player.open", "params": {"item":{"playlistid":1}}}'
         try:
             self.json_response = requests.post(self.kodi_path, data=self.kodi_payload, headers=self.json_header)  # start directly with json request
         except:
