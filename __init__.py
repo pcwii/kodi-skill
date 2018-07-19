@@ -262,8 +262,12 @@ class KodiSkill(MycroftSkill):
                     build())
     def handle_show_movie_info_intent(self, message):
         self.kodi_payload = '{"jsonrpc":"2.0","method":"Input.Info", "params": {}}}'
-        json_response = requests.post(self.kodi_path, data=self.kodi_payload,
+        try:
+            json_response = requests.post(self.kodi_path, data=self.kodi_payload,
                                       headers=self.json_header)  # start directly with json request
+        except:
+            time.sleep(0.5)  # ignore timeout error
+
 
     def stop(self):
         pass
