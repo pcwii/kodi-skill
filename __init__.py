@@ -29,6 +29,7 @@ class KodiSkill(MycroftSkill):
         self.kodi_path = ""
         self.kodi_payload = ""
         self.json_header = {'content-type': 'application/json'}
+        self.json_response = ""
         self._is_setup = False
 
         self.notifier_bool = False
@@ -195,9 +196,10 @@ class KodiSkill(MycroftSkill):
         # time.sleep(1)  # add delay to avoid socket timeout
         self.kodi_payload = '{"jsonrpc":"2.0","method":"player.open", "params": {"item":{"playlistid":1}}}'
         try:
-            json_response = requests.post(self.kodi_path, data=self.kodi_payload, headers=self.json_header)  # start directly with json request
+            self.json_response = requests.post(self.kodi_path, data=self.kodi_payload, headers=self.json_header)  # start directly with json request
         except:
             time.sleep(0.5)  # ignore timeout error
+            self.speek("jason error")
 
     @adds_context('Navigate')
     def play_film_by_search(self, kodi_id, film_search):  # called from, handle_play_film_intent
@@ -263,10 +265,11 @@ class KodiSkill(MycroftSkill):
     def handle_show_movie_info_intent(self, message):
         self.kodi_payload = '{"jsonrpc":"2.0","method":"Input.Info", "params": {}}}'
         try:
-            json_response = requests.post(self.kodi_path, data=self.kodi_payload,
+            self.json_response = requests.post(self.kodi_path, data=self.kodi_payload,
                                       headers=self.json_header)  # start directly with json request
         except:
             time.sleep(0.5)  # ignore timeout error
+            self.speek("jason error")
 
 
     def stop(self):
