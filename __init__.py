@@ -111,19 +111,28 @@ class KodiSkill(MycroftSkill):
     def handle_listen(self, message):
         voice_payload = "Listening"
         if self.notifier_bool:
-            self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
+            try:
+                self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
+            except:
+                time.sleep(.5)  # wait to do nothing
 
     def handle_utterance(self, message):
         utterance = message.data.get('utterances')
         voice_payload = utterance
         if self.notifier_bool:
-            self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
+            try:
+                self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
+            except:
+                time.sleep(.5)  # wait to do nothing
 
     def handle_speak(self, message):
         speak = message.data.get('utterance')
         voice_payload = speak
         if self.notifier_bool:
-            self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
+            try:
+                self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
+            except:
+                time.sleep(.5)  # wait to do nothing
 
     def handle_play_film_intent(self, message):  # executed with original voice command
         # movie_name = message.data.get("Film")
@@ -131,13 +140,22 @@ class KodiSkill(MycroftSkill):
         self.play_film_by_search(self.kodi_instance, movie_name)
 
     def handle_stop_film_intent(self, message):
-        self.kodi_instance.Player.Stop(playerid=1)
+        try:
+            self.kodi_instance.Player.Stop(playerid=1)
+        except:
+            time.sleep(.5)  # wait to do nothing
 
     def handle_pause_film_intent(self, message):
-        self.kodi_instance.Player.PlayPause(playerid=1)
+        try:
+            self.kodi_instance.Player.PlayPause(playerid=1)
+        except:
+            time.sleep(.5)  # wait to do nothing
 
     def handle_resume_film_intent(self, message):
-        self.kodi_instance.Player.PlayPause(playerid=1)
+        try:
+            self.kodi_instance.Player.PlayPause(playerid=1)
+        except:
+            time.sleep(.5) # wait to do nothing
 
     def handle_notification_on_intent(self, message):
         self.notifier_bool = True
