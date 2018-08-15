@@ -1,5 +1,4 @@
 from os.path import dirname
-import time
 
 from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill, intent_handler, intent_file_handler
