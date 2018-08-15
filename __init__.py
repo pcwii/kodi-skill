@@ -4,6 +4,7 @@ import time
 from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill, intent_handler, intent_file_handler
 from mycroft.util.log import getLogger
+from mycroft.util.log import LOG
 from mycroft.skills.context import adds_context, removes_context
 
 from kodipydent import Kodi
@@ -113,8 +114,8 @@ class KodiSkill(MycroftSkill):
         if self.notifier_bool:
             try:
                 self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
-            except:
-                time.sleep(.5)  # wait to do nothing
+            except Exception as e:
+                LOG.error(e)
 
     def handle_utterance(self, message):
         utterance = message.data.get('utterances')
@@ -122,17 +123,16 @@ class KodiSkill(MycroftSkill):
         if self.notifier_bool:
             try:
                 self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
-            except:
-                time.sleep(.5)  # wait to do nothing
+            except Exception as e:
+                LOG.error(e)
 
     def handle_speak(self, message):
-        speak = message.data.get('utterance')
-        voice_payload = speak
+        voice_payload = message.data.get('utterance')
         if self.notifier_bool:
             try:
                 self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
-            except:
-                time.sleep(.5)  # wait to do nothing
+            except Exception as e:
+                LOG.error(e)
 
     def handle_play_film_intent(self, message):  # executed with original voice command
         # movie_name = message.data.get("Film")
@@ -142,20 +142,20 @@ class KodiSkill(MycroftSkill):
     def handle_stop_film_intent(self, message):
         try:
             self.kodi_instance.Player.Stop(playerid=1)
-        except:
-            time.sleep(.5)  # wait to do nothing
+        except Exception as e:
+            LOG.error(e)
 
     def handle_pause_film_intent(self, message):
         try:
             self.kodi_instance.Player.PlayPause(playerid=1)
-        except:
-            time.sleep(.5)  # wait to do nothing
+        except Exception as e:
+            LOG.error(e)
 
     def handle_resume_film_intent(self, message):
         try:
             self.kodi_instance.Player.PlayPause(playerid=1)
-        except:
-            time.sleep(.5) # wait to do nothing
+        except Exception as e:
+            LOG.error(e)
 
     def handle_notification_on_intent(self, message):
         self.notifier_bool = True
@@ -215,9 +215,8 @@ class KodiSkill(MycroftSkill):
         self.kodi_payload = '{"jsonrpc":"2.0","method":"player.open", "params": {"item":{"playlistid":1}}}'
         try:
             self.json_response = requests.post(self.kodi_path, data=self.kodi_payload, headers=self.json_header)  # start directly with json request
-        except:
-            time.sleep(0.5)  # ignore timeout error
-            # self.speak("jason error")
+        except Exception as e:
+            LOG.error(e)
 
     @adds_context('Navigate')
     def play_film_by_search(self, kodi_id, film_search):  # called from, handle_play_film_intent
@@ -285,9 +284,8 @@ class KodiSkill(MycroftSkill):
         try:
             self.json_response = requests.post(self.kodi_path, data=self.kodi_payload,
                                       headers=self.json_header)  # start directly with json request
-        except:
-            time.sleep(0.5)  # ignore timeout error
-            # self.speak("jason error")
+        except Exception as e:
+            LOG.error(e)
 
 
     def stop(self):

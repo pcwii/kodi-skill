@@ -13,6 +13,8 @@ Utilize the kodi API and Python library for controlling the KODI open source med
 * "pause the movie"
 * "re-start the movie"
 * "stop the movie"
+* "show the movie information"
+* "hide the movie information"
 ## Conversational Context
 * If mycroft.ai locates more than one movie that matches your request it will permit you to itterate through your requests
 * using conversational context.
@@ -34,3 +36,9 @@ Tested on platform_picroft (others untested)
 - kodipydent
 ## Further Reading
 - [KODI API](https://kodi.wiki/index.php?title=JSON-RPC_API/v6)
+## Installation Notes
+- Configure Kodi to “allow remote control via HTTP”, under the Kodi settings:services
+- Configure Kodi to “allow remote control from applications on other systems”, under the Kodi settings:services
+- Under Kodi settings:services note the port number (8080)
+- Configure home.mycroft.ai to set your kodi instanace ip address and port number
+- username and password currently not supported
