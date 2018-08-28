@@ -282,10 +282,9 @@ class KodiSkill(MycroftSkill):
         self.kodi_payload = '{"jsonrpc":"2.0","method":"Input.Info", "params": {}}}'
         try:
             self.json_response = requests.post(self.kodi_path, data=self.kodi_payload,
-                                      headers=self.json_header)  # start directly with json request
+                                               headers=self.json_header)  # start directly with json request
         except Exception as e:
             LOG.error(e)
-
 
     def stop(self):
         pass
