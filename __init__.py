@@ -22,7 +22,7 @@ class KodiSkill(MycroftSkill):
     """
     def __init__(self):
         super(KodiSkill, self).__init__(name="KodiSkill")
-        self.settings["kodi_ip"] = "127.0.0.1"
+        self.settings["kodi_ip"  ] = "127.0.0.1"
         self.settings["kodi_port"] = "8080"
         self.settings["kodi_user"] = ""
         self.settings["kodi_pass"] = ""
@@ -80,17 +80,21 @@ class KodiSkill(MycroftSkill):
 
     def on_websettings_changed(self):
         if not self._is_setup:
-            kodi_ip = self.settings.get("kodi_ip", "127.0.0.1")
+            kodi_ip   = self.settings.get("kodi_ip", "127.0.0.1")
             kodi_port = self.settings.get("kodi_port", "8080")
             kodi_user = self.settings.get("kodi_user", "")
             kodi_pass = self.settings.get("kodi_pass", "")
             try:
                 if kodi_ip and kodi_port:
-                    kodi_ip = self.settings["kodi_ip"]
+                    kodi_ip   = self.settings["kodi_ip"  ]
                     kodi_port = self.settings["kodi_port"]
                     kodi_user = self.settings["kodi_user"]
                     kodi_pass = self.settings["kodi_pass"]
-                    self.kodi_instance = Kodi(kodi_ip)
+                    # self.kodi_instance = Kodi(kodi_ip)
+                    self.kodi_instance = Kodi(hostname=kodi_ip,
+                                              port=kodi_port,
+                                              username=kodi_user,
+                                              password=kodi_pass)
                     self.kodi_path = "http://"+kodi_ip+":"+kodi_port+"/jsonrpc"
                     # self.kodi_payload = '{"jsonrpc":"2.0","method":"player.open", "params": {"item":{"playlistid":1}}}'
                     self._is_setup = True
@@ -115,6 +119,7 @@ class KodiSkill(MycroftSkill):
                 self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
             except Exception as e:
                 LOG.error(e)
+                self.on_websettings_changed()
 
     def handle_utterance(self, message):
         utterance = message.data.get('utterances')
@@ -124,6 +129,7 @@ class KodiSkill(MycroftSkill):
                 self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
             except Exception as e:
                 LOG.error(e)
+                self.on_websettings_changed()
 
     def handle_speak(self, message):
         voice_payload = message.data.get('utterance')
@@ -132,29 +138,37 @@ class KodiSkill(MycroftSkill):
                 self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
             except Exception as e:
                 LOG.error(e)
+                self.on_websettings_changed()
 
     def handle_play_film_intent(self, message):  # executed with original voice command
         # movie_name = message.data.get("Film")
         movie_name = self.movie_regex(message.data.get('utterance'))
-        self.play_film_by_search(self.kodi_instance, movie_name)
+        try:
+            self.play_film_by_search(self.kodi_instance, movie_name)
+        except Exception as e:
+            LOG.error(e)
+            self.on_websettings_changed()
 
     def handle_stop_film_intent(self, message):
         try:
             self.kodi_instance.Player.Stop(playerid=1)
         except Exception as e:
             LOG.error(e)
+            self.on_websettings_changed()
 
     def handle_pause_film_intent(self, message):
         try:
             self.kodi_instance.Player.PlayPause(playerid=1)
         except Exception as e:
             LOG.error(e)
+            self.on_websettings_changed()
 
     def handle_resume_film_intent(self, message):
         try:
             self.kodi_instance.Player.PlayPause(playerid=1)
         except Exception as e:
             LOG.error(e)
+            self.on_websettings_changed()
 
     def handle_notification_on_intent(self, message):
         self.notifier_bool = True
@@ -168,20 +182,24 @@ class KodiSkill(MycroftSkill):
         direction = message.data.get("DirectionKeyword")
         cancel_kw = message.data.get("CancelKeyword")
         if direction:
-            if direction == "up":
-                self.kodi_instance.Input.Up()
-            if direction == "down":
-                self.kodi_instance.Input.Down()
-            if direction == "left":
-                self.kodi_instance.Input.Left()
-            if direction == "right":
-                self.kodi_instance.Input.Right()
-            if direction == "select":
-                self.kodi_instance.Input.Select()
-            if direction == "enter":
-                self.kodi_instance.Input.Select()
-            if direction == "back":
-                self.kodi_instance.Input.Back()
+            try:
+                if direction == "up":
+                    self.kodi_instance.Input.Up()
+                if direction == "down":
+                    self.kodi_instance.Input.Down()
+                if direction == "left":
+                    self.kodi_instance.Input.Left()
+                if direction == "right":
+                    self.kodi_instance.Input.Right()
+                if direction == "select":
+                    self.kodi_instance.Input.Select()
+                if direction == "enter":
+                    self.kodi_instance.Input.Select()
+                if direction == "back":
+                    self.kodi_instance.Input.Back()
+            except Exception as e:
+                LOG.error(e)
+                self.on_websettings_changed()
             move_kw = message.data.get('MoveKeyword')
             cursor_kw = message.data.get('CursorKeyword')
             self.set_context('MoveKeyword', move_kw)
@@ -227,12 +245,20 @@ class KodiSkill(MycroftSkill):
         elif len(results):
             msg_payload = "I found, " + str(len(results)) + ", results, would you like me to list them?"
             if self.notifier_bool:
-                self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
+                try:
+                    self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
+                except Exception as e:
+                    LOG.error(e)
+                    self.on_websettings_changed()
             self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
         else:
             msg_payload = "I found no results for the search: {}.".format(film_search)
             if self.notifier_bool:
-                self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
+                try:
+                    self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
+                except Exception as e:
+                    LOG.error(e)
+                    self.on_websettings_changed()
             self.stop_navigation(msg_payload)
 
     @intent_handler(IntentBuilder('NavigateYesIntent').require("YesKeyword").require('Navigate').build())
@@ -249,7 +275,11 @@ class KodiSkill(MycroftSkill):
     def handle_navigate_play_intent(self, message):  # Play was spoken, calls play_film
         msg_payload = "Attempting to play, " + str(self.movie_list[self.movie_index]['label'])
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
-        self.play_film(self.kodi_instance, self.movie_list[self.movie_index]['movieid'])
+        try:
+            self.play_film(self.kodi_instance, self.movie_list[self.movie_index]['movieid'])
+        except Exception as e:
+            LOG.error(e)
+            self.on_websettings_changed()
 
     @intent_handler(IntentBuilder('SkipIntent').require("NextKeyword").require('ParseList').optionally('Navigate').
                     build())
