@@ -183,7 +183,7 @@ class KodiSkill(MycroftSkill):
         direction = message.data.get("DirectionKeyword")
         cancel_kw = message.data.get("CancelKeyword")
         repeat_count = self.repeat_regex(message.data.get('utterance'))
-        LOG.info(message)
+        LOG.info(message.data.get('utterance'))
         LOG.info(str(repeat_count))
         if direction:
             for each_count in range(0, int(repeat_count)):
