@@ -45,7 +45,7 @@ class KodiSkill(MycroftSkill):
 
     def initialize(self):
         self.load_data_files(dirname(__file__))
-        self.repeat_regex = r"(?P<Repeat>\d.*) times"
+        self.repeat_regex = r"(?P<Repeat>\d.*)(times)"
 
         #  Check and then monitor for credential changes
         self.settings.set_changed_callback(self.on_websettings_changed)
@@ -117,6 +117,17 @@ class KodiSkill(MycroftSkill):
         my_movie = re.sub(' +', ' ', my_movie)
         return my_movie
 
+    def repeat_regex(self, message):
+        regex = r"(?P<Repeat>\d.*)(times)"
+        utt_str = message
+        matches = re.finditer(regex, utt_str, re.MULTILINE | re.DOTALL)
+        repeat_value = 1
+        for match_num, match in enumerate(matches):
+            if match:
+                group_num = 1
+                repeat_value = "{group}".format(group=match.group(group_num))
+        return repeat_value
+
     def handle_listen(self, message):
         voice_payload = "Listening"
         if self.notifier_bool:
@@ -176,8 +187,7 @@ class KodiSkill(MycroftSkill):
     def handle_move_kodi_intent(self, message):
         direction = message.data.get("DirectionKeyword")
         cancel_kw = message.data.get("CancelKeyword")
-        remainder_str = str(message.utterance_remainder())
-        repeat_count = re.finditer(self.repeat_regex, remainder_str, re.MULTILINE | re.DOTALL)
+        repeat_count = self.repeat_regex(message.utterance_remainder())
         LOG.info(str(repeat_count))
         if direction:
             if direction == "up":
