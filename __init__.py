@@ -83,7 +83,7 @@ class KodiSkill(MycroftSkill):
 
         move_kodi_intent = IntentBuilder("MoveKodiIntent"). \
             require("MoveKeyword").require("CursorKeyword").\
-            optionally("DirectionKeyword").optionally('CancelKeyword').optionally('Repeat').\
+            optionally("DirectionKeyword").optionally('CancelKeyword').optionally("Repeat").\
             build()
         self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)
 
