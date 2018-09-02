@@ -181,11 +181,6 @@ class KodiSkill(MycroftSkill):
 
     def handle_move_kodi_intent(self, message):
         direction = message.data.get("DirectionKeyword")
-        if direction == 'cancel':
-            cancel_kw = direction
-            direction = ""
-        else:
-            cancel_kw = ""
         repeat_count = self.repeat_regex(message.data.get('utterance'))
         LOG.info(message.data.get('utterance'))
         LOG.info(str(repeat_count))
@@ -207,8 +202,6 @@ class KodiSkill(MycroftSkill):
                     self.kodi_instance.Input.Back()
                 self.speak_dialog("direction", data={"result": direction}, expect_response=True)
                 time.sleep(1)
-        if cancel_kw:
-            self.speak_dialog("cancel", expect_response=False)
         self.set_context('MoveKeyword', 'move')
         self.set_context('CursorKeyword', 'cursor')
 
