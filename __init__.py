@@ -78,7 +78,7 @@ class KodiSkill(MycroftSkill):
 
         move_kodi_intent = IntentBuilder("MoveKodiIntent"). \
             require("MoveKeyword").require("CursorKeyword").\
-            optionally("DirectionKeyword").optionally("CancelKeyword").\
+            optionally("DirectionKeyword").\
             build()
         self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)
 
@@ -181,7 +181,12 @@ class KodiSkill(MycroftSkill):
 
     def handle_move_kodi_intent(self, message):
         direction = message.data.get("DirectionKeyword")
-        cancel_kw = message.data.get("CancelKeyword")
+
+        if direction == 'cancel':
+            cancel_kw = direction
+            direction = ""
+        else:
+            cancel_kw = ""
         repeat_count = self.repeat_regex(message.data.get('utterance'))
         LOG.info(message.data.get('utterance'))
         LOG.info(str(repeat_count))
