@@ -183,6 +183,7 @@ class KodiSkill(MycroftSkill):
         direction = message.data.get("DirectionKeyword")
         cancel_kw = message.data.get("CancelKeyword")
         repeat_count = self.repeat_regex(message.data.get('utterance'))
+        LOG.info(message)
         LOG.info(str(repeat_count))
         if direction:
             for each_count in range(0, int(repeat_count)):
@@ -207,7 +208,7 @@ class KodiSkill(MycroftSkill):
                 self.speak_dialog("direction", data={"result": direction}, expect_response=True)
                 time.sleep(1)
         if cancel_kw:
-            self.speak_dialog("cancel", data={"result": cancel_kw}, expect_response=False)
+            self.speak_dialog("cancel", expect_response=False)
 
     # Kodi specific functions for searching and playing movies
     def find_films_matching(self, kodi_id, search):  # called from, play_film_by_search
