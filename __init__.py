@@ -6,6 +6,11 @@ from mycroft.util.log import getLogger
 from mycroft.util.log import LOG
 from mycroft.skills.context import adds_context, removes_context
 
+from adapt.engine import IntentDeterminationEngine
+
+
+
+
 from kodipydent import Kodi
 import requests
 import re
@@ -36,8 +41,11 @@ class KodiSkill(MycroftSkill):
         self.movie_list = []
         self.movie_index = 0
 
+        self.engine = IntentDeterminationEngine()
+
     def initialize(self):
         self.load_data_files(dirname(__file__))
+        self.engine.register_regex_entity("(?P<Repeat>\d.*) times")
 
         #  Check and then monitor for credential changes
         self.settings.set_changed_callback(self.on_websettings_changed)
