@@ -45,7 +45,7 @@ class KodiSkill(MycroftSkill):
 
     def initialize(self):
         self.load_data_files(dirname(__file__))
-        self.engine.register_regex_entity("(?P<Repeat>\d.*) times")
+        self.repeat_regex = r"(?P<Repeat>\d.*) times"
 
         #  Check and then monitor for credential changes
         self.settings.set_changed_callback(self.on_websettings_changed)
@@ -83,7 +83,7 @@ class KodiSkill(MycroftSkill):
 
         move_kodi_intent = IntentBuilder("MoveKodiIntent"). \
             require("MoveKeyword").require("CursorKeyword").\
-            optionally("DirectionKeyword").optionally("CancelKeyword").optionally("Repeat").\
+            optionally("DirectionKeyword").optionally("CancelKeyword").\
             build()
         self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)
 
@@ -176,7 +176,8 @@ class KodiSkill(MycroftSkill):
     def handle_move_kodi_intent(self, message):
         direction = message.data.get("DirectionKeyword")
         cancel_kw = message.data.get("CancelKeyword")
-        repeat_count = message.data.get("Repeat")
+        remainder_str = str(message.utterance_remainder())
+        repeat_count = re.finditer(self.repeat_regex, remainder_str, re.MULTILINE | re.DOTALL)
         LOG.info(str(repeat_count))
         if direction:
             if direction == "up":
