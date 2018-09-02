@@ -6,11 +6,10 @@ from mycroft.util.log import getLogger
 from mycroft.util.log import LOG
 from mycroft.skills.context import adds_context, removes_context
 
-from adapt.engine import IntentDeterminationEngine
-
 from kodipydent import Kodi
 import requests
 import re
+import time
 
 _author__ = 'PCWii'
 # Release - 20180713
