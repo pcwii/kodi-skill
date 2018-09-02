@@ -186,25 +186,27 @@ class KodiSkill(MycroftSkill):
         repeat_count = self.repeat_regex(message.data.get('utterance'))
         LOG.info(str(repeat_count))
         if direction:
-            if direction == "up":
-                self.kodi_instance.Input.Up()
-            if direction == "down":
-                self.kodi_instance.Input.Down()
-            if direction == "left":
-                self.kodi_instance.Input.Left()
-            if direction == "right":
-                self.kodi_instance.Input.Right()
-            if direction == "select":
-                self.kodi_instance.Input.Select()
-            if direction == "enter":
-                self.kodi_instance.Input.Select()
-            if direction == "back":
-                self.kodi_instance.Input.Back()
-            move_kw = message.data.get('MoveKeyword')
-            cursor_kw = message.data.get('CursorKeyword')
-            self.set_context('MoveKeyword', move_kw)
-            self.set_context('CursorKeyword', cursor_kw)
-            self.speak_dialog("direction", data={"result": direction}, expect_response=True)
+            for each_count in range(1, int(repeat_count)):
+                if direction == "up":
+                    self.kodi_instance.Input.Up()
+                if direction == "down":
+                    self.kodi_instance.Input.Down()
+                if direction == "left":
+                    self.kodi_instance.Input.Left()
+                if direction == "right":
+                    self.kodi_instance.Input.Right()
+                if direction == "select":
+                    self.kodi_instance.Input.Select()
+                if direction == "enter":
+                    self.kodi_instance.Input.Select()
+                if direction == "back":
+                    self.kodi_instance.Input.Back()
+                move_kw = message.data.get('MoveKeyword')
+                cursor_kw = message.data.get('CursorKeyword')
+                self.set_context('MoveKeyword', move_kw)
+                self.set_context('CursorKeyword', cursor_kw)
+                self.speak_dialog("direction", data={"result": direction}, expect_response=True)
+                time.sleep(1)
         if cancel_kw:
             self.speak_dialog("direction", data={"result": cancel_kw}, expect_response=False)
 
