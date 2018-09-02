@@ -75,7 +75,8 @@ class KodiSkill(MycroftSkill):
 
         move_kodi_intent = IntentBuilder("MoveKodiIntent"). \
             require("MoveKeyword").require("CursorKeyword").\
-            optionally("DirectionKeyword").optionally('CancelKeyword').build()
+            optionally("DirectionKeyword").optionally('CancelKeyword').optionally('Repeat').\
+            build()
         self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)
 
     def on_websettings_changed(self):
@@ -167,6 +168,8 @@ class KodiSkill(MycroftSkill):
     def handle_move_kodi_intent(self, message):
         direction = message.data.get("DirectionKeyword")
         cancel_kw = message.data.get("CancelKeyword")
+        repeat_count = message.data.get("Repeat")
+        LOG.info(str(repeat_count))
         if direction:
             if direction == "up":
                 self.kodi_instance.Input.Up()
