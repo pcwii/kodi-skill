@@ -185,7 +185,7 @@ class KodiSkill(MycroftSkill):
         repeat_count = self.repeat_regex(message.data.get('utterance'))
         LOG.info(str(repeat_count))
         if direction:
-            for each_count in range(1, int(repeat_count)):
+            for each_count in range(0, int(repeat_count)):
                 if direction == "up":
                     self.kodi_instance.Input.Up()
                 if direction == "down":
