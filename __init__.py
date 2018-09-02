@@ -121,6 +121,10 @@ class KodiSkill(MycroftSkill):
             if match:
                 group_num = 1
                 repeat_value = "{group}".format(group=match.group(group_num))
+        if "once" in utt_str:
+            repeat_value = 1
+        if "twice" in utt_str:
+            repeat_value = 2
         return repeat_value
 
     def handle_listen(self, message):
