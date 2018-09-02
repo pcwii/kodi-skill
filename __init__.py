@@ -181,7 +181,6 @@ class KodiSkill(MycroftSkill):
 
     def handle_move_kodi_intent(self, message):
         direction = message.data.get("DirectionKeyword")
-
         if direction == 'cancel':
             cancel_kw = direction
             direction = ""
