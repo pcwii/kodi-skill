@@ -1,0 +1,12 @@
+{
+    "utterance": "play the film iron man",
+    "intent_type": "PlayFilmIntent",
+    "intent": {
+        "PlayKeyword": "play",
+        "FilmKeyword": "film"
+    },
+    "expected_dialog": "notification",
+    "expected_data": {
+        "result": "Off"
+    }
+}
