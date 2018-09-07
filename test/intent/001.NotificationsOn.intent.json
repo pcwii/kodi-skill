@@ -1,0 +1,13 @@
+{
+    "utterance": "turn the kodi notifications on",
+    "intent_type": "NotifyOnIntent",
+    "intent": {
+        "NotificationKeyword": "notifications",
+        "OnKeyword": "on",
+        "KodiKeyword": "kodi"
+    },
+    "expected_dialog": "notification",
+    "expected_data": {
+        "result": "On"
+    }
+}

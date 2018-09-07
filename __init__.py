@@ -5,10 +5,12 @@ from mycroft.skills.core import MycroftSkill, intent_handler, intent_file_handle
 from mycroft.util.log import getLogger
 from mycroft.util.log import LOG
 from mycroft.skills.context import adds_context, removes_context
+from mycroft.util.parse import extract_number
 
 from kodipydent import Kodi
 import requests
 import re
+import time
 
 _author__ = 'PCWii'
 # Release - 20180713
@@ -35,6 +37,8 @@ class KodiSkill(MycroftSkill):
         self.notifier_bool = False
         self.movie_list = []
         self.movie_index = 0
+
+        # self.engine = IntentDeterminationEngine()
 
     def initialize(self):
         self.load_data_files(dirname(__file__))
@@ -75,7 +79,8 @@ class KodiSkill(MycroftSkill):
 
         move_kodi_intent = IntentBuilder("MoveKodiIntent"). \
             require("MoveKeyword").require("CursorKeyword").\
-            optionally("DirectionKeyword").optionally('CancelKeyword').build()
+            require("DirectionKeyword").\
+            build()
         self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)
 
     def on_websettings_changed(self):
@@ -90,7 +95,6 @@ class KodiSkill(MycroftSkill):
                     kodi_port = self.settings["kodi_port"]
                     kodi_user = self.settings["kodi_user"]
                     kodi_pass = self.settings["kodi_pass"]
-                    # self.kodi_instance = Kodi(kodi_ip)
                     self.kodi_instance = Kodi(hostname=kodi_ip,
                                               port=kodi_port,
                                               username=kodi_user,
@@ -111,6 +115,18 @@ class KodiSkill(MycroftSkill):
         my_movie = re.sub('\W', ' ', my_movie)
         my_movie = re.sub(' +', ' ', my_movie)
         return my_movie
+
+    def repeat_regex(self, message):
+        value = extract_number(message)
+        if value:
+            repeat_value = value
+        elif "once" in message:
+            repeat_value = 1
+        elif "twice" in message:
+            repeat_value = 2
+        else:
+            repeat_value = 1
+        return repeat_value
 
     def handle_listen(self, message):
         voice_payload = "Listening"
@@ -180,33 +196,34 @@ class KodiSkill(MycroftSkill):
 
     def handle_move_kodi_intent(self, message):
         direction = message.data.get("DirectionKeyword")
-        cancel_kw = message.data.get("CancelKeyword")
+        repeat_count = self.repeat_regex(message.data.get('utterance'))
+        LOG.info('utterance: ' + str(message.data.get('utterance')))
+        LOG.info('repeat_count: ' + str(repeat_count))
         if direction:
-            try:
-                if direction == "up":
-                    self.kodi_instance.Input.Up()
-                if direction == "down":
-                    self.kodi_instance.Input.Down()
-                if direction == "left":
-                    self.kodi_instance.Input.Left()
-                if direction == "right":
-                    self.kodi_instance.Input.Right()
-                if direction == "select":
-                    self.kodi_instance.Input.Select()
-                if direction == "enter":
-                    self.kodi_instance.Input.Select()
-                if direction == "back":
-                    self.kodi_instance.Input.Back()
-            except Exception as e:
-                LOG.error(e)
-                self.on_websettings_changed()
-            move_kw = message.data.get('MoveKeyword')
-            cursor_kw = message.data.get('CursorKeyword')
-            self.set_context('MoveKeyword', move_kw)
-            self.set_context('CursorKeyword', cursor_kw)
-            self.speak_dialog("direction", data={"result": direction}, expect_response=True)
-        if cancel_kw:
-            self.speak_dialog("direction", data={"result": cancel_kw}, expect_response=False)
+            for each_count in range(0, int(repeat_count)):
+                try:
+                    if direction == "up":
+                        self.kodi_instance.Input.Up()
+                    elif direction == "down":
+                        self.kodi_instance.Input.Down()
+                    elif direction == "left":
+                        self.kodi_instance.Input.Left()
+                    elif direction == "right":
+                        self.kodi_instance.Input.Right()
+                    elif direction == "select":
+                        self.kodi_instance.Input.Select()
+                    elif direction == "enter":
+                        self.kodi_instance.Input.Select()
+                    elif direction == "back":
+                        self.kodi_instance.Input.Back()
+                except Exception as e:
+                    LOG.error(e)
+                    self.on_websettings_changed()
+                self.speak_dialog("direction", data={"result": direction}, 
+                                  expect_response=(each_count==repeat_count-1))
+                time.sleep(1)
+        self.set_context('MoveKeyword', 'move')
+        self.set_context('CursorKeyword', 'cursor')
 
     # Kodi specific functions for searching and playing movies
     def find_films_matching(self, kodi_id, search):  # called from, play_film_by_search
