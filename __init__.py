@@ -232,6 +232,7 @@ class KodiSkill(MycroftSkill):
         self.kodi_payload = '{"jsonrpc": "2.0", "method": "player.open", "params": {"item":{"playlistid":1}}, "id": 1}'
         try:
             self.json_response = requests.post(self.kodi_path, data=self.kodi_payload, headers=self.json_header)  # start directly with json request
+            LOG.info(self.json_response.text)
         except Exception as e:
             LOG.error(e)
 
@@ -301,6 +302,7 @@ class KodiSkill(MycroftSkill):
         try:
             self.json_response = requests.post(self.kodi_path, data=self.kodi_payload,
                                                headers=self.json_header)  # start directly with json request
+            LOG.info(self.json_response.text)
         except Exception as e:
             LOG.error(e)
 
