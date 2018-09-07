@@ -9,6 +9,7 @@ from mycroft.skills.context import adds_context, removes_context
 from kodipydent import Kodi
 import requests
 import re
+import time
 
 _author__ = 'PCWii'
 # Release - 20180713
@@ -35,6 +36,8 @@ class KodiSkill(MycroftSkill):
         self.notifier_bool = False
         self.movie_list = []
         self.movie_index = 0
+
+        self.engine = IntentDeterminationEngine()
 
     def initialize(self):
         self.load_data_files(dirname(__file__))
@@ -75,7 +78,8 @@ class KodiSkill(MycroftSkill):
 
         move_kodi_intent = IntentBuilder("MoveKodiIntent"). \
             require("MoveKeyword").require("CursorKeyword").\
-            optionally("DirectionKeyword").optionally('CancelKeyword').build()
+            require("DirectionKeyword").\
+            build()
         self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)
 
     def on_websettings_changed(self):
@@ -106,6 +110,21 @@ class KodiSkill(MycroftSkill):
         my_movie = re.sub('\W', ' ', my_movie)
         my_movie = re.sub(' +', ' ', my_movie)
         return my_movie
+
+    def repeat_regex(self, message):
+        regex = r"(?P<Repeat>\d.*)(times)"
+        utt_str = message
+        matches = re.finditer(regex, utt_str, re.MULTILINE | re.DOTALL)
+        repeat_value = 1
+        for match_num, match in enumerate(matches):
+            if match:
+                group_num = 1
+                repeat_value = "{group}".format(group=match.group(group_num))
+        if "once" in utt_str:
+            repeat_value = 1
+        if "twice" in utt_str:
+            repeat_value = 2
+        return repeat_value
 
     def handle_listen(self, message):
         voice_payload = "Listening"
@@ -165,29 +184,29 @@ class KodiSkill(MycroftSkill):
 
     def handle_move_kodi_intent(self, message):
         direction = message.data.get("DirectionKeyword")
-        cancel_kw = message.data.get("CancelKeyword")
+        repeat_count = self.repeat_regex(message.data.get('utterance'))
+        LOG.info(message.data.get('utterance'))
+        LOG.info(str(repeat_count))
         if direction:
-            if direction == "up":
-                self.kodi_instance.Input.Up()
-            if direction == "down":
-                self.kodi_instance.Input.Down()
-            if direction == "left":
-                self.kodi_instance.Input.Left()
-            if direction == "right":
-                self.kodi_instance.Input.Right()
-            if direction == "select":
-                self.kodi_instance.Input.Select()
-            if direction == "enter":
-                self.kodi_instance.Input.Select()
-            if direction == "back":
-                self.kodi_instance.Input.Back()
-            move_kw = message.data.get('MoveKeyword')
-            cursor_kw = message.data.get('CursorKeyword')
-            self.set_context('MoveKeyword', move_kw)
-            self.set_context('CursorKeyword', cursor_kw)
-            self.speak_dialog("direction", data={"result": direction}, expect_response=True)
-        if cancel_kw:
-            self.speak_dialog("direction", data={"result": cancel_kw}, expect_response=False)
+            for each_count in range(0, int(repeat_count)):
+                if direction == "up":
+                    self.kodi_instance.Input.Up()
+                if direction == "down":
+                    self.kodi_instance.Input.Down()
+                if direction == "left":
+                    self.kodi_instance.Input.Left()
+                if direction == "right":
+                    self.kodi_instance.Input.Right()
+                if direction == "select":
+                    self.kodi_instance.Input.Select()
+                if direction == "enter":
+                    self.kodi_instance.Input.Select()
+                if direction == "back":
+                    self.kodi_instance.Input.Back()
+                self.speak_dialog("direction", data={"result": direction}, expect_response=True)
+                time.sleep(1)
+        self.set_context('MoveKeyword', 'move')
+        self.set_context('CursorKeyword', 'cursor')
 
     # Kodi specific functions for searching and playing movies
     def find_films_matching(self, kodi_id, search):  # called from, play_film_by_search
