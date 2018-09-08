@@ -275,35 +275,29 @@ class KodiSkill(MycroftSkill):
         self.cv_payload = '{"jsonrpc": "2.0", "method": "Addons.ExecuteAddon", ' \
                           '"params": { "addonid": "script.cinemavision", ' \
                           '"params": ["experience", "nodialog"]},  "id": 1}'
-        if self.cv_use:  # A request was already made to use Cinemavision
-            try:
-                self.cv_response = requests.post(self.kodi_path, data=self.cv_payload, headers=self.json_header)
-                LOG.info(self.cv_response.text)
-            except Exception as e:
-                LOG.error(e)
-        else:
-            all_addons = self.list_addons()
-            if "script.cinemavision" in all_addons:
+        all_addons = self.list_addons()
+        if "script.cinemavision" in all_addons:
+            if not self.cv_use:
                 cv_answer = self.get_response('cinema.vision')
-                if any(["yes" in cv_answer, "ok" in cv_answer, "sure" in cv_answer, "why not" in cv_answer,
+            if any([self.cv_use, "yes" in cv_answer, "ok" in cv_answer, "sure" in cv_answer, "why not" in cv_answer,
                    "sounds good" in cv_answer, "alright" in cv_answer]):
-                    try:
-                        self.cv_response = requests.post(self.kodi_path, data=self.cv_payload, headers=self.json_header)
-                        LOG.info(self.cv_response.text)
-                    except Exception as e:
-                        LOG.error(e)
-                else:
-                    try:
-                        self.json_response = requests.post(self.kodi_path, data=self.kodi_payload, headers=self.json_header)
-                        LOG.info(self.json_response.text)
-                    except Exception as e:
-                        LOG.error(e)
+                try:
+                    self.cv_response = requests.post(self.kodi_path, data=self.cv_payload, headers=self.json_header)
+                    LOG.info(self.cv_response.text)
+                except Exception as e:
+                    LOG.error(e)
             else:
                 try:
                     self.json_response = requests.post(self.kodi_path, data=self.kodi_payload, headers=self.json_header)
                     LOG.info(self.json_response.text)
                 except Exception as e:
                     LOG.error(e)
+        else:
+            try:
+                self.json_response = requests.post(self.kodi_path, data=self.kodi_payload, headers=self.json_header)
+                LOG.info(self.json_response.text)
+            except Exception as e:
+                LOG.error(e)
 
     @adds_context('Navigate')
     def play_film_by_search(self, kodi_id, film_search):  # called from, handle_play_film_intent
