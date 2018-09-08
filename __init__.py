@@ -40,6 +40,7 @@ class KodiSkill(MycroftSkill):
         self.notifier_bool = False
         self.movie_list = []
         self.movie_index = 0
+        self.cv_use = False
 
         # self.engine = IntentDeterminationEngine()
 
@@ -55,7 +56,7 @@ class KodiSkill(MycroftSkill):
         self.add_event('speak', self.handle_speak)
 
         play_film_intent = IntentBuilder("PlayFilmIntent"). \
-            require("PlayKeyword").require("FilmKeyword").build()
+            require("PlayKeyword").require("FilmKeyword").optionally("CinemaVisionKeyword").build()
         self.register_intent(play_film_intent, self.handle_play_film_intent)
 
         stop_film_intent = IntentBuilder("StopFilmIntent"). \
@@ -159,7 +160,10 @@ class KodiSkill(MycroftSkill):
                 self.on_websettings_changed()
 
     def handle_play_film_intent(self, message):  # executed with original voice command
-        # movie_name = message.data.get("Film")
+        if message.data.get("CinemaVisionKeyword"):
+            self.cv_use = True
+        else:
+            self.cv_use = True
         movie_name = self.movie_regex(message.data.get('utterance'))
         try:
             self.play_film_by_search(self.kodi_instance, movie_name)
@@ -261,28 +265,35 @@ class KodiSkill(MycroftSkill):
         self.cv_payload = '{"jsonrpc": "2.0", "method": "Addons.ExecuteAddon", ' \
                           '"params": { "addonid": "script.cinemavision", ' \
                           '"params": ["experience", "nodialog"]},  "id": 1}'
-        all_addons = list_addons(self)
-        if "script.cinemavision" in all_addons:
-            cv_answer = self.get_response('cinema.vision')
-            if any(["yes" in cv_answer, "ok" in cv_answer, "sure" in cv_answer, "why not" in cv_answer,
+        if self.cv_use:  # A request was already made to use Cinemavision
+            try:
+                self.cv_response = requests.post(self.kodi_path, data=self.cv_payload, headers=self.json_header)
+                LOG.info(self.cv_response.text)
+            except Exception as e:
+                LOG.error(e)
+        else:
+            all_addons = list_addons(self)
+            if "script.cinemavision" in all_addons:
+                cv_answer = self.get_response('cinema.vision')
+                if any(["yes" in cv_answer, "ok" in cv_answer, "sure" in cv_answer, "why not" in cv_answer,
                    "sounds good" in cv_answer, "alright" in cv_answer]):
-                try:
-                    self.cv_response = requests.post(self.kodi_path, data=self.cv_payload, headers=self.json_header)
-                    LOG.info(self.cv_response.text)
-                except Exception as e:
-                    LOG.error(e)
+                    try:
+                        self.cv_response = requests.post(self.kodi_path, data=self.cv_payload, headers=self.json_header)
+                        LOG.info(self.cv_response.text)
+                    except Exception as e:
+                        LOG.error(e)
+                else:
+                    try:
+                        self.json_response = requests.post(self.kodi_path, data=self.kodi_payload, headers=self.json_header)
+                        LOG.info(self.json_response.text)
+                    except Exception as e:
+                        LOG.error(e)
             else:
                 try:
                     self.json_response = requests.post(self.kodi_path, data=self.kodi_payload, headers=self.json_header)
                     LOG.info(self.json_response.text)
                 except Exception as e:
                     LOG.error(e)
-        else:
-            try:
-                self.json_response = requests.post(self.kodi_path, data=self.kodi_payload, headers=self.json_header)
-                LOG.info(self.json_response.text)
-            except Exception as e:
-                LOG.error(e)
 
     @adds_context('Navigate')
     def play_film_by_search(self, kodi_id, film_search):  # called from, handle_play_film_intent
