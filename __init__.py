@@ -103,7 +103,8 @@ class KodiSkill(MycroftSkill):
                                               port=kodi_port,
                                               username=kodi_user,
                                               password=kodi_pass)
-                    self.kodi_path = "http://"+kodi_user+":"+kodi_pass+"@"+kodi_ip+":"+kodi_port+"/jsonrpc"
+                    self.kodi_path = "http://" + kodi_user + ":" + kodi_pass + "@" + kodi_ip + ":" + kodi_port + \
+                                     "/jsonrpc"
                     self._is_setup = True
             except Exception as e:
                 LOG.error(e)
@@ -273,7 +274,8 @@ class KodiSkill(MycroftSkill):
             except Exception as e:
                 LOG.error(e)
         else:
-            all_addons = list_addons(self)
+
+            all_addons = self.list_addons(self)
             if "script.cinemavision" in all_addons:
                 cv_answer = self.get_response('cinema.vision')
                 if any(["yes" in cv_answer, "ok" in cv_answer, "sure" in cv_answer, "why not" in cv_answer,
