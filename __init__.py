@@ -99,8 +99,7 @@ class KodiSkill(MycroftSkill):
                                               port=kodi_port,
                                               username=kodi_user,
                                               password=kodi_pass)
-                    self.kodi_path = "http://"+kodi_ip+":"+kodi_port+"/jsonrpc"
-                    # self.kodi_payload = '{"jsonrpc":"2.0","method":"player.open", "params": {"item":{"playlistid":1}}}'
+                    self.kodi_path = "http://"+kodi_user+":"+kodi_pass+"@"+kodi_ip+":"+kodi_port+"/jsonrpc"
                     self._is_setup = True
             except Exception as e:
                 LOG.error(e)
@@ -246,9 +245,10 @@ class KodiSkill(MycroftSkill):
         # time.sleep(1)  # add delay to avoid socket timeout
         kodi_id.Playlist.Add(playlistid=1, item={'movieid': movieid})
         # time.sleep(1)  # add delay to avoid socket timeout
-        self.kodi_payload = '{"jsonrpc":"2.0","method":"player.open", "params": {"item":{"playlistid":1}}}'
+        self.kodi_payload = '{"jsonrpc": "2.0", "method": "player.open", "params": {"item":{"playlistid":1}}, "id": 1}'
         try:
             self.json_response = requests.post(self.kodi_path, data=self.kodi_payload, headers=self.json_header)  # start directly with json request
+            LOG.info(self.json_response.text)
         except Exception as e:
             LOG.error(e)
 
@@ -326,13 +326,13 @@ class KodiSkill(MycroftSkill):
                     optionally('KodiKeyword').optionally('FilmKeyword').
                     build())
     def handle_show_movie_info_intent(self, message):
-        self.kodi_payload = '{"jsonrpc":"2.0","method":"Input.Info", "params": {}}}'
+        self.kodi_payload = '{"jsonrpc":"2.0","method":"Input.Info", "params": {}}, "id": 1}'
         try:
             self.json_response = requests.post(self.kodi_path, data=self.kodi_payload,
-                                      headers=self.json_header)  # start directly with json request
+                                               headers=self.json_header)  # start directly with json request
+            LOG.info(self.json_response.text)
         except Exception as e:
             LOG.error(e)
-
 
     def stop(self):
         pass

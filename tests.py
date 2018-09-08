@@ -27,6 +27,12 @@ def play_film(kodi_id, movieid):
     kodi_id.Playlist.Add(playlistid=1, item={'movieid': movieid})
     kodi_id.Player.Open(item={'playlistid': 1})
 
+def get_addons(kodi_id):
+    all_addons = kodi_id.Addons.GetAddons
+    print(all_addons)
+    for kodi_addon in all_addons:
+        print(kodi_addon)
+
 
 def play_film_by_search(kodi_id, film_search):
     results = find_films_matching(kodi_id, film_search)
@@ -38,6 +44,10 @@ def play_film_by_search(kodi_id, film_search):
     else:
         print("I found no results for the search: {}.".format(film_search))
 
+get_addons(my_kodi_instance)
+
+
+
 #my_kodi_instance.Input.Up()
 # my_kodi_instance.Player.Open(1)
 # my_kodi_instance.GUI.ShowNotification(title="Mycroft.AI Message", message="Hello This is a Test!", displaytime=2000)
@@ -47,16 +57,16 @@ def play_film_by_search(kodi_id, film_search):
 # print(movie_id)
 #play_film_by_search(my_kodi_instance, "ant man")
 
-regex = r"(movie|film) (?P<Film>.*)"
-utt_str = "play the movie guardians of the galaxy"
-matches = re.finditer(regex, utt_str, re.MULTILINE | re.DOTALL)
-for matchNum, match in enumerate(matches):
-    matchNum = matchNum + 1
-    groupNum = 2
-    my_movie = "{group}".format(groupNum=groupNum, start=match.start(groupNum),
-                                                                    end=match.end(groupNum),
-                                                                    group=match.group(groupNum))
-    print(my_movie)
+#regex = r"(movie|film) (?P<Film>.*)"
+#utt_str = "play the movie guardians of the galaxy"
+#matches = re.finditer(regex, utt_str, re.MULTILINE | re.DOTALL)
+#for matchNum, match in enumerate(matches):
+#    matchNum = matchNum + 1
+#    groupNum = 2
+#    my_movie = "{group}".format(groupNum=groupNum, start=match.start(groupNum),
+#                                                                    end=match.end(groupNum),
+#                                                                    group=match.group(groupNum))
+#    print(my_movie)
     #for groupNum in range(0, len(match.groups())):
     #    groupNum = groupNum + 1
 
@@ -65,7 +75,6 @@ for matchNum, match in enumerate(matches):
 #                                                                        group=match.group(groupNum)))
 
 
-# my_kodi_instance.Player.PlayPause(playerid=1)
 # print(my_kodi_instance)
 
 # print(movie_id)
@@ -77,10 +86,6 @@ for matchNum, match in enumerate(matches):
 # movie_name = re.sub('(movie|film) (?P<Film>.*)', mystring[])
 # print(movie_name)
 # play_film_by_search(my_kodi_instance, movie_name)
-
-"""
-unused code blocks below
-"""
 
 #    def speak_multi_film_match(self, search, results):  # Tell the user about the list of results
 #        output = "I found the following movies matching {}: ".format(search)
