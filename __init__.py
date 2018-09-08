@@ -163,10 +163,11 @@ class KodiSkill(MycroftSkill):
         if message.data.get("CinemaVisionKeyword"):
             self.cv_use = True
         else:
-            self.cv_use = True
+            self.cv_use = False
         movie_name = self.movie_regex(message.data.get('utterance'))
         try:
             self.play_film_by_search(self.kodi_instance, movie_name)
+            LOG.info("movie: " + movie_name)
         except Exception as e:
             LOG.error(e)
             self.on_websettings_changed()
