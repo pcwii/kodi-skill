@@ -120,7 +120,7 @@ class KodiSkill(MycroftSkill):
             group_id = "Film1"
             my_movie = "{group}".format(group=film_match.group(group_id))
             self.cv_use = False
-            if not my_movie:
+            if my_movie == "None":
                 group_id = "Film2"
                 my_movie = "{group}".format(group=film_match.group(group_id))
                 self.cv_use = True
