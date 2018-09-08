@@ -126,7 +126,7 @@ class KodiSkill(MycroftSkill):
                 self.cv_use = True
         my_movie = re.sub('\W', ' ', my_movie)
         my_movie = re.sub(' +', ' ', my_movie)
-        return my_movie
+        return my_movie.strip()
 
     def repeat_regex(self, message):
         value = extract_number(message)
