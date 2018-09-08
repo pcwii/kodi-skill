@@ -33,6 +33,7 @@ Utilize the kodi API and Python library for controlling the KODI open source med
 ** If mycroft.ai locates the addon CinemaVision it will prompt the user if this addon should be used during the 
 playback of the movie that was selected.
 * Response: "Would you like to play the movie using cinemavision?"
+* Request: "yes / no"
 ## Credits
 PCWii
 ## Require 
