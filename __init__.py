@@ -30,10 +30,11 @@ class KodiSkill(MycroftSkill):
         self.settings["kodi_pass"] = ""
         self.kodi_path = ""
         self.kodi_payload = ""
+        self.cv_payload = ""
         self.json_header = {'content-type': 'application/json'}
         self.json_response = ""
+        self.cv_response = ""
         self._is_setup = False
-
         self.notifier_bool = False
         self.movie_list = []
         self.movie_index = 0
@@ -224,6 +225,17 @@ class KodiSkill(MycroftSkill):
         self.set_context('MoveKeyword', 'move')
         self.set_context('CursorKeyword', 'cursor')
 
+    def list_addons(self):
+        list_payload = '{"jsonrpc": "2.0", "method": "Addons.GetAddons",' \
+                       ' "params": {"type": "xbmc.addon.executable"}, "id": "1"}'
+        try:
+            list_response = requests.post(kodi_path, data=list_payload, headers=json_header)
+            LOG.info(list_response.text)
+            return list_response.text
+        except Exception as e:
+            print(e)
+            return "NONE"
+
     # Kodi specific functions for searching and playing movies
     def find_films_matching(self, kodi_id, search):  # called from, play_film_by_search
         """
@@ -242,15 +254,25 @@ class KodiSkill(MycroftSkill):
     @removes_context('Navigate')
     def play_film(self, kodi_id, movieid):  # play the movie based on movie ID
         kodi_id.Playlist.Clear(playlistid=1)
-        # time.sleep(1)  # add delay to avoid socket timeout
         kodi_id.Playlist.Add(playlistid=1, item={'movieid': movieid})
-        # time.sleep(1)  # add delay to avoid socket timeout
         self.kodi_payload = '{"jsonrpc": "2.0", "method": "player.open", "params": {"item":{"playlistid":1}}, "id": 1}'
-        try:
-            self.json_response = requests.post(self.kodi_path, data=self.kodi_payload, headers=self.json_header)  # start directly with json request
-            LOG.info(self.json_response.text)
-        except Exception as e:
-            LOG.error(e)
+        self.cv_payload = '{"jsonrpc": "2.0", "method": "Addons.ExecuteAddon", ' \
+                          '"params": { "addonid": "script.cinemavision", ' \
+                          '"params": ["experience", "nodialog"]},  "id": 1}'
+        all_addons = list_addons(self)
+        if "script.cinemavision" in all_addons:
+            try:
+                self.cv_response = requests.post(self.kodi_path, data=self.cv_payload, headers=self.json_header)
+                LOG.info(self.cv_response.text)
+            except Exception as e:
+                LOG.error(e)
+        else:
+            try:
+                self.json_response = requests.post(self.kodi_path, data=self.kodi_payload, headers=self.json_header)
+                LOG.info(self.json_response.text)
+            except Exception as e:
+                LOG.error(e)
+
 
     @adds_context('Navigate')
     def play_film_by_search(self, kodi_id, film_search):  # called from, handle_play_film_intent
