@@ -277,6 +277,7 @@ class KodiSkill(MycroftSkill):
                           '"params": ["experience", "nodialog"]},  "id": 1}'
         all_addons = self.list_addons()
         if "script.cinemavision" in all_addons:
+            cv_answer = ""
             if not self.cv_use:
                 cv_answer = self.get_response('cinema.vision')
             if any([self.cv_use, "yes" in cv_answer, "ok" in cv_answer, "sure" in cv_answer, "why not" in cv_answer,
