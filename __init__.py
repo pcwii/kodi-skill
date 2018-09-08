@@ -109,13 +109,21 @@ class KodiSkill(MycroftSkill):
             except Exception as e:
                 LOG.error(e)
 
+
     def movie_regex(self, message):
-        regex = r"(movie|film) (?P<Film>.*)"
+        # film_regex = r"(movie|film) (?P<Film>.*)"
+        film_regex = r"((movie|film) (?P<Film1>.*))| ((movie|film) (?P<Film2>.*)(with|using) (cinemavision))"
         utt_str = message
-        matches = re.finditer(regex, utt_str, re.MULTILINE | re.DOTALL)
-        for match_num, match in enumerate(matches):
-            group_num = 2
-            my_movie = "{group}".format(group=match.group(group_num))
+        film_matches = re.finditer(film_regex, utt_str, re.MULTILINE | re.DOTALL)
+        for film_match_num, film_match in enumerate(film_matches):
+            # group_num = 2
+            group_id = "Film1"
+            my_movie = "{group}".format(group=film_match.group(group_id))
+            self.cv_use = False
+            if not my_movie:
+                group_id = "Film2"
+                my_movie = "{group}".format(group=film_match.group(group_id))
+                self.cv_use = True
         my_movie = re.sub('\W', ' ', my_movie)
         my_movie = re.sub(' +', ' ', my_movie)
         return my_movie
@@ -274,7 +282,6 @@ class KodiSkill(MycroftSkill):
             except Exception as e:
                 LOG.error(e)
         else:
-
             all_addons = self.list_addons()
             if "script.cinemavision" in all_addons:
                 cv_answer = self.get_response('cinema.vision')
