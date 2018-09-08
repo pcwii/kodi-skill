@@ -8,6 +8,8 @@ Utilize the kodi API and Python library for controlling the KODI open source med
 * "turn kodi notifications on"
 * "turn kodi notifications off"
 * "move the cursor up / down / left / right / back / select / cancel" (Conversational Context)
+* "move the cursor right 3 times"
+* "move the cursor down twice"
 * "play film Guardians of the galaxy"
 * "play the movie spider man homecoming"
 * "pause the movie"
@@ -16,7 +18,7 @@ Utilize the kodi API and Python library for controlling the KODI open source med
 * "show the movie information"
 * "hide the movie information"
 ## Conversational Context
-* If mycroft.ai locates more than one movie that matches your request it will permit you to itterate through your requests
+** If mycroft.ai locates more than one movie that matches your request it will permit you to itterate through your requests
 * using conversational context.
 * eg. "hey mycroft:"
 * Request: "play the move Iron Man"
@@ -27,6 +29,10 @@ Utilize the kodi API and Python library for controlling the KODI open source med
 * Response: "Iron Man 2"
 * Request: "play" / "select"
 * Response: "o-k, attempting to play, Iron Man 2"
+
+** If mycroft.ai locates the addon CinemaVision it will prompt the user if this addon should be used during the 
+playback of the movie that was selected.
+* Response: "Would you like to play the movie using cinemavision?"
 ## Credits
 PCWii
 ## Require 
@@ -35,7 +41,8 @@ Tested on platform_picroft (others untested)
 - [Mycroft](https://docs.mycroft.ai/installing.and.running/installation)
 - kodipydent
 ## Further Reading
-- [KODI API](https://kodi.wiki/index.php?title=JSON-RPC_API/v6)
+- [KODI API](https://kodi.wiki/index.php?title=JSON-RPC_API/v8)
+- [CinemaVision](https://kodi.wiki/view/Add-on:CinemaVision)
 ## Installation Notes
 - Configure Kodi to “allow remote control via HTTP”, under the Kodi settings:services
 - Configure Kodi to “allow remote control from applications on other systems”, under the Kodi settings:services
