@@ -50,3 +50,12 @@ Tested on platform_picroft (others untested)
 - Under Kodi settings:services note the port number (8080)
 - Configure home.mycroft.ai to set your kodi instanace ip address and port number
 - username and password currently not supported
+
+## Todo
+- Convert all kodipydent functions to json requests (WIP)
+- Enable subtitle control (WIP)
+- Enable library scanning / cleaning (WIP)
+- Enable Cinemavision Support (Complete)
+- Enable kodi Volume Control (WIP)
+- Enable movie skip fwd/rev (WIP)
+- Enable random movie selection (WIP)
