@@ -127,6 +127,7 @@ class KodiSkill(MycroftSkill):
             LOG.info("Is Kodi Playing?...", str(self.playing_status))
         except Exception as e:
             LOG.error(e)
+        return self.playing_status
 
     def show_root(self):
         method = "GUI.ActivateWindow"
@@ -438,8 +439,7 @@ class KodiSkill(MycroftSkill):
             },
             "id": 1
         }
-        self.is_kodi_playing()
-        if self.playing_status:
+        if self.is_kodi_playing(self):
             try:
                 kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
                 LOG.info(kodi_response.text)
@@ -462,8 +462,7 @@ class KodiSkill(MycroftSkill):
                 "subtitle": "on"
             }
         }
-        self.is_kodi_playing()
-        if self.playing_status:
+        if self.is_kodi_playing():
             try:
                 kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
                 LOG.info(kodi_response)
@@ -486,10 +485,10 @@ class KodiSkill(MycroftSkill):
                 "subtitle": "off"
             }
         }
-        self.is_kodi_playing()
-        if self.playing_status:
+        if self.is_kodi_playing():
             try:
-                kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+                kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload),
+                                              headers=self.json_header)
                 LOG.info(kodi_response)
             except Exception as e:
                 LOG.error(e)
