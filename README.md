@@ -1,22 +1,36 @@
-# Kodi Skill for Mycroft AI
-## kodi-skill
-Control KODI open source media center with Mycroft
+# <img src='https://rawgithub.com/FortAwesome/Font-Awesome/master/advanced-options/raw-svg/solid/tv.svg' card_color='#40dbb0' width='50' height='50' style='vertical-align:bottom'/> Kodi Control
+Control KODI open source media center with Mycroft.ai
 
-## Description 
-Utilize the kodi API and Python library for controlling the KODI open source media center with Mycroft.
+## About 
+Utilize the kodi API and Python library for controlling the KODI open source media center with Mycroft.ai. The control is mostly geared towards videos/movies but is capable of handling cursor navigation as well.
+The Kodi Skill uses conversational dialog to help you to control your KODI instance more naturally. 
+
 ## Examples 
-* "turn kodi notifications on"
-* "turn kodi notifications off"
-* "move the cursor up / down / left / right / back / select / cancel" (Conversational Context)
-* "move the cursor right 3 times"
-* "move the cursor down twice"
-* "play film Guardians of the galaxy"
-* "play the movie spider man homecoming"
+* "play the movie guardians of the galaxy"
+* "play the film planet of the apes"
+* "turn kodi subtitles on"
+* "turn kodi subtitles off"
+* "skip movie forward"
+* "skip movie backward"
 * "pause the movie"
 * "re-start the movie"
 * "stop the movie"
 * "show the movie information"
 * "hide the movie information"
+* "turn kodi notifications on"
+* "turn kodi notifications off"
+* "move the cursor up / down / left / right / back / select / cancel"
+* "move the cursor right 3 times"
+* "move the cursor down twice"
+* "update the kodi library"
+* "clean the kodi library"
+* "list recently added movies"
+* "list the movies by genre"
+* "list the movies by studio"
+* "list movie sets"
+* "list movies by title"
+* "list movies by actor"
+* "list all movies"
 ## Conversational Context
 ** If mycroft.ai locates more than one movie that matches your request it will permit you to itterate through your requests
 * using conversational context.
@@ -29,13 +43,17 @@ Utilize the kodi API and Python library for controlling the KODI open source med
 * Response: "Iron Man 2"
 * Request: "play" / "select"
 * Response: "o-k, attempting to play, Iron Man 2"
-
-** If mycroft.ai locates the addon CinemaVision it will prompt the user if this addon should be used during the 
+## Cinemavision
+If mycroft.ai locates the addon CinemaVision it will prompt the user if this addon should be used during the 
 playback of the movie that was selected.
 * Response: "Would you like to play the movie using cinemavision?"
 * Request: "yes / no"
-## Credits
+## Credits 
 PCWii
+
+## Category
+**Media**
+
 ## Require 
 Tested on platform_picroft (others untested) 
 ## Other Requirements

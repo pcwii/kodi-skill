@@ -11,6 +11,7 @@ from kodipydent import Kodi
 import requests
 import re
 import time
+import json
 
 _author__ = 'PCWii'
 # Release - 20180713
@@ -41,8 +42,6 @@ class KodiSkill(MycroftSkill):
         self.movie_list = []
         self.movie_index = 0
         self.cv_use = False
-
-        # self.engine = IntentDeterminationEngine()
 
     def initialize(self):
         self.load_data_files(dirname(__file__))
@@ -109,6 +108,43 @@ class KodiSkill(MycroftSkill):
             except Exception as e:
                 LOG.error(e)
 
+    def is_kodi_playing(self):
+        method = "Player.GetActivePlayers"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "id": 1
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            parse_response = json.loads(kodi_response.text)["result"]
+            if not parse_response:
+                playing_status = False
+            else:
+                playing_status = True
+            LOG.info("Is Kodi Playing?...", playing_status)
+            return playing_status
+        except Exception as e:
+            LOG.error(e)
+
+    def show_root(self):
+        method = "GUI.ActivateWindow"
+        kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": {
+                "window": "videos",
+                "parameters": [
+                    "library://video/"
+                ]
+            },
+            "id": "1"
+        }
+        try:
+            kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+            LOG.info(kodi_response.text)
+        except Exception as e:
+            LOG.error(e)
 
     def movie_regex(self, message):
         # film_regex = r"(movie|film) (?P<Film>.*)"
@@ -379,6 +415,232 @@ class KodiSkill(MycroftSkill):
             self.json_response = requests.post(self.kodi_path, data=self.kodi_payload,
                                                headers=self.json_header)  # start directly with json request
             LOG.info(self.json_response.text)
+        except Exception as e:
+            LOG.error(e)
+
+    @intent_handler(IntentBuilder('SkipMovieIntent').require("SkipKeyword").require('FilmKeyword').
+                    require('SkipDirectionKeyword').
+                    build())
+    def handle_skip_movie_intent(self, message):
+        method = "Player.Seek"
+        dir_kw = message.data.get("SkipDirectionKeyword")
+        if dir_kw == "backward":
+            dir_skip = "smallbackward"
+        else:
+            dir_skip = "smallforward"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": {
+                "playerid": 1,
+                "value": dir_skip
+            },
+            "id": 1
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
+        except Exception as e:
+            LOG.error(e)
+
+    @intent_handler(IntentBuilder('SubtitlesOnIntent').require("KodiKeyword").require('SubtitlesKeyword').
+                    require('OnKeyword').
+                    build())
+    def handle_subtitles_on_intent(self,message):
+        method = "Player.SetSubtitle"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": method,
+            "params": {
+                "playerid": 1,
+                "subtitle": "on"
+            }
+        }
+        if self.is_kodi_playing():
+            try:
+                kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+                LOG.info(kodi_response)
+            except Exception as e:
+                LOG.error(e)
+        else:
+            LOG.info("Subtitles On Failed, kodi not playing")
+
+    @intent_handler(IntentBuilder('SubtitlesOffIntent').require("KodiKeyword").require('SubtitlesKeyword').
+                    require('OffKeyword').
+                    build())
+    def handle_subtitles_on_intent(self,message):
+        method = "Player.SetSubtitle"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": method,
+            "params": {
+                "playerid": 1,
+                "subtitle": "off"
+            }
+        }
+        if self.is_kodi_playing():
+            try:
+                kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+                LOG.info(kodi_response)
+            except Exception as e:
+                LOG.error(e)
+        else:
+            LOG.info("Subtitles Off Failed, kodi not playing")
+
+    @intent_handler(IntentBuilder('ShowMoviesAddedIntent').require("ListKeyword").require('RecentKeyword').
+                    require('FilmKeyword').
+                    build())
+    def handle_show_movies_added_intent(self):
+        method = "GUI.ActivateWindow"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": {
+                "window": "videos",
+                "parameters": [
+                    "videodb://recentlyaddedmovies/"
+                ]
+            },
+            "id": "1"
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
+        except Exception as e:
+            LOG.error(e)
+
+    @intent_handler(IntentBuilder('ShowMoviesGenresIntent').require("ListKeyword").require('FilmKeyword').
+                    require('GenreKeyword').
+                    build())
+    def handle_show_movies_genres_intent(self):
+        method = "GUI.ActivateWindow"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": {
+                "window": "videos",
+                "parameters": [
+                    "videodb://movies/genres/"
+                ]
+            },
+            "id": "1"
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
+        except Exception as e:
+            LOG.error(e)
+
+    @intent_handler(IntentBuilder('ShowMoviesGenresIntent').require("ListKeyword").require('FilmKeyword').
+                    require('ActorKeyword').
+                    build())
+    def handle_show_movies_actors_intent(self):
+        method = "GUI.ActivateWindow"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": {
+                "window": "videos",
+                "parameters": [
+                    "videodb://movies/actors/"
+                ]
+            },
+            "id": "1"
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
+        except Exception as e:
+            LOG.error(e)
+
+    @intent_handler(IntentBuilder('ShowMoviesStudioIntent').require("ListKeyword").require('FilmKeyword').
+                    require('StudioKeyword').
+                    build())
+    def handle_show_movies_studio_intent(self):
+        method = "GUI.ActivateWindow"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": {
+                "window": "videos",
+                "parameters": [
+                    "videodb://movies/studios/"
+                ]
+            },
+            "id": "1"
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
+        except Exception as e:
+            LOG.error(e)
+
+    @intent_handler(IntentBuilder('ShowMoviesTitleIntent').require("ListKeyword").require('FilmKeyword').
+                    require('TitleKeyword').
+                    build())
+    def handle_show_movies_title_intent(self):
+        method = "GUI.ActivateWindow"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": {
+                "window": "videos",
+                "parameters": [
+                    "videodb://movies/titles/"
+                ]
+            },
+            "id": "1"
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
+        except Exception as e:
+            LOG.error(e)
+
+    @intent_handler(IntentBuilder('ShowMoviesSetsIntent').require("ListKeyword").require('FilmKeyword').
+                    require('SetsKeyword').
+                    build())
+    def handle_show_movies_sets_intent(self):
+        method = "GUI.ActivateWindow"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": {
+                "window": "videos",
+                "parameters": [
+                    "videodb://movies/sets/"
+                ]
+            },
+            "id": "1"
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
+        except Exception as e:
+            LOG.error(e)
+
+    @intent_handler(IntentBuilder('ShowAllMoviesIntent').require("ListKeyword").require('AllKeyword').
+                    require('FilmKeyword').
+                    build())
+    def handle_show_all_movies_intent(self):
+        self.show_root()
+        method = "GUI.ActivateWindow"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": {
+                "window": "videos",
+                "parameters": [
+                    "videodb://movies/"
+                ]
+            },
+            "id": "1"
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
         except Exception as e:
             LOG.error(e)
 
