@@ -38,6 +38,7 @@ class KodiSkill(MycroftSkill):
         self.cv_response = ""
         self.list_response = ""
         self._is_setup = False
+        self.playing_status = False
         self.notifier_bool = False
         self.movie_list = []
         self.movie_index = 0
@@ -109,6 +110,7 @@ class KodiSkill(MycroftSkill):
                 LOG.error(e)
 
     def is_kodi_playing(self):
+        LOG.info("Checking if kodi is playing a movie")
         method = "Player.GetActivePlayers"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -119,11 +121,10 @@ class KodiSkill(MycroftSkill):
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
             parse_response = json.loads(kodi_response.text)["result"]
             if not parse_response:
-                playing_status = False
+                self.playing_status = False
             else:
-                playing_status = True
-            LOG.info("Is Kodi Playing?...", playing_status)
-            return playing_status
+                self.playing_status = True
+            LOG.info("Is Kodi Playing?...", self.playing_status)
         except Exception as e:
             LOG.error(e)
 
@@ -437,7 +438,8 @@ class KodiSkill(MycroftSkill):
             },
             "id": 1
         }
-        if self.is_kodi_playing():
+        self.is_kodi_playing()
+        if self.playing_status:
             try:
                 kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
                 LOG.info(kodi_response.text)
@@ -460,7 +462,8 @@ class KodiSkill(MycroftSkill):
                 "subtitle": "on"
             }
         }
-        if self.is_kodi_playing():
+        self.is_kodi_playing()
+        if self.playing_status:
             try:
                 kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
                 LOG.info(kodi_response)
@@ -483,7 +486,8 @@ class KodiSkill(MycroftSkill):
                 "subtitle": "off"
             }
         }
-        if self.is_kodi_playing():
+        self.is_kodi_playing()
+        if self.playing_status:
             try:
                 kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
                 LOG.info(kodi_response)
