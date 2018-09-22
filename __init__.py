@@ -437,16 +437,19 @@ class KodiSkill(MycroftSkill):
             },
             "id": 1
         }
-        try:
-            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
-            LOG.info(kodi_response.text)
-        except Exception as e:
-            LOG.error(e)
+        if self.is_kodi_playing():
+            try:
+                kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+                LOG.info(kodi_response.text)
+            except Exception as e:
+                LOG.error(e)
+        else:
+            LOG.info("There is no movie playing to skip")
 
     @intent_handler(IntentBuilder('SubtitlesOnIntent').require("KodiKeyword").require('SubtitlesKeyword').
                     require('OnKeyword').
                     build())
-    def handle_subtitles_on_intent(self,message):
+    def handle_subtitles_on_intent(self, message):
         method = "Player.SetSubtitle"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -469,7 +472,7 @@ class KodiSkill(MycroftSkill):
     @intent_handler(IntentBuilder('SubtitlesOffIntent').require("KodiKeyword").require('SubtitlesKeyword').
                     require('OffKeyword').
                     build())
-    def handle_subtitles_on_intent(self,message):
+    def handle_subtitles_off_intent(self, message):
         method = "Player.SetSubtitle"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -492,7 +495,7 @@ class KodiSkill(MycroftSkill):
     @intent_handler(IntentBuilder('ShowMoviesAddedIntent').require("ListKeyword").require('RecentKeyword').
                     require('FilmKeyword').
                     build())
-    def handle_show_movies_added_intent(self):
+    def handle_show_movies_added_intent(self, message):
         method = "GUI.ActivateWindow"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -508,13 +511,15 @@ class KodiSkill(MycroftSkill):
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
             LOG.info(kodi_response.text)
+            sort_kw = message.data.get("RecentKeyword")
+            self.speak_dialog('sorted.by', data={"result": sort_kw}, expect_response=False)
         except Exception as e:
             LOG.error(e)
 
     @intent_handler(IntentBuilder('ShowMoviesGenresIntent').require("ListKeyword").require('FilmKeyword').
                     require('GenreKeyword').
                     build())
-    def handle_show_movies_genres_intent(self):
+    def handle_show_movies_genres_intent(self, message):
         method = "GUI.ActivateWindow"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -530,13 +535,15 @@ class KodiSkill(MycroftSkill):
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
             LOG.info(kodi_response.text)
+            sort_kw = message.data.get("GenreKeyword")
+            self.speak_dialog('sorted.by', data={"result": sort_kw}, expect_response=False)
         except Exception as e:
             LOG.error(e)
 
     @intent_handler(IntentBuilder('ShowMoviesGenresIntent').require("ListKeyword").require('FilmKeyword').
                     require('ActorKeyword').
                     build())
-    def handle_show_movies_actors_intent(self):
+    def handle_show_movies_actors_intent(self, message):
         method = "GUI.ActivateWindow"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -552,13 +559,15 @@ class KodiSkill(MycroftSkill):
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
             LOG.info(kodi_response.text)
+            sort_kw = message.data.get("ActorKeyword")
+            self.speak_dialog('sorted.by', data={"result": sort_kw}, expect_response=False)
         except Exception as e:
             LOG.error(e)
 
     @intent_handler(IntentBuilder('ShowMoviesStudioIntent').require("ListKeyword").require('FilmKeyword').
                     require('StudioKeyword').
                     build())
-    def handle_show_movies_studio_intent(self):
+    def handle_show_movies_studio_intent(self, message):
         method = "GUI.ActivateWindow"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -574,13 +583,15 @@ class KodiSkill(MycroftSkill):
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
             LOG.info(kodi_response.text)
+            sort_kw = message.data.get("StudioKeyword")
+            self.speak_dialog('sorted.by', data={"result": sort_kw}, expect_response=False)
         except Exception as e:
             LOG.error(e)
 
     @intent_handler(IntentBuilder('ShowMoviesTitleIntent').require("ListKeyword").require('FilmKeyword').
                     require('TitleKeyword').
                     build())
-    def handle_show_movies_title_intent(self):
+    def handle_show_movies_title_intent(self, message):
         method = "GUI.ActivateWindow"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -596,13 +607,15 @@ class KodiSkill(MycroftSkill):
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
             LOG.info(kodi_response.text)
+            sort_kw = message.data.get("TitleKeyword")
+            self.speak_dialog('sorted.by', data={"result": sort_kw}, expect_response=False)
         except Exception as e:
             LOG.error(e)
 
     @intent_handler(IntentBuilder('ShowMoviesSetsIntent').require("ListKeyword").require('FilmKeyword').
                     require('SetsKeyword').
                     build())
-    def handle_show_movies_sets_intent(self):
+    def handle_show_movies_sets_intent(self, message):
         method = "GUI.ActivateWindow"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -618,13 +631,15 @@ class KodiSkill(MycroftSkill):
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
             LOG.info(kodi_response.text)
+            sort_kw = message.data.get("SetsKeyword")
+            self.speak_dialog('sorted.by', data={"result": sort_kw}, expect_response=False)
         except Exception as e:
             LOG.error(e)
 
     @intent_handler(IntentBuilder('ShowAllMoviesIntent').require("ListKeyword").require('AllKeyword').
                     require('FilmKeyword').
                     build())
-    def handle_show_all_movies_intent(self):
+    def handle_show_all_movies_intent(self, message):
         self.show_root()
         method = "GUI.ActivateWindow"
         self.kodi_payload = {
@@ -641,8 +656,52 @@ class KodiSkill(MycroftSkill):
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
             LOG.info(kodi_response.text)
+            sort_kw = message.data.get("AllKeyword")
+            self.speak_dialog('sorted.by', data={"result": sort_kw}, expect_response=False)
         except Exception as e:
             LOG.error(e)
+
+    @intent_handler(IntentBuilder('CleanLibraryIntent').require("CleanKeyword").require('KodiKeyword').
+                    require('LibraryKeyword').
+                    build())
+    def handle_clean_library_intent(self, message):
+        method = "VideoLibrary.Clean"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": method,
+            "params": {
+                "showdialogs": True
+            }
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
+            update_kw = message.data.get("CleanKeyword")
+            self.speak_dialog('update.library', data={"result": update_kw}, expect_response=False)
+        except Exception as e:
+            LOG.errror(e)
+
+    @intent_handler(IntentBuilder('ScanLibraryIntent').require("ScanKeyword").require('KodiKeyword').
+                    require('LibraryKeyword').
+                    build())
+    def handle_scan_library_intent(self, message):
+        method = "VideoLibrary.Scan"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": method,
+            "params": {
+                "showdialogs": True
+            }
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
+            update_kw = message.data.get("ScanKeyword")
+            self.speak_dialog('update.library', data={"result": update_kw}, expect_response=False)
+        except Exception as e:
+            LOG.errror(e)
 
     def stop(self):
         pass
