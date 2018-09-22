@@ -124,7 +124,7 @@ class KodiSkill(MycroftSkill):
                 self.playing_status = False
             else:
                 self.playing_status = True
-            LOG.info("Is Kodi Playing?...", self.playing_status)
+            LOG.info("Is Kodi Playing?...", str(self.playing_status))
         except Exception as e:
             LOG.error(e)
 
