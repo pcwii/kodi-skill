@@ -71,9 +71,9 @@ Tested on platform_picroft (others untested)
 
 ## Todo
 - Convert all kodipydent functions to json requests (WIP)
-- Enable subtitle control (WIP)
-- Enable library scanning / cleaning (WIP)
+- Enable subtitle control (Complete)
+- Enable library scanning / cleaning (Complete)
 - Enable Cinemavision Support (Complete)
 - Enable kodi Volume Control (WIP)
-- Enable movie skip fwd/rev (WIP)
+- Enable movie skip fwd/rev (Complete)
 - Enable random movie selection (WIP)
