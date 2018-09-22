@@ -540,7 +540,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    @intent_handler(IntentBuilder('ShowMoviesGenresIntent').require("ListKeyword").require('FilmKeyword').
+    @intent_handler(IntentBuilder('ShowMoviesActorsIntent').require("ListKeyword").require('FilmKeyword').
                     require('ActorKeyword').
                     build())
     def handle_show_movies_actors_intent(self, message):
