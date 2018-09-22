@@ -99,6 +99,7 @@ class KodiSkill(MycroftSkill):
                     kodi_port = self.settings["kodi_port"]
                     kodi_user = self.settings["kodi_user"]
                     kodi_pass = self.settings["kodi_pass"]
+                    # TODO - remove kodipydent usage
                     self.kodi_instance = Kodi(hostname=kodi_ip,
                                               port=kodi_port,
                                               username=kodi_user,
@@ -148,13 +149,95 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
+    def clear_playlist(self):
+        method = "Playlist.Clear"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "id": 1,
+            "params": {
+                "playlistid": 1
+            }
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
+        except Exception as e:
+            LOG.error(e)
+
+    def add_playlist(self, movieid):
+        method = "Playlist.Add"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": method,
+            "params": {
+                "playlistid": 1,
+                "item": {
+                    "movieid": movieid
+                }
+            }
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
+        except Exception as e:
+            LOG.error(e)
+
+    def stop_movie(self):
+        method = "Player.Stop"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": {
+                "playerid": 1
+            },
+            "id": 1
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
+        except Exception as e:
+            LOG.error(e)
+
+    def pause_movie(self):
+        method = "Player.PlayPause"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": {
+                "playerid": 1,
+                "play": False},
+            "id": 1
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
+        except Exception as e:
+            LOG.error(e)
+
+    def resume_movie(self):
+        method = "Player.PlayPause"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": {
+                "playerid": 1,
+                "play": True},
+            "id": 1
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
+        except Exception as e:
+            LOG.error(e)
+
     def movie_regex(self, message):
         # film_regex = r"(movie|film) (?P<Film>.*)"
         film_regex = r"((movie|film) (?P<Film1>.*))| ((movie|film) (?P<Film2>.*)(with|using) (cinemavision))"
         utt_str = message
         film_matches = re.finditer(film_regex, utt_str, re.MULTILINE | re.DOTALL)
         for film_match_num, film_match in enumerate(film_matches):
-            # group_num = 2
             group_id = "Film1"
             my_movie = "{group}".format(group=film_match.group(group_id))
             self.cv_use = False
@@ -182,6 +265,7 @@ class KodiSkill(MycroftSkill):
         voice_payload = "Listening"
         if self.notifier_bool:
             try:
+                # TODO - remove kodipydent usage
                 self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
             except Exception as e:
                 LOG.error(e)
@@ -192,6 +276,7 @@ class KodiSkill(MycroftSkill):
         voice_payload = utterance
         if self.notifier_bool:
             try:
+                # TODO - remove kodipydent usage
                 self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
             except Exception as e:
                 LOG.error(e)
@@ -201,6 +286,7 @@ class KodiSkill(MycroftSkill):
         voice_payload = message.data.get('utterance')
         if self.notifier_bool:
             try:
+                # TODO - remove kodipydent usage
                 self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
             except Exception as e:
                 LOG.error(e)
@@ -214,6 +300,7 @@ class KodiSkill(MycroftSkill):
         movie_name = self.movie_regex(message.data.get('utterance'))
         try:
             LOG.info("movie: " + movie_name)
+            # TODO - remove kodipydent usage
             self.play_film_by_search(self.kodi_instance, movie_name)
         except Exception as e:
             LOG.error(e)
@@ -221,21 +308,24 @@ class KodiSkill(MycroftSkill):
 
     def handle_stop_film_intent(self, message):
         try:
-            self.kodi_instance.Player.Stop(playerid=1)
+            #self.kodi_instance.Player.Stop(playerid=1)
+            self.stop_movie()
         except Exception as e:
             LOG.error(e)
             self.on_websettings_changed()
 
     def handle_pause_film_intent(self, message):
         try:
-            self.kodi_instance.Player.PlayPause(playerid=1)
+            # self.kodi_instance.Player.PlayPause(playerid=1)
+            self.pause_movie()
         except Exception as e:
             LOG.error(e)
             self.on_websettings_changed()
 
     def handle_resume_film_intent(self, message):
         try:
-            self.kodi_instance.Player.PlayPause(playerid=1)
+            # self.kodi_instance.Player.PlayPause(playerid=1)
+            self.resume_movie()
         except Exception as e:
             LOG.error(e)
             self.on_websettings_changed()
@@ -257,18 +347,25 @@ class KodiSkill(MycroftSkill):
             for each_count in range(0, int(repeat_count)):
                 try:
                     if direction == "up":
+                        # TODO - remove kodipydent usage
                         self.kodi_instance.Input.Up()
                     elif direction == "down":
+                        # TODO - remove kodipydent usage
                         self.kodi_instance.Input.Down()
                     elif direction == "left":
+                        # TODO - remove kodipydent usage
                         self.kodi_instance.Input.Left()
                     elif direction == "right":
+                        # TODO - remove kodipydent usage
                         self.kodi_instance.Input.Right()
                     elif direction == "select":
+                        # TODO - remove kodipydent usage
                         self.kodi_instance.Input.Select()
                     elif direction == "enter":
+                        # TODO - remove kodipydent usage
                         self.kodi_instance.Input.Select()
                     elif direction == "back":
+                        # TODO - remove kodipydent usage
                         self.kodi_instance.Input.Back()
                 except Exception as e:
                     LOG.error(e)
@@ -280,10 +377,16 @@ class KodiSkill(MycroftSkill):
         self.set_context('CursorKeyword', 'cursor')
 
     def list_addons(self):
-        self.list_payload = '{"jsonrpc": "2.0", "method": "Addons.GetAddons",' \
-                       ' "params": {"type": "xbmc.addon.executable"}, "id": "1"}'
+        self.list_payload = {
+            "jsonrpc": "2.0",
+            "method": "Addons.GetAddons",
+            "params": {
+                "type": "xbmc.addon.executable"
+            },
+            "id": "1"
+        }
         try:
-            self.list_response = requests.post(self.kodi_path, data=self.list_payload, headers=self.json_header)
+            self.list_response = requests.post(self.kodi_path, data=json.dumps(self.list_payload), headers=self.json_header)
             LOG.info(self.list_response.text)
             return self.list_response.text
         except Exception as e:
@@ -307,12 +410,31 @@ class KodiSkill(MycroftSkill):
     @removes_context('ParseList')
     @removes_context('Navigate')
     def play_film(self, kodi_id, movieid):  # play the movie based on movie ID
-        kodi_id.Playlist.Clear(playlistid=1)
-        kodi_id.Playlist.Add(playlistid=1, item={'movieid': movieid})
-        self.kodi_payload = '{"jsonrpc": "2.0", "method": "player.open", "params": {"item":{"playlistid":1}}, "id": 1}'
-        self.cv_payload = '{"jsonrpc": "2.0", "method": "Addons.ExecuteAddon", ' \
-                          '"params": { "addonid": "script.cinemavision", ' \
-                          '"params": ["experience", "nodialog"]},  "id": 1}'
+        # kodi_id.Playlist.Clear(playlistid=1)
+        self.clear_playlist()
+        # kodi_id.Playlist.Add(playlistid=1, item={'movieid': movieid})
+        self.add_playlist(movieid)
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": "player.open",
+            "params": {
+                "item": {
+                    "playlistid": 1
+                }
+            },
+            "id": 1
+        }
+        self.cv_payload = {
+            "jsonrpc": "2.0",
+            "method": "Addons.ExecuteAddon",
+            "params": {
+                "addonid": "script.cinemavision",
+                "params": [
+                    "experience", "nodialog"
+                ]
+            },
+            "id": 1
+        }
         all_addons = self.list_addons()
         if "script.cinemavision" in all_addons:
             cv_answer = ""
@@ -321,19 +443,22 @@ class KodiSkill(MycroftSkill):
             if any([self.cv_use, "yes" in cv_answer, "ok" in cv_answer, "sure" in cv_answer, "why not" in cv_answer,
                    "sounds good" in cv_answer, "alright" in cv_answer]):
                 try:
-                    self.cv_response = requests.post(self.kodi_path, data=self.cv_payload, headers=self.json_header)
+                    self.cv_response = requests.post(self.kodi_path, data=json.dumps(self.cv_payload),
+                                                     headers=self.json_header)
                     LOG.info(self.cv_response.text)
                 except Exception as e:
                     LOG.error(e)
             else:
                 try:
-                    self.json_response = requests.post(self.kodi_path, data=self.kodi_payload, headers=self.json_header)
+                    self.json_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload),
+                                                       headers=self.json_header)
                     LOG.info(self.json_response.text)
                 except Exception as e:
                     LOG.error(e)
         else:
             try:
-                self.json_response = requests.post(self.kodi_path, data=self.kodi_payload, headers=self.json_header)
+                self.json_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload),
+                                                   headers=self.json_header)
                 LOG.info(self.json_response.text)
             except Exception as e:
                 LOG.error(e)
@@ -349,6 +474,7 @@ class KodiSkill(MycroftSkill):
             msg_payload = "I found, " + str(len(results)) + ", results, would you like me to list them?"
             if self.notifier_bool:
                 try:
+                    # TODO - remove kodipydent usage
                     self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
                 except Exception as e:
                     LOG.error(e)
@@ -358,6 +484,7 @@ class KodiSkill(MycroftSkill):
             msg_payload = "I found no results for the search: {}.".format(film_search)
             if self.notifier_bool:
                 try:
+                    # TODO - remove kodipydent usage
                     self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
                 except Exception as e:
                     LOG.error(e)
@@ -379,6 +506,7 @@ class KodiSkill(MycroftSkill):
         msg_payload = "Attempting to play, " + str(self.movie_list[self.movie_index]['label'])
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
         try:
+            # TODO - remove kodipydent usage
             self.play_film(self.kodi_instance, self.movie_list[self.movie_index]['movieid'])
         except Exception as e:
             LOG.error(e)
@@ -412,11 +540,15 @@ class KodiSkill(MycroftSkill):
                     optionally('KodiKeyword').optionally('FilmKeyword').
                     build())
     def handle_show_movie_info_intent(self, message):
-        self.kodi_payload = '{"jsonrpc":"2.0","method":"Input.Info", "params": {}}, "id": 1}'
+        method = "Input.Info"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "id": 1
+        }
         try:
-            self.json_response = requests.post(self.kodi_path, data=self.kodi_payload,
-                                               headers=self.json_header)  # start directly with json request
-            LOG.info(self.json_response.text)
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
         except Exception as e:
             LOG.error(e)
 
@@ -439,7 +571,7 @@ class KodiSkill(MycroftSkill):
             },
             "id": 1
         }
-        if self.is_kodi_playing(self):
+        if self.is_kodi_playing():
             try:
                 kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
                 LOG.info(kodi_response.text)
@@ -705,6 +837,8 @@ class KodiSkill(MycroftSkill):
             self.speak_dialog('update.library', data={"result": update_kw}, expect_response=False)
         except Exception as e:
             LOG.errror(e)
+
+
 
     def stop(self):
         pass
