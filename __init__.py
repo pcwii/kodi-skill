@@ -121,13 +121,14 @@ class KodiSkill(MycroftSkill):
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
             parse_response = json.loads(kodi_response.text)["result"]
+            LOG.info(kodi_response.text)
             if not parse_response:
                 self.playing_status = False
             else:
                 self.playing_status = True
-            LOG.info("Is Kodi Playing?...", str(self.playing_status))
         except Exception as e:
             LOG.error(e)
+        LOG.info("Is Kodi Playing?...", str(self.playing_status))
         return self.playing_status
 
     def show_root(self):
@@ -232,6 +233,36 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
+    def find_films_matching(self, kodi_id, search):  # called from, play_film_by_search
+        """
+        Find all Movies Matching the search
+        """
+        my_movies = kodi_id.VideoLibrary.GetMovies()['result']['movies']
+        results = []
+        for m in my_movies:
+            index_movie = re.sub('\W', ' ', m['label'].lower())
+            index_movie = re.sub(' +', ' ', index_movie)
+            if search in index_movie:
+                results.append(m)
+        return results
+
+    def list_addons(self):
+        self.list_payload = {
+            "jsonrpc": "2.0",
+            "method": "Addons.GetAddons",
+            "params": {
+                "type": "xbmc.addon.executable"
+            },
+            "id": "1"
+        }
+        try:
+            self.list_response = requests.post(self.kodi_path, data=json.dumps(self.list_payload), headers=self.json_header)
+            LOG.info(self.list_response.text)
+            return self.list_response.text
+        except Exception as e:
+            print(e)
+            return "NONE"
+
     def movie_regex(self, message):
         # film_regex = r"(movie|film) (?P<Film>.*)"
         film_regex = r"((movie|film) (?P<Film1>.*))| ((movie|film) (?P<Film2>.*)(with|using) (cinemavision))"
@@ -308,7 +339,6 @@ class KodiSkill(MycroftSkill):
 
     def handle_stop_film_intent(self, message):
         try:
-            #self.kodi_instance.Player.Stop(playerid=1)
             self.stop_movie()
         except Exception as e:
             LOG.error(e)
@@ -316,7 +346,6 @@ class KodiSkill(MycroftSkill):
 
     def handle_pause_film_intent(self, message):
         try:
-            # self.kodi_instance.Player.PlayPause(playerid=1)
             self.pause_movie()
         except Exception as e:
             LOG.error(e)
@@ -324,7 +353,6 @@ class KodiSkill(MycroftSkill):
 
     def handle_resume_film_intent(self, message):
         try:
-            # self.kodi_instance.Player.PlayPause(playerid=1)
             self.resume_movie()
         except Exception as e:
             LOG.error(e)
@@ -376,43 +404,10 @@ class KodiSkill(MycroftSkill):
         self.set_context('MoveKeyword', 'move')
         self.set_context('CursorKeyword', 'cursor')
 
-    def list_addons(self):
-        self.list_payload = {
-            "jsonrpc": "2.0",
-            "method": "Addons.GetAddons",
-            "params": {
-                "type": "xbmc.addon.executable"
-            },
-            "id": "1"
-        }
-        try:
-            self.list_response = requests.post(self.kodi_path, data=json.dumps(self.list_payload), headers=self.json_header)
-            LOG.info(self.list_response.text)
-            return self.list_response.text
-        except Exception as e:
-            print(e)
-            return "NONE"
-
-    # Kodi specific functions for searching and playing movies
-    def find_films_matching(self, kodi_id, search):  # called from, play_film_by_search
-        """
-        Find all Movies Matching the search
-        """
-        my_movies = kodi_id.VideoLibrary.GetMovies()['result']['movies']
-        results = []
-        for m in my_movies:
-            index_movie = re.sub('\W', ' ', m['label'].lower())
-            index_movie = re.sub(' +', ' ', index_movie)
-            if search in index_movie:
-                results.append(m)
-        return results
-
     @removes_context('ParseList')
     @removes_context('Navigate')
     def play_film(self, kodi_id, movieid):  # play the movie based on movie ID
-        # kodi_id.Playlist.Clear(playlistid=1)
         self.clear_playlist()
-        # kodi_id.Playlist.Add(playlistid=1, item={'movieid': movieid})
         self.add_playlist(movieid)
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -573,7 +568,8 @@ class KodiSkill(MycroftSkill):
         }
         if self.is_kodi_playing():
             try:
-                kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+                kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload),
+                                              headers=self.json_header)
                 LOG.info(kodi_response.text)
             except Exception as e:
                 LOG.error(e)
@@ -596,7 +592,8 @@ class KodiSkill(MycroftSkill):
         }
         if self.is_kodi_playing():
             try:
-                kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+                kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload),
+                                              headers=self.json_header)
                 LOG.info(kodi_response)
             except Exception as e:
                 LOG.error(e)
@@ -837,8 +834,6 @@ class KodiSkill(MycroftSkill):
             self.speak_dialog('update.library', data={"result": update_kw}, expect_response=False)
         except Exception as e:
             LOG.errror(e)
-
-
 
     def stop(self):
         pass
