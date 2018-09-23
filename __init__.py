@@ -314,8 +314,6 @@ class KodiSkill(MycroftSkill):
         voice_payload = "Listening"
         if self.notifier_bool:
             try:
-                # TODO - remove kodipydent usage
-                # self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
                 self.post_kodi_notification(voice_payload)
             except Exception as e:
                 LOG.error(e)
@@ -326,8 +324,6 @@ class KodiSkill(MycroftSkill):
         voice_payload = utterance
         if self.notifier_bool:
             try:
-                # TODO - remove kodipydent usage
-                # self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
                 self.post_kodi_notification(voice_payload)
             except Exception as e:
                 LOG.error(e)
@@ -337,8 +333,6 @@ class KodiSkill(MycroftSkill):
         voice_payload = message.data.get('utterance')
         if self.notifier_bool:
             try:
-                # TODO - remove kodipydent usage
-                # self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
                 self.post_kodi_notification(voice_payload)
             except Exception as e:
                 LOG.error(e)
@@ -479,8 +473,6 @@ class KodiSkill(MycroftSkill):
             msg_payload = "I found, " + str(len(results)) + ", results, would you like me to list them?"
             if self.notifier_bool:
                 try:
-                    # TODO - remove kodipydent usage
-                    # self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
                     self.post_kodi_notification(msg_payload)
                 except Exception as e:
                     LOG.error(e)
@@ -490,8 +482,6 @@ class KodiSkill(MycroftSkill):
             msg_payload = "I found no results for the search: {}.".format(film_search)
             if self.notifier_bool:
                 try:
-                    # TODO - remove kodipydent usage
-                    # self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
                     self.post_kodi_notification(msg_payload)
                 except Exception as e:
                     LOG.error(e)
