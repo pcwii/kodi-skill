@@ -292,12 +292,30 @@ class KodiSkill(MycroftSkill):
             repeat_value = 1
         return repeat_value
 
+    def post_kodi_notification(self,message):
+        method = "GUI.ShowNotification"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": {
+                "title": "Kelsey.AI",
+                "message": message
+            },
+            "id": 1
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
+        except Exception as e:
+            LOG.error(e)
+
     def handle_listen(self, message):
         voice_payload = "Listening"
         if self.notifier_bool:
             try:
                 # TODO - remove kodipydent usage
-                self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
+                # self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
+                self.post_kodi_notification(voice_payload)
             except Exception as e:
                 LOG.error(e)
                 self.on_websettings_changed()
@@ -308,7 +326,8 @@ class KodiSkill(MycroftSkill):
         if self.notifier_bool:
             try:
                 # TODO - remove kodipydent usage
-                self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
+                # self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
+                self.post_kodi_notification(voice_payload)
             except Exception as e:
                 LOG.error(e)
                 self.on_websettings_changed()
@@ -318,7 +337,8 @@ class KodiSkill(MycroftSkill):
         if self.notifier_bool:
             try:
                 # TODO - remove kodipydent usage
-                self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
+                # self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=voice_payload, displaytime=4000)
+                self.post_kodi_notification(voice_payload)
             except Exception as e:
                 LOG.error(e)
                 self.on_websettings_changed()
@@ -366,45 +386,23 @@ class KodiSkill(MycroftSkill):
         self.notifier_bool = False
         self.speak_dialog("notification", data={"result": "Off"})
 
+    @adds_context('Navigate')
     def handle_move_kodi_intent(self, message):
-        direction = message.data.get("DirectionKeyword")
+        direction_kw = message.data.get("DirectionKeyword")
         repeat_count = self.repeat_regex(message.data.get('utterance'))
         LOG.info('utterance: ' + str(message.data.get('utterance')))
         LOG.info('repeat_count: ' + str(repeat_count))
-        if direction:
-            method = "Input." + direction.capitalize()
+        if direction_kw:
+            method = "Input." + direction_kw.capitalize()
             for each_count in range(0, int(repeat_count)):
-                # try:
-                    # if direction == "up":
-                        # TODO - remove kodipydent usage
-                        # self.kodi_instance.Input.Up()
-                    # elif direction == "down":
-                        # TODO - remove kodipydent usage
-                        # self.kodi_instance.Input.Down()
-                    # elif direction == "left":
-                        # TODO - remove kodipydent usage
-                        # self.kodi_instance.Input.Left()
-                    # elif direction == "right":
-                        # TODO - remove kodipydent usage
-                        # self.kodi_instance.Input.Right()
-                    # elif direction == "select":
-                        # TODO - remove kodipydent usage
-                        # self.kodi_instance.Input.Select()
-                    # elif direction == "enter":
-                        # TODO - remove kodipydent usage
-                        # self.kodi_instance.Input.Select()
-                    # elif direction == "back":
-                        # TODO - remove kodipydent usage
-                        # self.kodi_instance.Input.Back()
-                # except Exception as e:
-                    # LOG.error(e)
                 self.kodi_payload = {
                     "jsonrpc": "2.0",
                     "method": method,
                     "id": 1
                 }
                 try:
-                    kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+                    kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload),
+                                                  headers=self.json_header)
                     LOG.info(kodi_response.text)
                 except Exception as e:
                     LOG.error(e)
@@ -481,7 +479,8 @@ class KodiSkill(MycroftSkill):
             if self.notifier_bool:
                 try:
                     # TODO - remove kodipydent usage
-                    self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
+                    # self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
+                    self.post_kodi_notification(msg_payload)
                 except Exception as e:
                     LOG.error(e)
                     self.on_websettings_changed()
@@ -491,7 +490,8 @@ class KodiSkill(MycroftSkill):
             if self.notifier_bool:
                 try:
                     # TODO - remove kodipydent usage
-                    self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
+                    # self.kodi_instance.GUI.ShowNotification(title="Mycroft.AI", message=msg_payload, displaytime=2500)
+                    self.post_kodi_notification(msg_payload)
                 except Exception as e:
                     LOG.error(e)
                     self.on_websettings_changed()
@@ -823,7 +823,7 @@ class KodiSkill(MycroftSkill):
             update_kw = message.data.get("CleanKeyword")
             self.speak_dialog('update.library', data={"result": update_kw}, expect_response=False)
         except Exception as e:
-            LOG.errror(e)
+            LOG.error(e)
 
     @intent_handler(IntentBuilder('ScanLibraryIntent').require("ScanKeyword").require('KodiKeyword').
                     require('LibraryKeyword').
@@ -844,7 +844,7 @@ class KodiSkill(MycroftSkill):
             update_kw = message.data.get("ScanKeyword")
             self.speak_dialog('update.library', data={"result": update_kw}, expect_response=False)
         except Exception as e:
-            LOG.errror(e)
+            LOG.error(e)
 
     def stop(self):
         pass
