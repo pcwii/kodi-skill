@@ -372,34 +372,45 @@ class KodiSkill(MycroftSkill):
         LOG.info('utterance: ' + str(message.data.get('utterance')))
         LOG.info('repeat_count: ' + str(repeat_count))
         if direction:
+            method = "Input." + direction.capitalize()
             for each_count in range(0, int(repeat_count)):
+                # try:
+                    # if direction == "up":
+                        # TODO - remove kodipydent usage
+                        # self.kodi_instance.Input.Up()
+                    # elif direction == "down":
+                        # TODO - remove kodipydent usage
+                        # self.kodi_instance.Input.Down()
+                    # elif direction == "left":
+                        # TODO - remove kodipydent usage
+                        # self.kodi_instance.Input.Left()
+                    # elif direction == "right":
+                        # TODO - remove kodipydent usage
+                        # self.kodi_instance.Input.Right()
+                    # elif direction == "select":
+                        # TODO - remove kodipydent usage
+                        # self.kodi_instance.Input.Select()
+                    # elif direction == "enter":
+                        # TODO - remove kodipydent usage
+                        # self.kodi_instance.Input.Select()
+                    # elif direction == "back":
+                        # TODO - remove kodipydent usage
+                        # self.kodi_instance.Input.Back()
+                # except Exception as e:
+                    # LOG.error(e)
+                self.kodi_payload = {
+                    "jsonrpc": "2.0",
+                    "method": method,
+                    "id": 1
+                }
                 try:
-                    if direction == "up":
-                        # TODO - remove kodipydent usage
-                        self.kodi_instance.Input.Up()
-                    elif direction == "down":
-                        # TODO - remove kodipydent usage
-                        self.kodi_instance.Input.Down()
-                    elif direction == "left":
-                        # TODO - remove kodipydent usage
-                        self.kodi_instance.Input.Left()
-                    elif direction == "right":
-                        # TODO - remove kodipydent usage
-                        self.kodi_instance.Input.Right()
-                    elif direction == "select":
-                        # TODO - remove kodipydent usage
-                        self.kodi_instance.Input.Select()
-                    elif direction == "enter":
-                        # TODO - remove kodipydent usage
-                        self.kodi_instance.Input.Select()
-                    elif direction == "back":
-                        # TODO - remove kodipydent usage
-                        self.kodi_instance.Input.Back()
+                    kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+                    LOG.info(kodi_response.text)
                 except Exception as e:
                     LOG.error(e)
                     self.on_websettings_changed()
                 self.speak_dialog("direction", data={"result": direction}, 
-                                  expect_response=(each_count==repeat_count-1))
+                                  expect_response=(each_count == repeat_count-1))
                 time.sleep(1)
         self.set_context('MoveKeyword', 'move')
         self.set_context('CursorKeyword', 'cursor')
