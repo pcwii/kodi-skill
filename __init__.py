@@ -299,7 +299,8 @@ class KodiSkill(MycroftSkill):
             "method": method,
             "params": {
                 "title": "Kelsey.AI",
-                "message": str(message)
+                "message": str(message),
+                "displaytime": 5000,
             },
             "id": 1
         }
