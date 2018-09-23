@@ -292,14 +292,14 @@ class KodiSkill(MycroftSkill):
             repeat_value = 1
         return repeat_value
 
-    def post_kodi_notification(self,message):
+    def post_kodi_notification(self, message):
         method = "GUI.ShowNotification"
         self.kodi_payload = {
             "jsonrpc": "2.0",
             "method": method,
             "params": {
                 "title": "Kelsey.AI",
-                "message": message
+                "message": str(message)
             },
             "id": 1
         }
