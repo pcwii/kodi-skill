@@ -385,10 +385,10 @@ class KodiSkill(MycroftSkill):
         yt_links = []
         if video_links:
             yt_links.append(video_links[0])
-            LOG.info("Found Single Links: " + video_links)
+            LOG.info("Found Single Links: " + str(video_links))
         if playlist_links:
             yt_links.append(playlist_links[0])
-            LOG.info("Found Playlist Links: " + playlist_links)
+            LOG.info("Found Playlist Links: " + str(playlist_links))
         return yt_links
 
     def post_kodi_notification(self, message):
