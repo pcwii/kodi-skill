@@ -7,6 +7,10 @@ from mycroft.util.log import LOG
 from mycroft.skills.context import adds_context, removes_context
 from mycroft.util.parse import extract_number
 
+import urllib.error
+import urllib.parse
+import urllib.request
+
 from kodipydent import Kodi
 import requests
 import re
@@ -246,7 +250,28 @@ class KodiSkill(MycroftSkill):
                 results.append(m)
         return results
 
-    def list_addons(self):
+    def check_youtube_present(self):
+        method = "Addons.GetAddons"
+        addon_video = "xbmc.addon.video"
+        kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "id": "1",
+            "params": {
+                "type": addon_video
+            }
+        }
+        try:
+            kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+        except Exception as e:
+            print(e)
+            return False
+        if "plugin.video.youtube" in kodi_response.text:
+            return True
+        else:
+            return False
+
+    def check_cinemavision_present(self):
         self.list_payload = {
             "jsonrpc": "2.0",
             "method": "Addons.GetAddons",
@@ -258,10 +283,13 @@ class KodiSkill(MycroftSkill):
         try:
             self.list_response = requests.post(self.kodi_path, data=json.dumps(self.list_payload), headers=self.json_header)
             LOG.info(self.list_response.text)
-            return self.list_response.text
         except Exception as e:
             print(e)
-            return "NONE"
+            return False
+        if "script.cinemavision" in self.list_response.text:
+            return True
+        else:
+            return False
 
     def movie_regex(self, message):
         # film_regex = r"(movie|film) (?P<Film>.*)"
@@ -291,6 +319,76 @@ class KodiSkill(MycroftSkill):
         else:
             repeat_value = 1
         return repeat_value
+
+    def play_youtube_video(self, video_id):
+        method = "Player.Open"
+        # Playlist links are longer than individual links
+        # individual links are 11 characters long
+        if len(video_id) > 11:
+            yt_link = "plugin://plugin.video.youtube/play/?playlist_id=" + video_id + "&play=1&order=shuffle"
+        else:
+            yt_link = "plugin://plugin.video.youtube/play/?video_id=" + video_id
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "params": {
+                "item": {
+                    "file": yt_link
+                }
+            },
+            "method": method,
+            "id": "libPlayer"
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.inof(kodi_response.text)
+        except Exception as e:
+            LOG.error(e)
+
+    def youtube_query_regex(self, req_string):
+        return_list = []
+        pri_regex = re.search(r'play (?P<item1>.*) from youtube', req_string)
+        sec_regex = re.search(r'play some (?P<item1>.*) from youtube|play the (?P<item2>.*)from youtube', req_string)
+        if pri_regex:
+            if sec_regex:  # more items requested
+                temp_results = sec_regex
+            else:  # single item requested
+                temp_results = pri_regex
+        if temp_results:
+            item_result = temp_results.group(temp_results.lastgroup)
+            return_list = item_result
+            LOG.info(return_list)
+            return return_list
+
+    def get_youtube_links(self, search_list):
+        search_text = str(search_list[0])
+        query = urllib.parse.quote(search_text)
+        url = "https://www.youtube.com/results?search_query=" + query
+        response = urllib.request.urlopen(url)
+        html = response.read()
+        # Get all video links from page
+        temp_links = []
+        all_video_links = re.findall(r'href=\"\/watch\?v=(.{11})', html.decode())
+        for each_video in all_video_links:
+            if each_video not in temp_links:
+                temp_links.append(each_video)
+        video_links = temp_links
+        # Get all playlist links from page
+        temp_links = []
+        all_playlist_results = re.findall(r'href=\"\/playlist\?list\=(.{34})', html.decode())
+        sep = '"'
+        for each_playlist in all_playlist_results:
+            if each_playlist not in temp_links:
+                cleaned_pl = each_playlist.split(sep, 1)[0]  # clean up dirty playlists
+                temp_links.append(cleaned_pl)
+        playlist_links = temp_links
+        yt_links = []
+        if video_links:
+            yt_links.append(video_links[0])
+            LOG.info("Found Single Links: " + video_links)
+        if playlist_links:
+            yt_links.append(playlist_links[0])
+            LOG.info("Found Playlist Links: " + playlist_links)
+        return yt_links
 
     def post_kodi_notification(self, message):
         method = "GUI.ShowNotification"
@@ -434,8 +532,9 @@ class KodiSkill(MycroftSkill):
             },
             "id": 1
         }
-        all_addons = self.list_addons()
-        if "script.cinemavision" in all_addons:
+        # all_addons = self.list_addons()
+        # if "script.cinemavision" in all_addons:
+        if self.check_cinemavision_present():
             cv_answer = ""
             if not self.cv_use:
                 cv_answer = self.get_response('cinema.vision')
@@ -836,6 +935,24 @@ class KodiSkill(MycroftSkill):
             self.speak_dialog('update.library', data={"result": update_kw}, expect_response=False)
         except Exception as e:
             LOG.error(e)
+
+    @intent_handler(IntentBuilder('PlayYoutubeIntent').require("PlayKeyword").require('FromYoutubeKeyword').
+                    build())
+    def handle_play_youtube_intent(self, message):
+        youtube_search = self.youtube_query_regex(message.data.get('utterance'))
+        youtube_id = self.get_youtube_links(youtube_search)
+        if self.check_youtube_present():
+            self.speak_dialog('play.youtube', data={"result": youtube_search}, expect_response=False)
+            if len(youtube_id) >1:
+                pl_answer = self.get_response('youtube.playlist.present')
+                if 'yes' in pl_answer:
+                    self.play_youtube_video(youtube_id[1])
+                else:
+                    self.play_youtube_video(youtube_id[0])
+            else:
+                self.play_youtube_video(youtube_id[0])
+        else:
+            self.speak_dialog('youtube.addon.error', expect_response=False)
 
     def stop(self):
         pass

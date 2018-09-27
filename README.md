@@ -43,11 +43,14 @@ The Kodi Skill uses conversational dialog to help you to control your KODI insta
 * Response: "Iron Man 2"
 * Request: "play" / "select"
 * Response: "o-k, attempting to play, Iron Man 2"
-## Cinemavision
+## Cinemavision Addon
 If mycroft.ai locates the addon CinemaVision it will prompt the user if this addon should be used during the 
 playback of the movie that was selected.
 * Response: "Would you like to play the movie using cinemavision?"
 * Request: "yes / no"
+## Youtube Addon
+Request: "play some Elton John from youtube
+Request: "Play the official captain marvel trailer from youtube"
 ## Credits 
 PCWii
 
