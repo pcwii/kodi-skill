@@ -46,7 +46,8 @@ class KodiSkill(MycroftSkill):
         self.notifier_bool = False
         self.movie_list = []
         self.movie_index = 0
-        self.cv_use = False
+        self.cv_request = False
+        self.use_cv = False
 
     def initialize(self):
         self.load_data_files(dirname(__file__))
@@ -299,11 +300,11 @@ class KodiSkill(MycroftSkill):
         for film_match_num, film_match in enumerate(film_matches):
             group_id = "Film1"
             my_movie = "{group}".format(group=film_match.group(group_id))
-            self.cv_use = False
+            self.cv_request = False
             if my_movie == "None":
                 group_id = "Film2"
                 my_movie = "{group}".format(group=film_match.group(group_id))
-                self.cv_use = True
+                self.cv_request = True
         my_movie = re.sub('\W', ' ', my_movie)
         my_movie = re.sub(' +', ' ', my_movie)
         return my_movie.strip()
@@ -438,9 +439,9 @@ class KodiSkill(MycroftSkill):
 
     def handle_play_film_intent(self, message):  # executed with original voice command
         if message.data.get("CinemaVisionKeyword"):
-            self.cv_use = True
+            self.cv_request = True
         else:
-            self.cv_use = False
+            self.cv_request = False
         movie_name = self.movie_regex(message.data.get('utterance'))
         try:
             LOG.info("movie: " + movie_name)
@@ -534,25 +535,24 @@ class KodiSkill(MycroftSkill):
         }
         # all_addons = self.list_addons()
         # if "script.cinemavision" in all_addons:
-        if self.check_cinemavision_present():
-            cv_answer = ""
-            if not self.cv_use:
-                cv_answer = self.get_response('cinema.vision')
-            if any([self.cv_use, "yes" in cv_answer, "ok" in cv_answer, "sure" in cv_answer, "why not" in cv_answer,
-                   "sounds good" in cv_answer, "alright" in cv_answer]):
-                try:
-                    self.cv_response = requests.post(self.kodi_path, data=json.dumps(self.cv_payload),
-                                                     headers=self.json_header)
-                    LOG.info(self.cv_response.text)
-                except Exception as e:
-                    LOG.error(e)
-            else:
-                try:
-                    self.json_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload),
-                                                       headers=self.json_header)
-                    LOG.info(self.json_response.text)
-                except Exception as e:
-                    LOG.error(e)
+        self.use_cv = False
+        if self.check_cinemavision_present():  # Cinemavision is installed
+            if not self.cv_request:  # Cinemavision was not commanded in the utterance
+                if self.ask_yesno('cinema.vision') == 'yes':
+                    self.use_cv = True
+                else:  # User does NOT want to use Cinemavision
+                    self.use_cv = False
+            else:  # Cinemavision WAS commanded by the utterance
+                self.use_cv = True
+        else:  # Cinemavision is NOT installed
+            self.use_cv = False
+        if self.use_cv:
+            try:  # run with Cinemavision
+                self.cv_response = requests.post(self.kodi_path, data=json.dumps(self.cv_payload),
+                                                 headers=self.json_header)
+                LOG.info(self.cv_response.text)
+            except Exception as e:
+                LOG.error(e)
         else:
             try:
                 self.json_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload),
@@ -943,9 +943,8 @@ class KodiSkill(MycroftSkill):
         youtube_id = self.get_youtube_links(youtube_search)
         if self.check_youtube_present():
             self.speak_dialog('play.youtube', data={"result": youtube_search}, expect_response=False)
-            if len(youtube_id) >1:
-                pl_answer = self.get_response('youtube.playlist.present')
-                if 'yes' in pl_answer:
+            if len(youtube_id) > 1:
+                if self.ask_yesno('youtube.playlist.present') == 'yes':
                     self.play_youtube_video(youtube_id[1])
                 else:
                     self.play_youtube_video(youtube_id[0])
