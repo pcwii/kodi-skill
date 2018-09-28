@@ -138,7 +138,7 @@ class KodiSkill(MycroftSkill):
 
     def show_root(self):
         method = "GUI.ActivateWindow"
-        kodi_payload = {
+        self.kodi_payload = {
             "jsonrpc": "2.0",
             "method": method,
             "params": {
@@ -150,7 +150,7 @@ class KodiSkill(MycroftSkill):
             "id": "1"
         }
         try:
-            kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
             LOG.info(kodi_response.text)
         except Exception as e:
             LOG.error(e)
@@ -254,7 +254,7 @@ class KodiSkill(MycroftSkill):
     def check_youtube_present(self):
         method = "Addons.GetAddons"
         addon_video = "xbmc.addon.video"
-        kodi_payload = {
+        self.kodi_payload = {
             "jsonrpc": "2.0",
             "method": method,
             "id": "1",
@@ -263,7 +263,7 @@ class KodiSkill(MycroftSkill):
             }
         }
         try:
-            kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
         except Exception as e:
             print(e)
             return False
@@ -501,7 +501,7 @@ class KodiSkill(MycroftSkill):
                 except Exception as e:
                     LOG.error(e)
                     self.on_websettings_changed()
-                self.speak_dialog("direction", data={"result": direction}, 
+                self.speak_dialog("direction", data={"result": direction_kw},
                                   expect_response=(each_count == repeat_count-1))
                 time.sleep(1)
         self.set_context('MoveKeyword', 'move')
