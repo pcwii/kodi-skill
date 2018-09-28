@@ -947,7 +947,7 @@ class KodiSkill(MycroftSkill):
             self.speak_dialog('play.youtube', data={"result": youtube_search}, expect_response=False)
             wait_while_speaking()
             if len(self.youtube_id) > 1:
-                self.set_context('DialogRoting', 'Routing001')
+                self.set_context('DialogRouting', 'Routing001')
                 self.speak_dialog('youtube.playlist.present', expect_response=True)
                 # if self.ask_yesno('youtube.playlist.present') == 'yes':
                 #    self.play_youtube_video(youtube_id[1])
