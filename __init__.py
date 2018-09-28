@@ -6,6 +6,7 @@ from mycroft.util.log import getLogger
 from mycroft.util.log import LOG
 from mycroft.skills.context import adds_context, removes_context
 from mycroft.util.parse import extract_number
+from mycroft.audio import wait_while_speaking
 
 import urllib.error
 import urllib.parse
@@ -34,6 +35,7 @@ class KodiSkill(MycroftSkill):
         self.settings["kodi_user"] = ""
         self.settings["kodi_pass"] = ""
         self.kodi_path = ""
+        self.youtube_id = []
         self.kodi_payload = ""
         self.cv_payload = ""
         self.list_payload = ""
@@ -940,10 +942,11 @@ class KodiSkill(MycroftSkill):
                     build())
     def handle_play_youtube_intent(self, message):
         youtube_search = self.youtube_query_regex(message.data.get('utterance'))
-        youtube_id = self.get_youtube_links(youtube_search)
+        self.youtube_id = self.get_youtube_links(youtube_search)
         if self.check_youtube_present():
             self.speak_dialog('play.youtube', data={"result": youtube_search}, expect_response=False)
-            if len(youtube_id) > 1:
+            wait_while_speaking()
+            if len(self.youtube_id) > 1:
                 self.set_context('DialogRoting', 'Routing001')
                 self.speak_dialog('youtube.playlist.present', expect_response=True)
                 # if self.ask_yesno('youtube.playlist.present') == 'yes':
@@ -951,7 +954,7 @@ class KodiSkill(MycroftSkill):
                 # else:
                 #    self.play_youtube_video(youtube_id[0])
             else:
-                self.play_youtube_video(youtube_id[0])
+                self.play_youtube_video(self.youtube_id[0])
         else:
             self.speak_dialog('youtube.addon.error', expect_response=False)
 
@@ -960,10 +963,11 @@ class KodiSkill(MycroftSkill):
                     require('DecisionKeyword').build())
     def handle_youtube_play_type_decision_intent(self, message):
         decision_kw = message.data.get("DecisionKeyword")
+        LOG.info('user resonded with: ' + decision_kw)
         if decision_kw == 'yes':
-            self.play_youtube_video(youtube_id[1])
+            self.play_youtube_video(self.youtube_id[1])
         else:
-            self.play_youtube_video(youtube_id[0])
+            self.play_youtube_video(self.youtube_id[0])
 
     def stop(self):
         pass
