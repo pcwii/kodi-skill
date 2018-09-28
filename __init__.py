@@ -944,14 +944,26 @@ class KodiSkill(MycroftSkill):
         if self.check_youtube_present():
             self.speak_dialog('play.youtube', data={"result": youtube_search}, expect_response=False)
             if len(youtube_id) > 1:
-                if self.ask_yesno('youtube.playlist.present') == 'yes':
-                    self.play_youtube_video(youtube_id[1])
-                else:
-                    self.play_youtube_video(youtube_id[0])
+                self.set_context('DialogRoting', 'Routing001')
+                self.speak_dialog('youtube.playlist.present', expect_response=True)
+                # if self.ask_yesno('youtube.playlist.present') == 'yes':
+                #    self.play_youtube_video(youtube_id[1])
+                # else:
+                #    self.play_youtube_video(youtube_id[0])
             else:
                 self.play_youtube_video(youtube_id[0])
         else:
             self.speak_dialog('youtube.addon.error', expect_response=False)
+
+    @removes_context('DialogRoting')
+    @intent_handler(IntentBuilder('YoutubePlayTypeDecisionIntent').require("DialogRoutingKeyword").
+                    require('DecisionKeyword').build())
+    def handle_youtube_play_type_decision_intent(self, message):
+        decision_kw = message.data.get("DecisionKeyword")
+        if decision_kw == 'yes':
+            self.play_youtube_video(youtube_id[1])
+        else:
+            self.play_youtube_video(youtube_id[0])
 
     def stop(self):
         pass
