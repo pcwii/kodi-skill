@@ -958,7 +958,7 @@ class KodiSkill(MycroftSkill):
         else:
             self.speak_dialog('youtube.addon.error', expect_response=False)
 
-    @removes_context('DialogRoting')
+    @removes_context('DialogRouting')
     @intent_handler(IntentBuilder('YoutubePlayTypeDecisionIntent').require("DialogRoutingKeyword").
                     require('DecisionKeyword').build())
     def handle_youtube_play_type_decision_intent(self, message):
