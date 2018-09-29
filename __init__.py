@@ -940,6 +940,7 @@ class KodiSkill(MycroftSkill):
 
     @intent_handler(IntentBuilder('PlayYoutubeIntent').require("PlayKeyword").require('FromYoutubeKeyword').
                     build())
+    # @adds_context('DialogRouting')
     def handle_play_youtube_intent(self, message):
         youtube_search = self.youtube_query_regex(message.data.get('utterance'))
         self.youtube_id = self.get_youtube_links(youtube_search)
@@ -947,7 +948,7 @@ class KodiSkill(MycroftSkill):
             self.speak_dialog('play.youtube', data={"result": youtube_search}, expect_response=False)
             wait_while_speaking()
             if len(self.youtube_id) > 1:
-                self.set_context('DialogRouting', 'Routing001')
+                self.set_context('DialogRoutingKeyword', 'routing001')
                 self.speak_dialog('youtube.playlist.present', expect_response=True)
                 # if self.ask_yesno('youtube.playlist.present') == 'yes':
                 #    self.play_youtube_video(youtube_id[1])
@@ -958,12 +959,12 @@ class KodiSkill(MycroftSkill):
         else:
             self.speak_dialog('youtube.addon.error', expect_response=False)
 
-    @removes_context('DialogRouting')
     @intent_handler(IntentBuilder('YoutubePlayTypeDecisionIntent').require("DialogRoutingKeyword").
                     require('DecisionKeyword').build())
+    # @removes_context('DialogRouting')
     def handle_youtube_play_type_decision_intent(self, message):
         decision_kw = message.data.get("DecisionKeyword")
-        LOG.info('user resonded with: ' + decision_kw)
+        LOG.info('user responded with: ' + decision_kw)
         if decision_kw == 'yes':
             self.play_youtube_video(self.youtube_id[1])
         else:
