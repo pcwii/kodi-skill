@@ -324,6 +324,7 @@ class KodiSkill(MycroftSkill):
         return repeat_value
 
     def play_youtube_video(self, video_id):
+        LOG.info('play youtube ID: ' + str(video_id))
         method = "Player.Open"
         # Playlist links are longer than individual links
         # individual links are 11 characters long
@@ -961,8 +962,8 @@ class KodiSkill(MycroftSkill):
 
     @intent_handler(IntentBuilder('YoutubePlayTypeDecisionIntent').require("DialogRoutingKeyword").
                     require('DecisionKeyword').build())
-    # @removes_context('DialogRouting')
     def handle_youtube_play_type_decision_intent(self, message):
+        self.set_context('DialogRoutingKeyword', '')  # Removes Context
         decision_kw = message.data.get("DecisionKeyword")
         LOG.info('user responded with: ' + decision_kw)
         if decision_kw == 'yes':
