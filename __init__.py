@@ -343,7 +343,7 @@ class KodiSkill(MycroftSkill):
         }
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
-            LOG.inof(kodi_response.text)
+            LOG.info(kodi_response.text)
         except Exception as e:
             LOG.error(e)
 
