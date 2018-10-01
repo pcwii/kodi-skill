@@ -537,8 +537,6 @@ class KodiSkill(MycroftSkill):
             },
             "id": 1
         }
-        # all_addons = self.list_addons()
-        # if "script.cinemavision" in all_addons:
         self.use_cv = False
         if self.check_cinemavision_present():  # Cinemavision is installed
             if not self.cv_request:  # Cinemavision was not commanded in the utterance
@@ -942,7 +940,6 @@ class KodiSkill(MycroftSkill):
 
     @intent_handler(IntentBuilder('PlayYoutubeIntent').require("PlayKeyword").require('FromYoutubeKeyword').
                     build())
-    # @adds_context('DialogRouting')
     def handle_play_youtube_intent(self, message):
         self.youtube_search = self.youtube_query_regex(message.data.get('utterance'))
         self.youtube_id = self.get_youtube_links(self.youtube_search)
