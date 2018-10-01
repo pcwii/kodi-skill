@@ -69,14 +69,16 @@ Tested on platform_picroft (others untested)
 - Configure Kodi to “allow remote control via HTTP”, under the Kodi settings:services
 - Configure Kodi to “allow remote control from applications on other systems”, under the Kodi settings:services
 - Under Kodi settings:services note the port number (8080)
-- Configure home.mycroft.ai to set your kodi instanace ip address and port number
-- username and password currently not supported
+- Configure home.mycroft.ai to set your kodi instance ip address and port number
 
 ## Todo
 - Convert all kodipydent functions to json requests (WIP)
-- Enable subtitle control (Complete)
-- Enable library scanning / cleaning (Complete)
-- Enable Cinemavision Support (Complete)
+- ~~Enable username and password support in webgui~~ (Complete)
+- ~~Enable subtitle control~~ (Complete)
+- ~~Enable library scanning / cleaning~~ (Complete)
+- ~~Enable Support for cinemavision~~ (Complete)
+- Correct cinemavision dialog control (WIP)
 - Enable kodi Volume Control (WIP)
-- Enable movie skip fwd/rev (Complete)
+- ~~Enable movie skip fwd/rev~~ (Complete)
 - Enable random movie selection (WIP)
+- Add play "from youtube" option for videos / music (WIP)

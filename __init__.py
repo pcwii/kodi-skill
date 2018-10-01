@@ -398,13 +398,14 @@ class KodiSkill(MycroftSkill):
 
     def post_kodi_notification(self, message):
         method = "GUI.ShowNotification"
+        display_timeout = 5000
         self.kodi_payload = {
             "jsonrpc": "2.0",
             "method": method,
             "params": {
                 "title": "Kelsey.AI",
                 "message": str(message),
-                "displaytime": 5000,
+                "displaytime": display_timeout,
             },
             "id": 1
         }
