@@ -174,6 +174,45 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
+    def play_cinemavision(self):
+        method = "Addons.ExecuteAddon"
+        self.cv_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": {
+                "addonid": "script.cinemavision",
+                "params": [
+                    "experience", "nodialog"
+                ]
+            },
+            "id": 1
+        }
+        try:
+            self.cv_response = requests.post(self.kodi_path, data=json.dumps(self.cv_payload),
+                                             headers=self.json_header)
+            LOG.info(self.cv_response.text)
+        except Exception as e:
+            LOG.error(e)
+
+    def play_normal(self):
+        method = "player.open"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": {
+                "item": {
+                    "playlistid": 1
+                }
+            },
+            "id": 1
+        }
+        try:
+            self.json_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload),
+                                               headers=self.json_header)
+            LOG.info(self.json_response.text)
+        except Exception as e:
+            LOG.error(e)
+
     def add_playlist(self, movieid):
         method = "Playlist.Add"
         self.kodi_payload = {
@@ -518,52 +557,22 @@ class KodiSkill(MycroftSkill):
     def play_film(self, movieid):  # play the movie based on movie ID
         self.clear_playlist()
         self.add_playlist(movieid)
-        self.kodi_payload = {
-            "jsonrpc": "2.0",
-            "method": "player.open",
-            "params": {
-                "item": {
-                    "playlistid": 1
-                }
-            },
-            "id": 1
-        }
-        self.cv_payload = {
-            "jsonrpc": "2.0",
-            "method": "Addons.ExecuteAddon",
-            "params": {
-                "addonid": "script.cinemavision",
-                "params": [
-                    "experience", "nodialog"
-                ]
-            },
-            "id": 1
-        }
-        self.use_cv = False
         if self.check_cinemavision_present():  # Cinemavision is installed
-            if not self.cv_request:  # Cinemavision was not commanded in the utterance
-                if self.ask_yesno('cinema.vision') == 'yes':
-                    self.use_cv = True
-                else:  # User does NOT want to use Cinemavision
-                    self.use_cv = False
-            else:  # Cinemavision WAS commanded by the utterance
-                self.use_cv = True
+            self.set_context('CinemaVisionDecisionKeyword', 'Routing002')
+            self.speak_dialog('cinema.vision', expect_response=True)
         else:  # Cinemavision is NOT installed
-            self.use_cv = False
-        if self.use_cv:
-            try:  # run with Cinemavision
-                self.cv_response = requests.post(self.kodi_path, data=json.dumps(self.cv_payload),
-                                                 headers=self.json_header)
-                LOG.info(self.cv_response.text)
-            except Exception as e:
-                LOG.error(e)
+            self.play_normal()
+
+    @intent_handler(IntentBuilder('CinemavisionRequestIntent').require("CinemaVisionDecisionKeyword")
+                    .require('DecisionKeyword').build())
+    def handle_cinemavision_request_intent(self, message):  # Yes was spoken to navigate the list, reading the first item
+        self.set_context('CinemaVisionDecisionKeyword', '')
+        decision_kw = message.data.get("DecisionKeyword")
+        LOG.info('user responded with: ' + decision_kw)
+        if decision_kw == 'yes':
+            self.play_cinemavision()
         else:
-            try:
-                self.json_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload),
-                                                   headers=self.json_header)
-                LOG.info(self.json_response.text)
-            except Exception as e:
-                LOG.error(e)
+            self.play_normal()
 
     @adds_context('Navigate')
     def play_film_by_search(self, kodi_id, film_search):  # called from, handle_play_film_intent
