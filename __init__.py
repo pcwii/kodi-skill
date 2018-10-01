@@ -245,6 +245,7 @@ class KodiSkill(MycroftSkill):
         """
         Find all Movies Matching the search
         """
+        # Todo remove kodipydent reference (kodi_id)
         my_movies = kodi_id.VideoLibrary.GetMovies()['result']['movies']
         results = []
         for m in my_movies:
@@ -513,7 +514,7 @@ class KodiSkill(MycroftSkill):
 
     @removes_context('ParseList')
     @removes_context('Navigate')
-    def play_film(self, kodi_id, movieid):  # play the movie based on movie ID
+    def play_film(self, movieid):  # play the movie based on movie ID
         self.clear_playlist()
         self.add_playlist(movieid)
         self.kodi_payload = {
@@ -565,11 +566,12 @@ class KodiSkill(MycroftSkill):
 
     @adds_context('Navigate')
     def play_film_by_search(self, kodi_id, film_search):  # called from, handle_play_film_intent
+        # Todo need to remove kodi_id (kodipydent) reference
         results = self.find_films_matching(kodi_id, film_search)
         self.movie_list = results
         self.movie_index = 0
         if len(results) == 1:
-            self.play_film(kodi_id, results[0]['movieid'])
+            self.play_film(results[0]['movieid'])
         elif len(results):
             msg_payload = "I found, " + str(len(results)) + ", results, would you like me to list them?"
             if self.notifier_bool:
@@ -604,8 +606,7 @@ class KodiSkill(MycroftSkill):
         msg_payload = "Attempting to play, " + str(self.movie_list[self.movie_index]['label'])
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
         try:
-            # TODO - remove kodipydent usage
-            self.play_film(self.kodi_instance, self.movie_list[self.movie_index]['movieid'])
+            self.play_film(self.movie_list[self.movie_index]['movieid'])
         except Exception as e:
             LOG.error(e)
             self.on_websettings_changed()
