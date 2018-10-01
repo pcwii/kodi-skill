@@ -36,6 +36,7 @@ class KodiSkill(MycroftSkill):
         self.settings["kodi_pass"] = ""
         self.kodi_path = ""
         self.youtube_id = []
+        self.youtube_search = ""
         self.kodi_payload = ""
         self.cv_payload = ""
         self.list_payload = ""
@@ -943,32 +944,31 @@ class KodiSkill(MycroftSkill):
                     build())
     # @adds_context('DialogRouting')
     def handle_play_youtube_intent(self, message):
-        youtube_search = self.youtube_query_regex(message.data.get('utterance'))
-        self.youtube_id = self.get_youtube_links(youtube_search)
+        self.youtube_search = self.youtube_query_regex(message.data.get('utterance'))
+        self.youtube_id = self.get_youtube_links(self.youtube_search)
         if self.check_youtube_present():
             wait_while_speaking()
             if len(self.youtube_id) > 1:
-                self.set_context('DialogRoutingKeyword', 'routing001')
+                self.set_context('PlaylistDecisionKeyword', 'routing001')
                 self.speak_dialog('youtube.playlist.present', expect_response=True)
-                # if self.ask_yesno('youtube.playlist.present') == 'yes':
-                #    self.play_youtube_video(youtube_id[1])
-                # else:
-                #    self.play_youtube_video(youtube_id[0])
             else:
-                self.speak_dialog('play.youtube', data={"result": youtube_search}, expect_response=False)
+                self.speak_dialog('play.youtube', data={"result": self.youtube_search}, expect_response=False)
                 self.play_youtube_video(self.youtube_id[0])
         else:
             self.speak_dialog('youtube.addon.error', expect_response=False)
 
-    @intent_handler(IntentBuilder('YoutubePlayTypeDecisionIntent').require("DialogRoutingKeyword").
+    @intent_handler(IntentBuilder('YoutubePlayTypeDecisionIntent').require("PlaylistDecisionKeyword").
                     require('DecisionKeyword').build())
     def handle_youtube_play_type_decision_intent(self, message):
-        self.set_context('DialogRoutingKeyword', '')  # Removes Context
+        self.set_context('PlaylistDecisionKeyword', '')  # Removes Context
         decision_kw = message.data.get("DecisionKeyword")
         LOG.info('user responded with: ' + decision_kw)
+        self.speak_dialog('play.youtube', data={"result": self.youtube_search}, expect_response=False)
         if decision_kw == 'yes':
+            LOG.info('Playing youtube id: ' + str(self.youtube_id[1]))
             self.play_youtube_video(self.youtube_id[1])
         else:
+            LOG.info('Playing youtube id: ' + str(self.youtube_id[0]))
             self.play_youtube_video(self.youtube_id[0])
 
     def stop(self):
