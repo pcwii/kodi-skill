@@ -174,6 +174,8 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
+    @removes_context('ParseList')
+    @removes_context('Navigate')
     def play_cinemavision(self):
         method = "Addons.ExecuteAddon"
         self.cv_payload = {
@@ -194,6 +196,8 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
+    @removes_context('ParseList')
+    @removes_context('Navigate')
     def play_normal(self):
         method = "player.open"
         self.kodi_payload = {
@@ -482,6 +486,8 @@ class KodiSkill(MycroftSkill):
                 LOG.error(e)
                 self.on_websettings_changed()
 
+    @removes_context('ParseList')
+    @removes_context('Navigate')
     def handle_play_film_intent(self, message):  # executed with original voice command
         if message.data.get("CinemaVisionKeyword"):
             self.cv_request = True
@@ -565,6 +571,8 @@ class KodiSkill(MycroftSkill):
 
     @intent_handler(IntentBuilder('CinemavisionRequestIntent').require("CinemaVisionDecisionKeyword")
                     .require('DecisionKeyword').build())
+    @removes_context('ParseList')
+    @removes_context('Navigate')
     def handle_cinemavision_request_intent(self, message):  # Yes was spoken to navigate the list, reading the first item
         self.set_context('CinemaVisionDecisionKeyword', '')
         decision_kw = message.data.get("DecisionKeyword")
@@ -951,6 +959,8 @@ class KodiSkill(MycroftSkill):
 
     @intent_handler(IntentBuilder('PlayYoutubeIntent').require("PlayKeyword").require('FromYoutubeKeyword').
                     build())
+    @removes_context('ParseList')
+    @removes_context('Navigate')
     def handle_play_youtube_intent(self, message):
         self.youtube_search = self.youtube_query_regex(message.data.get('utterance'))
         self.youtube_id = self.get_youtube_links(self.youtube_search)
@@ -967,6 +977,8 @@ class KodiSkill(MycroftSkill):
 
     @intent_handler(IntentBuilder('YoutubePlayTypeDecisionIntent').require("PlaylistDecisionKeyword").
                     require('DecisionKeyword').build())
+    @removes_context('ParseList')
+    @removes_context('Navigate')
     def handle_youtube_play_type_decision_intent(self, message):
         self.set_context('PlaylistDecisionKeyword', '')  # Removes Context
         decision_kw = message.data.get("DecisionKeyword")
