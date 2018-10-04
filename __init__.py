@@ -523,7 +523,7 @@ class KodiSkill(MycroftSkill):
         self.notifier_bool = False
         self.speak_dialog("notification", data={"result": "Off"})
 
-    @intent_handler(IntentBuilder().require('MoveKeyword').require('CursorKeyword').
+    @intent_handler(IntentBuilder('MoveCursorIntent').require('MoveKeyword').require('CursorKeyword').
                     require('DirectionKeyword').build())
     def handle_move_cursor_intent(self, message):  # a request was made to move the kodi cursor
         direction_kw = message.data.get("DirectionKeyword")
