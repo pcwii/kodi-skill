@@ -92,11 +92,11 @@ class KodiSkill(MycroftSkill):
             require("KodiKeyword").build()
         self.register_intent(notification_off_intent, self.handle_notification_off_intent)  # eg. turn kodi notifications off
 
-        move_kodi_intent = IntentBuilder("MoveKodiIntent"). \
-            require("MoveKeyword").require("CursorKeyword").\
-            require("DirectionKeyword").\
-            build()
-        self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)  # eg. move the cursor down
+#        move_kodi_intent = IntentBuilder("MoveKodiIntent"). \
+#            require("MoveKeyword").require("CursorKeyword").\
+#            require("DirectionKeyword").\
+#            build()
+#        self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)  # eg. move the cursor down
 
     def on_websettings_changed(self):  # when updating mycroft home page
         if not self._is_setup:
@@ -523,7 +523,9 @@ class KodiSkill(MycroftSkill):
         self.notifier_bool = False
         self.speak_dialog("notification", data={"result": "Off"})
 
-    def handle_move_kodi_intent(self, message):  # a request was made to move the kodi cursor
+    @intent_handler(IntentBuilder().require('MoveKeyword').require('CursorKeyword').
+                    require('DirectionKeyword').build())
+    def handle_move_cursor_intent(self, message):  # a request was made to move the kodi cursor
         direction_kw = message.data.get("DirectionKeyword")
         repeat_count = self.repeat_regex(message.data.get('utterance'))
         LOG.info('utterance: ' + str(message.data.get('utterance')))
@@ -543,14 +545,13 @@ class KodiSkill(MycroftSkill):
                 except Exception as e:
                     LOG.error(e)
                     self.on_websettings_changed()
+#                self.speak_dialog("direction", data={"result": direction_kw},
+#                                  expect_response=(each_count == repeat_count-1))
                 self.speak_dialog("direction", data={"result": direction_kw},
-                                  expect_response=(each_count == repeat_count-1))
+                                  expect_response=True)
                 time.sleep(1)
             self.set_context('MoveKeyword', 'move')  # in future the user does not have to say the move keyword
             self.set_context('CursorKeyword', 'cursor')  # in future the user does not have to say the cursor keyword
-        else:
-            self.remove_context('MoveKeyword')
-            self.remove_context('CursorKeyword')
 
     def play_film(self, movieid):  # play the movie based on movie ID
         self.clear_playlist()
