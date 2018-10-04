@@ -5,6 +5,9 @@ from mycroft.skills.core import MycroftSkill, intent_handler, intent_file_handle
 from mycroft.util.log import getLogger
 from mycroft.util.log import LOG
 from mycroft.skills.context import adds_context, removes_context
+# also use self.remove_context(s, x)
+# also use self.set_context(s,x)
+
 from mycroft.util.parse import extract_number
 from mycroft.audio import wait_while_speaking
 
@@ -65,37 +68,37 @@ class KodiSkill(MycroftSkill):
 
         play_film_intent = IntentBuilder("PlayFilmIntent"). \
             require("PlayKeyword").require("FilmKeyword").optionally("CinemaVisionKeyword").build()
-        self.register_intent(play_film_intent, self.handle_play_film_intent)
+        self.register_intent(play_film_intent, self.handle_play_film_intent)  # eg. play the film iron man
 
         stop_film_intent = IntentBuilder("StopFilmIntent"). \
             require("StopKeyword").require("FilmKeyword").build()
-        self.register_intent(stop_film_intent, self.handle_stop_film_intent)
+        self.register_intent(stop_film_intent, self.handle_stop_film_intent)  # eg. stop the movie
 
         pause_film_intent = IntentBuilder("PauseFilmIntent"). \
             require("PauseKeyword").require("FilmKeyword").build()
-        self.register_intent(pause_film_intent, self.handle_pause_film_intent)
+        self.register_intent(pause_film_intent, self.handle_pause_film_intent)  # eg. pause the movie
 
         resume_film_intent = IntentBuilder("ResumeFilmIntent"). \
             require("ResumeKeyword").require("FilmKeyword").build()
-        self.register_intent(resume_film_intent, self.handle_resume_film_intent)
+        self.register_intent(resume_film_intent, self.handle_resume_film_intent)  # eg. resume the movie
 
         notification_on_intent = IntentBuilder("NotifyOnIntent"). \
             require("NotificationKeyword").require("OnKeyword"). \
             require("KodiKeyword").build()
-        self.register_intent(notification_on_intent, self.handle_notification_on_intent)
+        self.register_intent(notification_on_intent, self.handle_notification_on_intent)  # eg. turn kodi notifications on
 
         notification_off_intent = IntentBuilder("NotifyOffIntent"). \
             require("NotificationKeyword").require("OffKeyword"). \
             require("KodiKeyword").build()
-        self.register_intent(notification_off_intent, self.handle_notification_off_intent)
+        self.register_intent(notification_off_intent, self.handle_notification_off_intent)  # eg. turn kodi notifications off
 
         move_kodi_intent = IntentBuilder("MoveKodiIntent"). \
             require("MoveKeyword").require("CursorKeyword").\
-            require("DirectionKeyword").\
+            optionally("DirectionKeyword").optionally("CancelKeyword").\
             build()
-        self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)
+        self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)  # eg. move the cursor down
 
-    def on_websettings_changed(self):
+    def on_websettings_changed(self):  # when updating mycroft home page
         if not self._is_setup:
             kodi_ip   = self.settings.get("kodi_ip", "127.0.0.1")
             kodi_port = self.settings.get("kodi_port", "8080")
@@ -118,8 +121,7 @@ class KodiSkill(MycroftSkill):
             except Exception as e:
                 LOG.error(e)
 
-    def is_kodi_playing(self):
-        LOG.info("is_kodi_playing: Checking if kodi is playing a movie")
+    def is_kodi_playing(self):  # check if kodi is currently playing, required for some functions
         method = "Player.GetActivePlayers"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -129,7 +131,6 @@ class KodiSkill(MycroftSkill):
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
             parse_response = json.loads(kodi_response.text)["result"]
-            LOG.info(kodi_response.text)
             if not parse_response:
                 self.playing_status = False
             else:
@@ -139,7 +140,7 @@ class KodiSkill(MycroftSkill):
         LOG.info("Is Kodi Playing?...", str(self.playing_status))
         return self.playing_status
 
-    def show_root(self):
+    def show_root(self):  # activate the kodi root menu system
         method = "GUI.ActivateWindow"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -158,7 +159,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    def clear_playlist(self):
+    def clear_playlist(self):  # clear any active playlists
         method = "Playlist.Clear"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -174,10 +175,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    @removes_context('ParseList')
-    @removes_context('Navigate')
-    def play_cinemavision(self):
-        LOG.info('play_cinemavision: removed context[ParseList, Navigate]')
+    def play_cinemavision(self):  # play the movie playlist with cinemavision addon
         method = "Addons.ExecuteAddon"
         self.cv_payload = {
             "jsonrpc": "2.0",
@@ -197,10 +195,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    @removes_context('ParseList')
-    @removes_context('Navigate')
-    def play_normal(self):
-        LOG.info('play_normal: removed context[ParseList, Navigate]')
+    def play_normal(self):  # play the movie playlist normally without any addons
         method = "player.open"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -219,7 +214,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    def add_playlist(self, movieid):
+    def add_playlist(self, movieid):  # add the movieid to the active playlist
         method = "Playlist.Add"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -238,7 +233,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    def stop_movie(self):
+    def stop_movie(self):  # stop any playing movies
         method = "Player.Stop"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -254,7 +249,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    def pause_movie(self):
+    def pause_movie(self):  # pause any playing movies
         method = "Player.PlayPause"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -270,7 +265,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    def resume_movie(self):
+    def resume_movie(self):  # resume any paused movies
         method = "Player.PlayPause"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -300,7 +295,7 @@ class KodiSkill(MycroftSkill):
                 results.append(m)
         return results
 
-    def check_youtube_present(self):
+    def check_youtube_present(self):  # check if the youtube addon exists
         method = "Addons.GetAddons"
         addon_video = "xbmc.addon.video"
         self.kodi_payload = {
@@ -321,7 +316,7 @@ class KodiSkill(MycroftSkill):
         else:
             return False
 
-    def check_cinemavision_present(self):
+    def check_cinemavision_present(self):  # check if the cinemavision addon exists
         self.list_payload = {
             "jsonrpc": "2.0",
             "method": "Addons.GetAddons",
@@ -341,7 +336,7 @@ class KodiSkill(MycroftSkill):
         else:
             return False
 
-    def movie_regex(self, message):
+    def movie_regex(self, message):  # use regex to find any movie names found in the utterance
         # film_regex = r"(movie|film) (?P<Film>.*)"
         film_regex = r"((movie|film) (?P<Film1>.*))| ((movie|film) (?P<Film2>.*)(with|using) (cinemavision))"
         utt_str = message
@@ -358,7 +353,7 @@ class KodiSkill(MycroftSkill):
         my_movie = re.sub(' +', ' ', my_movie)
         return my_movie.strip()
 
-    def repeat_regex(self, message):
+    def repeat_regex(self, message):  # check the cursor control utterance for repeat commands
         value = extract_number(message)
         if value:
             repeat_value = value
@@ -370,7 +365,7 @@ class KodiSkill(MycroftSkill):
             repeat_value = 1
         return repeat_value
 
-    def play_youtube_video(self, video_id):
+    def play_youtube_video(self, video_id):  # play the supplied video_id with the youtube addon
         LOG.info('play youtube ID: ' + str(video_id))
         method = "Player.Open"
         # Playlist links are longer than individual links
@@ -395,7 +390,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    def youtube_query_regex(self, req_string):
+    def youtube_query_regex(self, req_string):  # extract the requested youtube item from the utterance
         return_list = []
         pri_regex = re.search(r'play (?P<item1>.*) from youtube', req_string)
         sec_regex = re.search(r'play some (?P<item1>.*) from youtube|play the (?P<item2>.*)from youtube', req_string)
@@ -410,7 +405,7 @@ class KodiSkill(MycroftSkill):
             LOG.info(return_list)
             return return_list
 
-    def get_youtube_links(self, search_list):
+    def get_youtube_links(self, search_list):  # extract the youtube links from the provided search_list
         search_text = str(search_list[0])
         query = urllib.parse.quote(search_text)
         url = "https://www.youtube.com/results?search_query=" + query
@@ -441,7 +436,7 @@ class KodiSkill(MycroftSkill):
             LOG.info("Found Playlist Links: " + str(playlist_links))
         return yt_links
 
-    def post_kodi_notification(self, message):
+    def post_kodi_notification(self, message):  # push a message to the kodi notification popup
         method = "GUI.ShowNotification"
         display_timeout = 5000
         self.kodi_payload = {
@@ -460,7 +455,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    def handle_listen(self, message):
+    def handle_listen(self, message):  # listening event used for kodi notifications
         voice_payload = "Listening"
         if self.notifier_bool:
             try:
@@ -469,7 +464,7 @@ class KodiSkill(MycroftSkill):
                 LOG.error(e)
                 self.on_websettings_changed()
 
-    def handle_utterance(self, message):
+    def handle_utterance(self, message):  # utterance event used for kodi notifications
         utterance = message.data.get('utterances')
         voice_payload = utterance
         if self.notifier_bool:
@@ -479,7 +474,7 @@ class KodiSkill(MycroftSkill):
                 LOG.error(e)
                 self.on_websettings_changed()
 
-    def handle_speak(self, message):
+    def handle_speak(self, message):  # mycroft speaking event used for kodi notificatons
         voice_payload = message.data.get('utterance')
         if self.notifier_bool:
             try:
@@ -488,10 +483,7 @@ class KodiSkill(MycroftSkill):
                 LOG.error(e)
                 self.on_websettings_changed()
 
-    @removes_context('ParseList')
-    @removes_context('Navigate')
-    def handle_play_film_intent(self, message):  # executed with original voice command
-        LOG.info('handle_play_film_intent: removed context[ParseList, Navigate]')
+    def handle_play_film_intent(self, message):  # play file was requested in the utterance
         if message.data.get("CinemaVisionKeyword"):
             self.cv_request = True
         else:
@@ -505,39 +497,38 @@ class KodiSkill(MycroftSkill):
             LOG.error(e)
             self.on_websettings_changed()
 
-    def handle_stop_film_intent(self, message):
+    def handle_stop_film_intent(self, message):  # stop film was requested in the utterance
         try:
             self.stop_movie()
         except Exception as e:
             LOG.error(e)
             self.on_websettings_changed()
 
-    def handle_pause_film_intent(self, message):
+    def handle_pause_film_intent(self, message):  # pause film was requested in the utterance
         try:
             self.pause_movie()
         except Exception as e:
             LOG.error(e)
             self.on_websettings_changed()
 
-    def handle_resume_film_intent(self, message):
+    def handle_resume_film_intent(self, message):  # resume the film was requested in the utterance
         try:
             self.resume_movie()
         except Exception as e:
             LOG.error(e)
             self.on_websettings_changed()
 
-    def handle_notification_on_intent(self, message):
+    def handle_notification_on_intent(self, message):  # turn notifications on requested in the utterance
         self.notifier_bool = True
         self.speak_dialog("notification", data={"result": "On"})
 
-    def handle_notification_off_intent(self, message):
+    def handle_notification_off_intent(self, message):  # turn notifications off requested in the utterance
         self.notifier_bool = False
         self.speak_dialog("notification", data={"result": "Off"})
 
-    @adds_context('Navigate')
-    def handle_move_kodi_intent(self, message):
-        LOG.info('handle_move_kodi_intent: Added context[Navigate]')
+    def handle_move_kodi_intent(self, message):  # a request was made to move the kodi cursor
         direction_kw = message.data.get("DirectionKeyword")
+        cancel_kw = message.data.get("CancelKeyword")
         repeat_count = self.repeat_regex(message.data.get('utterance'))
         LOG.info('utterance: ' + str(message.data.get('utterance')))
         LOG.info('repeat_count: ' + str(repeat_count))
@@ -559,41 +550,35 @@ class KodiSkill(MycroftSkill):
                 self.speak_dialog("direction", data={"result": direction_kw},
                                   expect_response=(each_count == repeat_count-1))
                 time.sleep(1)
-        self.set_context('MoveKeyword', 'move')
-        self.set_context('CursorKeyword', 'cursor')
-        LOG.info('handle_move_kodi_intent: Added context[MoveKeyword, CursorKeyword]')
+            self.set_context('MoveKeyword', 'move')  # in future the user does not have to say the move keyword
+            self.set_context('CursorKeyword', 'cursor')  # in future the user does not have to say the cursor keyword
+        else:
+            self.remove_context('MoveKeyword')
+            self.remove_context('CursorKeyword')
+            if cancel_kw:
+                self.stop_navigation("Navigation Canceled")
 
-    @removes_context('ParseList')
-    @removes_context('Navigate')
     def play_film(self, movieid):  # play the movie based on movie ID
-        LOG.info('play_film: Removed context[ParseList, Navigate]')
         self.clear_playlist()
         self.add_playlist(movieid)
         if self.check_cinemavision_present():  # Cinemavision is installed
-            self.set_context('CinemaVisionDecisionKeyword', 'Routing002')
-            LOG.info('play_film: Added context[CinemaVisionDecisionKeyword]')
+            self.set_context('CinemaVisionDecision')
             self.speak_dialog('cinema.vision', expect_response=True)
         else:  # Cinemavision is NOT installed
             self.play_normal()
 
-    @intent_handler(IntentBuilder('CinemavisionRequestIntent').require("CinemaVisionDecisionKeyword")
+    @intent_handler(IntentBuilder('CinemavisionRequestIntent').require('CinemaVisionDecision')
                     .require('DecisionKeyword').build())
-    @removes_context('ParseList')
-    @removes_context('Navigate')
     def handle_cinemavision_request_intent(self, message):  # Yes was spoken to navigate the list, reading the first item
-        LOG.info('handle_cinemavision_request_intent: Removed context[ParseList, Navigate]')
-        self.set_context('CinemaVisionDecisionKeyword', '')
-        LOG.info('handle_cinemavision_request_intent: Removed context[CinemaVisionDecisionKeyword]')
+        self.remove_context('CinemaVisionDecision')
         decision_kw = message.data.get("DecisionKeyword")
-        LOG.info('user responded with: ' + decision_kw)
+        LOG.info('User responded with: ' + decision_kw)
         if decision_kw == 'yes':
             self.play_cinemavision()
         else:
             self.play_normal()
 
-    @adds_context('Navigate')
     def play_film_by_search(self, kodi_id, film_search):  # called from, handle_play_film_intent
-        LOG.info('play_film_by_search: Added context[Navigate]')
         # Todo need to remove kodi_id (kodipydent) reference
         results = self.find_films_matching(kodi_id, film_search)
         self.movie_list = results
@@ -601,6 +586,7 @@ class KodiSkill(MycroftSkill):
         if len(results) == 1:
             self.play_film(results[0]['movieid'])
         elif len(results):
+            self.set_context('Navigate')
             msg_payload = "I found, " + str(len(results)) + ", results, would you like me to list them?"
             if self.notifier_bool:
                 try:
@@ -620,19 +606,17 @@ class KodiSkill(MycroftSkill):
             self.stop_navigation(msg_payload)
 
     @intent_handler(IntentBuilder('NavigateYesIntent').require("YesKeyword").require('Navigate').build())
-    @adds_context('ParseList')
     def handle_navigate_yes_intent(self, message):  # Yes was spoken to navigate the list, reading the first item
-        LOG.info('handle_navigate_yes_intent: Added context[ParseList]')
+        self.set_context('ParseList')
+        self.remove_context('Navigate')
         msg_payload = str(self.movie_list[self.movie_index]['label']) + ", To Skip, say Next, Say play, to" \
                                                                " play, or Cancel, to stop"
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
 
-    @intent_handler(IntentBuilder('NavigatePlayIntent').require("PlayKeyword").require('ParseList').
-                    optionally('Navigate').build())  # optionally('OrdinalKeyword').build())
-    @removes_context('ParseList')
-    @removes_context('Navigate')
+    @intent_handler(IntentBuilder('NavigatePlayIntent').require('ParseList').require("PlayKeyword").
+                    build())
     def handle_navigate_play_intent(self, message):  # Play was spoken, calls play_film
-        LOG.info('handle_navigate_yes_intent: Removed context[ParseList, Navigate]')
+        self.remove_context('ParseList')
         msg_payload = "Attempting to play, " + str(self.movie_list[self.movie_index]['label'])
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
         try:
@@ -641,9 +625,10 @@ class KodiSkill(MycroftSkill):
             LOG.error(e)
             self.on_websettings_changed()
 
-    @intent_handler(IntentBuilder('SkipIntent').require("NextKeyword").require('ParseList').optionally('Navigate').
+    @intent_handler(IntentBuilder('SkipIntent').require('ParseList').require('NextKeyword').
                     build())
     def handle_navigate_skip_intent(self, message):  # Skip was spoken, navigates to next item in the list
+        self.set_context('ParseList')
         self.movie_index += 1
         if self.movie_index < len(self.movie_list):
             msg_payload = str(self.movie_list[self.movie_index]['label'])
@@ -652,19 +637,21 @@ class KodiSkill(MycroftSkill):
             msg_payload = "there are no more movies in the list"
             self.stop_navigation(msg_payload)
 
-    @intent_handler(IntentBuilder('NavigateCancelIntent').require("CancelKeyword").require('Navigate').
-                    optionally('ParseList').build())
-    @removes_context('Navigate')
-    @removes_context('ParseList')
+    @intent_handler(IntentBuilder('NavigateCancelIntent').require('Navigate').require("CancelKeyword").
+                    build())
     def handle_navigate_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
-        LOG.info('handle_navigate_cancel_intent: Removed context[ParseList, Navigate]')
-        msg_payload = 'Canceled'
+        self.remove_context('Navigate')
+        msg_payload = 'Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
-    @removes_context('Navigate')
-    @removes_context('ParseList')
+    @intent_handler(IntentBuilder('ParseCancelIntent').require('ParseList').require("CancelKeyword").
+                    build())
+    def handle_navigate_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
+        self.remove_context('ParseList')
+        msg_payload = 'Navigation Canceled'
+        self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
+
     def stop_navigation(self, message):  # An internal conversational context stoppage was issued
-        LOG.info('stop_navigation: Removed context[ParseList, Navigate]')
         self.speak_dialog('context', data={"result": message}, expect_response=False)
 
     @intent_handler(IntentBuilder('ShowMovieInfoIntent').require("VisibilityKeyword").require('InfoKeyword').
@@ -683,7 +670,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    @intent_handler(IntentBuilder('SkipMovieIntent').require("SkipKeyword").require('FilmKeyword').
+    @intent_handler(IntentBuilder('SkipMovieIntent').require("NextKeyword").require('FilmKeyword').
                     require('SkipDirectionKeyword').
                     build())
     def handle_skip_movie_intent(self, message):
@@ -734,7 +721,7 @@ class KodiSkill(MycroftSkill):
             except Exception as e:
                 LOG.error(e)
         else:
-            LOG.info("Subtitles On Failed, kodi not playing")
+            LOG.info("Turning Subtitles On Failed, kodi not playing")
 
     @intent_handler(IntentBuilder('SubtitlesOffIntent').require("KodiKeyword").require('SubtitlesKeyword').
                     require('OffKeyword').
@@ -758,7 +745,7 @@ class KodiSkill(MycroftSkill):
             except Exception as e:
                 LOG.error(e)
         else:
-            LOG.info("Subtitles Off Failed, kodi not playing")
+            LOG.info("Turning Subtitles Off Failed, kodi not playing")
 
     @intent_handler(IntentBuilder('ShowMoviesAddedIntent').require("ListKeyword").require('RecentKeyword').
                     require('FilmKeyword').
@@ -973,17 +960,13 @@ class KodiSkill(MycroftSkill):
 
     @intent_handler(IntentBuilder('PlayYoutubeIntent').require("PlayKeyword").require('FromYoutubeKeyword').
                     build())
-    @removes_context('ParseList')
-    @removes_context('Navigate')
     def handle_play_youtube_intent(self, message):
-        LOG.info('handle_play_youtube_intent: Removed context[ParseList, Navigate]')
         self.youtube_search = self.youtube_query_regex(message.data.get('utterance'))
         self.youtube_id = self.get_youtube_links(self.youtube_search)
         if self.check_youtube_present():
             wait_while_speaking()
             if len(self.youtube_id) > 1:
-                self.set_context('PlaylistDecisionKeyword', 'routing001')
-                LOG.info('handle_play_youtube_intent: Added context[PlaylistDecisionKeyword]')
+                self.set_context('PlaylistDecision')
                 self.speak_dialog('youtube.playlist.present', expect_response=True)
             else:
                 self.speak_dialog('play.youtube', data={"result": self.youtube_search}, expect_response=False)
@@ -991,14 +974,10 @@ class KodiSkill(MycroftSkill):
         else:
             self.speak_dialog('youtube.addon.error', expect_response=False)
 
-    @intent_handler(IntentBuilder('YoutubePlayTypeDecisionIntent').require("PlaylistDecisionKeyword").
+    @intent_handler(IntentBuilder('YoutubePlayTypeDecisionIntent').require('PlaylistDecision').
                     require('DecisionKeyword').build())
-    @removes_context('ParseList')
-    @removes_context('Navigate')
     def handle_youtube_play_type_decision_intent(self, message):
-        LOG.info('handle_youtube_play_type_decision_intent: Removed context[ParseList, Navigate')
-        self.set_context('PlaylistDecisionKeyword', '')  # Removes Context
-        LOG.info('handle_youtube_play_type_decision_intent: Removed context[PlaylistDecisionKeyword')
+        self.remove_context('PlaylistDecision')  # Removes Context
         decision_kw = message.data.get("DecisionKeyword")
         LOG.info('user responded with: ' + decision_kw)
         self.speak_dialog('play.youtube', data={"result": self.youtube_search}, expect_response=False)
