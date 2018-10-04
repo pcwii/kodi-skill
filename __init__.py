@@ -635,22 +635,23 @@ class KodiSkill(MycroftSkill):
                     build())
     def handle_navigate_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
         self.remove_context('Navigate')
-        msg_payload = 'Navigation Canceled'
+        msg_payload = 'List Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
     @intent_handler(IntentBuilder('ParseCancelIntent').require('ParseList').require("CancelKeyword").
                     build())
     def handle_parse_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
         self.remove_context('ParseList')
-        msg_payload = 'Navigation Canceled'
+        msg_payload = 'Parse Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
-    @intent_handler(IntentBuilder('CursorCancelIntent').require('MoveKeyword').require("CursorKeyword").
-                    require("CancelKeyword").build())
+    @intent_handler(IntentBuilder('CursorCancelIntent').require('MoveKeyword').require('CursorKeyword').
+                    require('CancelKeyword').build())
     def handle_cursor_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
+        LOG.info('handle_cursor_cancel_intent')
         self.remove_context('MoveKeyword')
         self.remove_context('CursorKeyword')
-        msg_payload = 'Navigation Canceled'
+        msg_payload = 'Cursor Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
     def stop_navigation(self, message):  # An internal conversational context stoppage was issued
