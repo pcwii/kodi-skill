@@ -94,7 +94,7 @@ class KodiSkill(MycroftSkill):
 
         move_kodi_intent = IntentBuilder("MoveKodiIntent"). \
             require("MoveKeyword").require("CursorKeyword").\
-            optionally("DirectionKeyword").optionally("CancelKeyword").\
+            require("DirectionKeyword").\
             build()
         self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)  # eg. move the cursor down
 
@@ -648,6 +648,14 @@ class KodiSkill(MycroftSkill):
                     build())
     def handle_navigate_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
         self.remove_context('ParseList')
+        msg_payload = 'Navigation Canceled'
+        self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
+
+    @intent_handler(IntentBuilder('CursorCancelIntent').require('MoveKeyword').require("CursorKeyword").
+                    require("CancelKeyword").build())
+    def handle_cursor_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
+        self.remove_context('MoveKeyword')
+        self.remove_context('CursorKeyword')
         msg_payload = 'Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
