@@ -282,9 +282,6 @@ class KodiSkill(MycroftSkill):
             LOG.error(e)
 
     def find_films_matching(self, kodi_id, search):  # called from, play_film_by_search
-        """
-        Find all Movies Matching the search
-        """
         # Todo remove kodipydent reference (kodi_id)
         my_movies = kodi_id.VideoLibrary.GetMovies()['result']['movies']
         results = []
@@ -528,7 +525,6 @@ class KodiSkill(MycroftSkill):
 
     def handle_move_kodi_intent(self, message):  # a request was made to move the kodi cursor
         direction_kw = message.data.get("DirectionKeyword")
-        cancel_kw = message.data.get("CancelKeyword")
         repeat_count = self.repeat_regex(message.data.get('utterance'))
         LOG.info('utterance: ' + str(message.data.get('utterance')))
         LOG.info('repeat_count: ' + str(repeat_count))
@@ -555,8 +551,6 @@ class KodiSkill(MycroftSkill):
         else:
             self.remove_context('MoveKeyword')
             self.remove_context('CursorKeyword')
-            if cancel_kw:
-                self.stop_navigation("Navigation Canceled")
 
     def play_film(self, movieid):  # play the movie based on movie ID
         self.clear_playlist()
@@ -646,7 +640,7 @@ class KodiSkill(MycroftSkill):
 
     @intent_handler(IntentBuilder('ParseCancelIntent').require('ParseList').require("CancelKeyword").
                     build())
-    def handle_navigate_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
+    def handle_parse_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
         self.remove_context('ParseList')
         msg_payload = 'Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
