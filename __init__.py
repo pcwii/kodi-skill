@@ -526,6 +526,8 @@ class KodiSkill(MycroftSkill):
     @intent_handler(IntentBuilder('MoveCursorIntent').require('MoveKeyword').require('CursorKeyword').
                     require('DirectionKeyword').build())
     def handle_move_cursor_intent(self, message):  # a request was made to move the kodi cursor
+        self.set_context('MoveKeyword', 'move')  # in future the user does not have to say the move keyword
+        self.set_context('CursorKeyword', 'cursor')  # in future the user does not have to say the cursor keyword
         direction_kw = message.data.get("DirectionKeyword")
         repeat_count = self.repeat_regex(message.data.get('utterance'))
         LOG.info('utterance: ' + str(message.data.get('utterance')))
@@ -550,8 +552,6 @@ class KodiSkill(MycroftSkill):
                 self.speak_dialog("direction", data={"result": direction_kw},
                                   expect_response=True)
                 time.sleep(1)
-            self.set_context('MoveKeyword', 'move')  # in future the user does not have to say the move keyword
-            self.set_context('CursorKeyword', 'cursor')  # in future the user does not have to say the cursor keyword
 
     def play_film(self, movieid):  # play the movie based on movie ID
         self.clear_playlist()
@@ -600,7 +600,7 @@ class KodiSkill(MycroftSkill):
                     self.on_websettings_changed()
             self.stop_navigation(msg_payload)
 
-    @intent_handler(IntentBuilder('NavigateYesIntent').require("YesKeyword").require('Navigate').build())
+    @intent_handler(IntentBuilder('NavigateYesIntent').require('Navigate').require("YesKeyword").build())
     def handle_navigate_yes_intent(self, message):  # Yes was spoken to navigate the list, reading the first item
         self.set_context('ParseList')
         self.remove_context('Navigate')
@@ -620,9 +620,9 @@ class KodiSkill(MycroftSkill):
             LOG.error(e)
             self.on_websettings_changed()
 
-    @intent_handler(IntentBuilder('SkipIntent').require('ParseList').require('NextKeyword').
+    @intent_handler(IntentBuilder('ParseSkipIntent').require('ParseList').require('NextKeyword').
                     build())
-    def handle_navigate_skip_intent(self, message):  # Skip was spoken, navigates to next item in the list
+    def handle_parse_skip_intent(self, message):  # Skip was spoken, navigates to next item in the list
         self.set_context('ParseList')
         self.movie_index += 1
         if self.movie_index < len(self.movie_list):
@@ -632,7 +632,7 @@ class KodiSkill(MycroftSkill):
             msg_payload = "there are no more movies in the list"
             self.stop_navigation(msg_payload)
 
-    @intent_handler(IntentBuilder('NavigateCancelIntent').require('Navigate').require("CancelKeyword").
+    @intent_handler(IntentBuilder('NavigateCancelIntent').require('Navigate').require('CancelKeyword').
                     build())
     def handle_navigate_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
         self.remove_context('Navigate')
