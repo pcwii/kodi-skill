@@ -620,10 +620,10 @@ class KodiSkill(MycroftSkill):
             LOG.error(e)
             self.on_websettings_changed()
 
-    @intent_handler(IntentBuilder('ParseSkipIntent').require('Parselist').require('NextKeyword').
+    @intent_handler(IntentBuilder('ParseNextIntent').require('Parselist').require('NextKeyword').
                     build())
     @adds_context('Parselist')
-    def handle_parse_skip_intent(self, message):  # Skip was spoken, navigates to next item in the list
+    def handle_parse_next_intent(self, message):  # Skip was spoken, navigates to next item in the list
         self.movie_index += 1
         if self.movie_index < len(self.movie_list):
             msg_payload = str(self.movie_list[self.movie_index]['label'])
@@ -639,9 +639,10 @@ class KodiSkill(MycroftSkill):
         msg_payload = 'List Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
-    @intent_handler(IntentBuilder('ParseCancelIntent').require('Parselist').require("CancelKeyword").
+    @intent_handler(IntentBuilder('ParseCancelIntent').require('Parselist').require('CancelKeyword').
                     build())
-    @removes_context('Parselist')
+    @adds_context('Parselist')
+    # @removes_context('Parselist')
     def handle_parse_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
         msg_payload = 'Parse Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
