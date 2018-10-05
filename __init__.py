@@ -604,7 +604,7 @@ class KodiSkill(MycroftSkill):
                                                                " play, or Stop, to stop"
             self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
         else:
-            self.remove_context('Parselist')
+            # self.remove_context('Parselist')
             msg_payload = 'Movie List Navigation Canceled'
             self.stop_navigation(msg_payload)
 
@@ -655,8 +655,9 @@ class KodiSkill(MycroftSkill):
         msg_payload = 'Cursor Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
-
     def stop_navigation(self, message):  # An internal conversational context stoppage was issued
+        self.remove_context('Parselist')
+        self.remove_context('Navigate')
         self.speak_dialog('context', data={"result": message}, expect_response=False)
 
     @intent_handler(IntentBuilder('ShowMovieInfoIntent').require('VisibilityKeyword').require('InfoKeyword').
