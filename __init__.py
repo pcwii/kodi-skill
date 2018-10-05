@@ -384,6 +384,24 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
+    @intent_handler(IntentBuilder('StopYoutubeIntent').require('StopKeyword').require('YoutubeKeyword').
+                    build())
+    def handle_stop_youtube_intent(self, message):
+        method = "Player.Stop"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": {
+                "playerid": 1
+            },
+            "id": "libPlayer"
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(str(kodi_response.text))
+        except Exception as e:
+            LOG.error(e)
+
     def youtube_query_regex(self, req_string):  # extract the requested youtube item from the utterance
         return_list = []
         pri_regex = re.search(r'play (?P<item1>.*) from youtube', req_string)
