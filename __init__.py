@@ -605,8 +605,15 @@ class KodiSkill(MycroftSkill):
     @removes_context('Navigate')
     def handle_navigate_yes_intent(self, message):  # Yes was spoken to navigate the list, reading the first item
         msg_payload = str(self.movie_list[self.movie_index]['label']) + ", To Skip, say Next, Say play, to" \
-                                                               " play, or Cancel, to stop"
+                                                               " play, or Stop, to stop"
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
+
+    @intent_handler(IntentBuilder('NavigateNoIntent').require('Navigate').require("NoKeyword").build())
+    @removes_context('Parselist')
+    @removes_context('Navigate')
+    def handle_navigate_No_intent(self, message):  # Yes was spoken to navigate the list, reading the first item
+        msg_payload = 'Movie List Navigation Canceled'
+        self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
     @intent_handler(IntentBuilder('NavigatePlayIntent').require('Parselist').require("PlayKeyword").
                     build())
@@ -654,6 +661,7 @@ class KodiSkill(MycroftSkill):
         LOG.info('handle_cursor_cancel_intent')
         msg_payload = 'Cursor Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
+
 
     def stop_navigation(self, message):  # An internal conversational context stoppage was issued
         self.speak_dialog('context', data={"result": message}, expect_response=False)
