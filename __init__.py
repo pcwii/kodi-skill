@@ -399,7 +399,8 @@ class KodiSkill(MycroftSkill):
             return return_list
 
     def get_youtube_links(self, search_list):  # extract the youtube links from the provided search_list
-        search_text = str(search_list[0])
+        # search_text = str(search_list[0])
+        search_text = str(search_list)
         query = urllib.parse.quote(search_text)
         url = "https://www.youtube.com/results?search_query=" + query
         response = urllib.request.urlopen(url)
