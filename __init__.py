@@ -610,8 +610,8 @@ class KodiSkill(MycroftSkill):
 
     @intent_handler(IntentBuilder('NavigatePlayIntent').require('Parselist').require("PlayKeyword").
                     build())
+    @removes_context('Parselist')
     def handle_navigate_play_intent(self, message):  # Play was spoken, calls play_film
-        self.remove_context('Parselist')
         msg_payload = "Attempting to play, " + str(self.movie_list[self.movie_index]['label'])
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
         try:
@@ -634,24 +634,24 @@ class KodiSkill(MycroftSkill):
 
     @intent_handler(IntentBuilder('NavigateCancelIntent').require('Navigate').require('CancelKeyword').
                     build())
+    @removes_context('Navigate')
     def handle_navigate_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
-        self.remove_context('Navigate')
         msg_payload = 'List Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
     @intent_handler(IntentBuilder('ParseCancelIntent').require('Parselist').require("CancelKeyword").
                     build())
+    @removes_context('Parselist')
     def handle_parse_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
-        self.remove_context('Parselist')
         msg_payload = 'Parse Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
     @intent_handler(IntentBuilder('CursorCancelIntent').require('MoveKeyword').require('CursorKeyword').
                     require('CancelKeyword').build())
+    @removes_context('MoveKeyword')
+    @removes_context('CursorKeyword')
     def handle_cursor_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
         LOG.info('handle_cursor_cancel_intent')
-        self.remove_context('MoveKeyword')
-        self.remove_context('CursorKeyword')
         msg_payload = 'Cursor Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
