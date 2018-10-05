@@ -560,7 +560,7 @@ class KodiSkill(MycroftSkill):
 
     @intent_handler(IntentBuilder('CinemavisionRequestIntent').require('CinemaVisionContextKeyword')
                     .require('DecisionKeyword').build())
-    def handle_cinemavision_request_intent(self, message):  # Yes was spoken to navigate the list, reading the first item
+    def handle_cinemavision_request_intent(self, message):  # Yes was spoken to navigate the list
         self.set_context('CinemaVisionContextKeyword', '')
         decision_kw = message.data.get("DecisionKeyword")
         LOG.info('User responded with: ' + decision_kw)
