@@ -51,6 +51,7 @@ playback of the movie that was selected.
 ## Youtube Addon
 Request: "play some Elton John from youtube
 Request: "Play the official captain marvel trailer from youtube"
+Request: "Stop youtube"
 ## Credits 
 PCWii
 
