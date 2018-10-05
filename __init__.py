@@ -632,7 +632,7 @@ class KodiSkill(MycroftSkill):
             msg_payload = "there are no more movies in the list"
             self.stop_navigation(msg_payload)
 
-    @intent_handler(IntentBuilder('NavigateCancelIntent').require('Navigate').require('CancelKeyword').
+    @intent_handler(IntentBuilder('NavigateCancelIntent').require('Navigate').require('StopKeyword').
                     build())
     @removes_context('Navigate')
     def handle_navigate_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
@@ -641,14 +641,13 @@ class KodiSkill(MycroftSkill):
 
     @intent_handler(IntentBuilder('ParseCancelIntent').require('Parselist').require('StopKeyword').
                     build())
-    # @adds_context('Parselist')
     @removes_context('Parselist')
     def handle_parse_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
         msg_payload = 'Parse Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
     @intent_handler(IntentBuilder('CursorCancelIntent').require('MoveKeyword').require('CursorKeyword').
-                    require('CancelKeyword').build())
+                    require('StopKeyword').build())
     @removes_context('MoveKeyword')
     @removes_context('CursorKeyword')
     def handle_cursor_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
