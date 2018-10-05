@@ -639,10 +639,10 @@ class KodiSkill(MycroftSkill):
         msg_payload = 'List Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
-    @intent_handler(IntentBuilder('ParseCancelIntent').require('Parselist').require('CancelKeyword').
+    @intent_handler(IntentBuilder('ParseCancelIntent').require('Parselist').require('StopKeyword').
                     build())
-    @adds_context('Parselist')
-    # @removes_context('Parselist')
+    # @adds_context('Parselist')
+    @removes_context('Parselist')
     def handle_parse_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
         msg_payload = 'Parse Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
