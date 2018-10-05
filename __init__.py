@@ -553,15 +553,15 @@ class KodiSkill(MycroftSkill):
         self.clear_playlist()
         self.add_playlist(movieid)
         if self.check_cinemavision_present():  # Cinemavision is installed
-            self.set_context('CinemaVisionDecision')
+            self.set_context('CinemaVisionContextKeyword', 'CinemaVisionContext')
             self.speak_dialog('cinema.vision', expect_response=True)
         else:  # Cinemavision is NOT installed
             self.play_normal()
 
-    @intent_handler(IntentBuilder('CinemavisionRequestIntent').require('CinemaVisionDecision')
+    @intent_handler(IntentBuilder('CinemavisionRequestIntent').require('CinemaVisionContextKeyword')
                     .require('DecisionKeyword').build())
     def handle_cinemavision_request_intent(self, message):  # Yes was spoken to navigate the list, reading the first item
-        self.remove_context('CinemaVisionDecision')
+        self.set_context('CinemaVisionContextKeyword', '')
         decision_kw = message.data.get("DecisionKeyword")
         LOG.info('User responded with: ' + decision_kw)
         if decision_kw == 'yes':
@@ -577,7 +577,7 @@ class KodiSkill(MycroftSkill):
         if len(results) == 1:
             self.play_film(results[0]['movieid'])
         elif len(results):
-            self.set_context('Navigate')
+            self.set_context('NavigateContextKeyword', 'NavigateContext')
             msg_payload = "I found, " + str(len(results)) + ", results, would you like me to list them?"
             if self.notifier_bool:
                 try:
@@ -596,24 +596,24 @@ class KodiSkill(MycroftSkill):
                     self.on_websettings_changed()
             self.stop_navigation(msg_payload)
 
-    @intent_handler(IntentBuilder('NavigateDecisionIntent').require('Navigate').require('DecisionKeyword').build())
-    @removes_context('Navigate')
-    @adds_context('ListContext')
+    @intent_handler(IntentBuilder('NavigateDecisionIntent').require('NavigateContextKeyword').
+                    require('DecisionKeyword').build())
     def handle_navigate_Decision_intent(self, message):  # Yes was spoken to navigate the list, reading the first item
+        self.set_context('NavigateContextKeyword', '')
         decision_kw = message.data.get('DecisionKeyword')
         if decision_kw == 'yes':
-            msg_payload = str(self.movie_list[self.movie_index]['label']) + ", To Skip, say Next, Say play, to" \
-                                                               " play, or Stop, to stop"
+            self.set_context('ListContextKeyword', 'ListContext')
+            msg_payload = str(self.movie_list[self.movie_index]['label']) + ", To Skip, say Next, Say play, " \
+                                                                            "to play, or Stop, to stop"
             self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
         else:
-            # self.remove_context('Parselist')
             msg_payload = 'Movie List Navigation Canceled'
             self.stop_navigation(msg_payload)
 
-    @intent_handler(IntentBuilder('NavigatePlayIntent').require('ListContext').require("PlayKeyword").
+    @intent_handler(IntentBuilder('NavigatePlayIntent').require('ListContextKeyword').require("PlayKeyword").
                     build())
-    @removes_context('ListContext')
     def handle_navigate_play_intent(self, message):  # Play was spoken, calls play_film
+        self.set_context('ListContextKeyword', '')
         msg_payload = "Attempting to play, " + str(self.movie_list[self.movie_index]['label'])
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
         try:
@@ -622,37 +622,38 @@ class KodiSkill(MycroftSkill):
             LOG.error(e)
             self.on_websettings_changed()
 
-    @intent_handler(IntentBuilder('ParseNextIntent').require('ListContext').require('NextKeyword').
+    @intent_handler(IntentBuilder('ParseNextIntent').require('ListContextKeyword').require('NextKeyword').
                     build())
-    @adds_context('ListContext')
     def handle_parse_next_intent(self, message):  # Skip was spoken, navigates to next item in the list
+        self.set_context('ListContextKeyword', 'ListContext')
         self.movie_index += 1
         if self.movie_index < len(self.movie_list):
             msg_payload = str(self.movie_list[self.movie_index]['label'])
             self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
         else:
+            self.set_context('ListContextKeyword', '')
             msg_payload = "there are no more movies in the list"
             self.stop_navigation(msg_payload)
 
-    @intent_handler(IntentBuilder('NavigateStopIntent').require('Navigate').require('StopKeyword').
+    @intent_handler(IntentBuilder('NavigateStopIntent').require('NavigateContextKeyword').require('StopKeyword').
                     build())
-    @removes_context('Navigate')
     def handle_navigate_stop_intent(self, message):  # Cancel was spoken, Cancel the list navigation
+        self.set_context('NavigateContextKeyword', '')
         msg_payload = 'List Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
-    @intent_handler(IntentBuilder('ParseCancelIntent').require('ListContext').require('StopKeyword').
+    @intent_handler(IntentBuilder('ParseCancelIntent').require('ListContextKeyword').require('StopKeyword').
                     build())
-    @removes_context('ListContext')
     def handle_parse_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
+        self.set_context('ListContextKeyword', '')
         msg_payload = 'Parse Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
     @intent_handler(IntentBuilder('CursorCancelIntent').require('MoveKeyword').require('CursorKeyword').
                     require('StopKeyword').build())
-    @removes_context('MoveKeyword')
-    @removes_context('CursorKeyword')
     def handle_cursor_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
+        self.set_context('MoveKeyword', '')
+        self.set_context('CursorKeyword', '')
         LOG.info('handle_cursor_cancel_intent')
         msg_payload = 'Cursor Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
@@ -972,7 +973,7 @@ class KodiSkill(MycroftSkill):
         if self.check_youtube_present():
             wait_while_speaking()
             if len(self.youtube_id) > 1:
-                self.set_context('PlaylistDecision')
+                self.set_context('PlaylistContextKeyword', 'PlaylistContext')
                 self.speak_dialog('youtube.playlist.present', expect_response=True)
             else:
                 self.speak_dialog('play.youtube', data={"result": self.youtube_search}, expect_response=False)
@@ -980,10 +981,10 @@ class KodiSkill(MycroftSkill):
         else:
             self.speak_dialog('youtube.addon.error', expect_response=False)
 
-    @intent_handler(IntentBuilder('YoutubePlayTypeDecisionIntent').require('PlaylistDecision').
+    @intent_handler(IntentBuilder('YoutubePlayTypeDecisionIntent').require('PlaylistContextKeyword').
                     require('DecisionKeyword').build())
     def handle_youtube_play_type_decision_intent(self, message):
-        self.remove_context('PlaylistDecision')  # Removes Context
+        self.set_context('PlaylistContextKeyword', '')
         decision_kw = message.data.get("DecisionKeyword")
         LOG.info('user responded with: ' + decision_kw)
         self.speak_dialog('play.youtube', data={"result": self.youtube_search}, expect_response=False)
