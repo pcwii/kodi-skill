@@ -596,7 +596,7 @@ class KodiSkill(MycroftSkill):
 
     @intent_handler(IntentBuilder('NavigateDecisionIntent').require('Navigate').require('DecisionKeyword').build())
     @removes_context('Navigate')
-    @adds_context('Parselist')
+    @adds_context('ListContext')
     def handle_navigate_Decision_intent(self, message):  # Yes was spoken to navigate the list, reading the first item
         decision_kw = message.data.get('DecisionKeyword')
         if decision_kw == 'yes':
@@ -608,9 +608,9 @@ class KodiSkill(MycroftSkill):
             msg_payload = 'Movie List Navigation Canceled'
             self.stop_navigation(msg_payload)
 
-    @intent_handler(IntentBuilder('NavigatePlayIntent').require('Parselist').require("PlayKeyword").
+    @intent_handler(IntentBuilder('NavigatePlayIntent').require('ListContext').require("PlayKeyword").
                     build())
-    @removes_context('Parselist')
+    @removes_context('ListContext')
     def handle_navigate_play_intent(self, message):  # Play was spoken, calls play_film
         msg_payload = "Attempting to play, " + str(self.movie_list[self.movie_index]['label'])
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
@@ -620,9 +620,9 @@ class KodiSkill(MycroftSkill):
             LOG.error(e)
             self.on_websettings_changed()
 
-    @intent_handler(IntentBuilder('ParseNextIntent').require('Parselist').require('NextKeyword').
+    @intent_handler(IntentBuilder('ParseNextIntent').require('ListContext').require('NextKeyword').
                     build())
-    @adds_context('Parselist')
+    @adds_context('ListContext')
     def handle_parse_next_intent(self, message):  # Skip was spoken, navigates to next item in the list
         self.movie_index += 1
         if self.movie_index < len(self.movie_list):
@@ -632,16 +632,16 @@ class KodiSkill(MycroftSkill):
             msg_payload = "there are no more movies in the list"
             self.stop_navigation(msg_payload)
 
-    @intent_handler(IntentBuilder('NavigateCancelIntent').require('Navigate').require('StopKeyword').
+    @intent_handler(IntentBuilder('NavigateStopIntent').require('Navigate').require('StopKeyword').
                     build())
     @removes_context('Navigate')
-    def handle_navigate_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
+    def handle_navigate_stop_intent(self, message):  # Cancel was spoken, Cancel the list navigation
         msg_payload = 'List Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
-    @intent_handler(IntentBuilder('ParseCancelIntent').require('Parselist').require('StopKeyword').
+    @intent_handler(IntentBuilder('ParseCancelIntent').require('ListContext').require('StopKeyword').
                     build())
-    @removes_context('Parselist')
+    @removes_context('ListContext')
     def handle_parse_cancel_intent(self, message):  # Cancel was spoken, Cancel the list navigation
         msg_payload = 'Parse Navigation Canceled'
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
@@ -656,8 +656,6 @@ class KodiSkill(MycroftSkill):
         self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
 
     def stop_navigation(self, message):  # An internal conversational context stoppage was issued
-        self.remove_context('Parselist')
-        self.remove_context('Navigate')
         self.speak_dialog('context', data={"result": message}, expect_response=False)
 
     @intent_handler(IntentBuilder('ShowMovieInfoIntent').require('VisibilityKeyword').require('InfoKeyword').
