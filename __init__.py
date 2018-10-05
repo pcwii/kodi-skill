@@ -622,15 +622,14 @@ class KodiSkill(MycroftSkill):
 
     @intent_handler(IntentBuilder('ParseSkipIntent').require('Parselist').require('NextKeyword').
                     build())
+    @adds_context('Parselist')
     def handle_parse_skip_intent(self, message):  # Skip was spoken, navigates to next item in the list
-        self.set_context('Parselist')
         self.movie_index += 1
         if self.movie_index < len(self.movie_list):
             msg_payload = str(self.movie_list[self.movie_index]['label'])
             self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
         else:
             msg_payload = "there are no more movies in the list"
-            self.remove_context('Parselist')
             self.stop_navigation(msg_payload)
 
     @intent_handler(IntentBuilder('NavigateCancelIntent').require('Navigate').require('CancelKeyword').
