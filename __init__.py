@@ -92,12 +92,6 @@ class KodiSkill(MycroftSkill):
             require("KodiKeyword").build()
         self.register_intent(notification_off_intent, self.handle_notification_off_intent)  # eg. turn kodi notifications off
 
-#        move_kodi_intent = IntentBuilder("MoveKodiIntent"). \
-#            require("MoveKeyword").require("CursorKeyword").\
-#            require("DirectionKeyword").\
-#            build()
-#        self.register_intent(move_kodi_intent, self.handle_move_kodi_intent)  # eg. move the cursor down
-
     def on_websettings_changed(self):  # when updating mycroft home page
         if not self._is_setup:
             kodi_ip   = self.settings.get("kodi_ip", "127.0.0.1")
@@ -600,20 +594,19 @@ class KodiSkill(MycroftSkill):
                     self.on_websettings_changed()
             self.stop_navigation(msg_payload)
 
-    @intent_handler(IntentBuilder('NavigateYesIntent').require('Navigate').require("YesKeyword").build())
-    @adds_context('Parselist')
+    @intent_handler(IntentBuilder('NavigateDecisionIntent').require('Navigate').require('DecisionKeyword').build())
     @removes_context('Navigate')
-    def handle_navigate_yes_intent(self, message):  # Yes was spoken to navigate the list, reading the first item
-        msg_payload = str(self.movie_list[self.movie_index]['label']) + ", To Skip, say Next, Say play, to" \
+    def handle_navigate_Decision_intent(self, message):  # Yes was spoken to navigate the list, reading the first item
+        decision_kw = message.get('DecisionKeyword')
+        if decision_kw == 'yes':
+            self.set_context('Parselist')
+            msg_payload = str(self.movie_list[self.movie_index]['label']) + ", To Skip, say Next, Say play, to" \
                                                                " play, or Stop, to stop"
-        self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
-
-    @intent_handler(IntentBuilder('NavigateNoIntent').require('Navigate').require("NoKeyword").build())
-    @removes_context('Parselist')
-    @removes_context('Navigate')
-    def handle_navigate_No_intent(self, message):  # Yes was spoken to navigate the list, reading the first item
-        msg_payload = 'Movie List Navigation Canceled'
-        self.speak_dialog('context', data={"result": msg_payload}, expect_response=False)
+            self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
+        else:
+            self.remove_context('Parselist')
+            msg_payload = 'Movie List Navigation Canceled'
+            self.stop_navigation(msg_payload)
 
     @intent_handler(IntentBuilder('NavigatePlayIntent').require('Parselist').require("PlayKeyword").
                     build())
