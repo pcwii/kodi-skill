@@ -377,6 +377,7 @@ class KodiSkill(MycroftSkill):
             "method": method,
             "id": "libPlayer"
         }
+        LOG.info(yt_link)
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
             LOG.info(kodi_response.text)
