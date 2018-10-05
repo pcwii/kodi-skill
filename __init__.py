@@ -5,9 +5,11 @@ from mycroft.skills.core import MycroftSkill, intent_handler, intent_file_handle
 from mycroft.util.log import getLogger
 from mycroft.util.log import LOG
 from mycroft.skills.context import adds_context, removes_context
-# also use self.remove_context(s, x)
-# also use self.set_context(s,x)
-
+'''
+also use self.remove_context(s, x)
+also use self.set_context(s,x)
+Note: the @adds_context / @removes_context can't be used with the Remove / set context options
+'''
 from mycroft.util.parse import extract_number
 from mycroft.audio import wait_while_speaking
 
