@@ -591,13 +591,10 @@ class KodiSkill(MycroftSkill):
             self.play_normal()
 
     @intent_handler(IntentBuilder('CinemavisionRequestIntent').require('CinemaVisionContextKeyword')
-                    .require('YesKeyword').build())
-    @intent_handler(IntentBuilder('CinemavisionRequestIntent').require('CinemaVisionContextKeyword')
-                    .require('NoKeyword').build())
+                    .one_of('YesKeyword', 'NoKeyword').build())
     def handle_cinemavision_request_intent(self, message):  # Yes was spoken to navigate the list
         self.set_context('CinemaVisionContextKeyword', '')
-        yes_kw = message.data.get("YesKeyword")
-        if yes_kw:
+        if "YesKeyword" in message.data:
             LOG.info('User responded with: ' + message.data.get("YesKeyword"))
             self.play_cinemavision()
         else:
@@ -632,13 +629,10 @@ class KodiSkill(MycroftSkill):
             self.stop_navigation(msg_payload)
 
     @intent_handler(IntentBuilder('NavigateDecisionIntent').require('NavigateContextKeyword').
-                    require('YesKeyword').build())
-    @intent_handler(IntentBuilder('NavigateDecisionIntent').require('NavigateContextKeyword').
-                    require('NoKeyword').build())
+                    one_of('YesKeyword', 'NoKeyword').build())
     def handle_navigate_Decision_intent(self, message):  # Yes was spoken to navigate the list, reading the first item
         self.set_context('NavigateContextKeyword', '')
-        yes_kw = message.data.get('YesKeyword')
-        if yes_kw:
+        if "YesKeyword" in message.data:
             LOG.info('User responded with...' + message.data.get('YesKeyword'))
             self.set_context('ListContextKeyword', 'ListContext')
             msg_payload = str(self.movie_list[self.movie_index]['label']) + ", To Skip, say Next, Say play, " \
@@ -1024,14 +1018,11 @@ class KodiSkill(MycroftSkill):
             self.speak_dialog('youtube.addon.error', expect_response=False)
 
     @intent_handler(IntentBuilder('YoutubePlayTypeDecisionIntent').require('PlaylistContextKeyword').
-                    require('YesKeyword').build())
-    @intent_handler(IntentBuilder('YoutubePlayTypeDecisionIntent').require('PlaylistContextKeyword').
-                    require('NoKeyword').build())
+                    one_of('YesKeyword', 'NoKeyword').build())
     def handle_youtube_play_type_decision_intent(self, message):
         self.set_context('PlaylistContextKeyword', '')
-        yes_kw = message.data.get("YesKeyword")
         self.speak_dialog('play.youtube', data={"result": self.youtube_search}, expect_response=False)
-        if yes_kw:
+        if "YesKeyword" in message.data:
             LOG.info('Playing youtube id: ' + str(self.youtube_id[1]))
             self.play_youtube_video(self.youtube_id[1])
         else:
