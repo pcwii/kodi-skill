@@ -544,6 +544,8 @@ class KodiSkill(MycroftSkill):
     def handle_move_cursor_intent(self, message):  # a request was made to move the kodi cursor
         self.set_context('MoveKeyword', 'move')  # in future the user does not have to say the move keyword
         self.set_context('CursorKeyword', 'cursor')  # in future the user does not have to say the cursor keyword
+        # Todo: Need to correct this for multiple languages
+        # Todo: The api requires english direction words but that can't be guaranteed with multi-language support
         direction_kw = message.data.get("DirectionKeyword")
         repeat_count = self.repeat_regex(message.data.get('utterance'))
         LOG.info('utterance: ' + str(message.data.get('utterance')))
@@ -563,8 +565,6 @@ class KodiSkill(MycroftSkill):
                 except Exception as e:
                     LOG.error(e)
                     self.on_websettings_changed()
-#                self.speak_dialog("direction", data={"result": direction_kw},
-#                                  expect_response=(each_count == repeat_count-1))
                 self.speak_dialog("direction", data={"result": direction_kw},
                                   expect_response=True)
                 time.sleep(1)
@@ -582,6 +582,10 @@ class KodiSkill(MycroftSkill):
                     .require('DecisionKeyword').build())
     def handle_cinemavision_request_intent(self, message):  # Yes was spoken to navigate the list
         self.set_context('CinemaVisionContextKeyword', '')
+        # Todo: Need to modify this to support multiple languages
+        # Todo: Possibly use yes or no Decision Keywords
+        # Todo: There was a note on github that @intent_handler can be used more than once / intent
+        # Todo: I could have two intent_handlers that ".require" yes or no then evaluate from there
         decision_kw = message.data.get("DecisionKeyword")
         LOG.info('User responded with: ' + decision_kw)
         if decision_kw == 'yes':
@@ -620,6 +624,10 @@ class KodiSkill(MycroftSkill):
                     require('DecisionKeyword').build())
     def handle_navigate_Decision_intent(self, message):  # Yes was spoken to navigate the list, reading the first item
         self.set_context('NavigateContextKeyword', '')
+        # Todo: Need to modify this to support multiple languages
+        # Todo: Possibly use yes or no Decision Keywords
+        # Todo: There was a note on github that @intent_handler can be used more than once / intent
+        # Todo: I could have two intent_handlers that ".require" yes or no then evaluate from there
         decision_kw = message.data.get('DecisionKeyword')
         if decision_kw == 'yes':
             self.set_context('ListContextKeyword', 'ListContext')
@@ -702,6 +710,10 @@ class KodiSkill(MycroftSkill):
                     build())
     def handle_skip_movie_intent(self, message):
         method = "Player.Seek"
+        # Todo: Need to modify this to support multiple languages
+        # Todo: Possibly use forward or backward Decision Keywords
+        # Todo: There was a note on github that @intent_handler can be used more than once / intent
+        # Todo: I could have two intent_handlers that ".require" forward or backward then evaluate from there
         dir_kw = message.data.get("SkipDirectionKeyword")
         if dir_kw == "backward":
             dir_skip = "smallbackward"
@@ -1005,6 +1017,10 @@ class KodiSkill(MycroftSkill):
                     require('DecisionKeyword').build())
     def handle_youtube_play_type_decision_intent(self, message):
         self.set_context('PlaylistContextKeyword', '')
+        # Todo: Need to modify this to support multiple languages
+        # Todo: Possibly use yes or noo Decision Keywords
+        # Todo: There was a note on github that @intent_handler can be used more than once / intent
+        # Todo: I could have two intent_handlers that ".require" yes or no then evaluate from there
         decision_kw = message.data.get("DecisionKeyword")
         LOG.info('user responded with: ' + decision_kw)
         self.speak_dialog('play.youtube', data={"result": self.youtube_search}, expect_response=False)
