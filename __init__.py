@@ -540,19 +540,30 @@ class KodiSkill(MycroftSkill):
         self.speak_dialog("notification", data={"result": "Off"})
 
     @intent_handler(IntentBuilder('MoveCursorIntent').require('MoveKeyword').require('CursorKeyword').
-                    require('DirectionKeyword').build())
+                    one_of('UpKeyword', 'DownKeyword', 'LeftKeyword', 'RightKeyword', 'EnterKeyword',
+                           'SelectKeyword', 'BackKeyword').build())
     def handle_move_cursor_intent(self, message):  # a request was made to move the kodi cursor
         self.set_context('MoveKeyword', 'move')  # in future the user does not have to say the move keyword
         self.set_context('CursorKeyword', 'cursor')  # in future the user does not have to say the cursor keyword
-        # Todo: Need to correct this for multiple languages
-        # Todo: The api requires english direction words but that can't be guaranteed with multi-language support
-        # Todo: This could be challenging....
-        direction_kw = message.data.get("DirectionKeyword")
+        if "UpKeyword" in message.data:
+            direction_kw = "Up"
+        if "DownKeyword" in message.data:
+            direction_kw = "Down"
+        if "LeftKeyword" in message.data:
+            direction_kw = "Left"
+        if "RightKeyword" in message.data:
+            direction_kw = "Right"
+        if "EnterKeyword" in message.data:
+            direction_kw = "Enter"
+        if "SelectKeyword" in message.data:
+            direction_kw = "Select"
+        if "BackKeyword" in message.data:
+            direction_kw = "Back"
         repeat_count = self.repeat_regex(message.data.get('utterance'))
         LOG.info('utterance: ' + str(message.data.get('utterance')))
         LOG.info('repeat_count: ' + str(repeat_count))
         if direction_kw:
-            method = "Input." + direction_kw.capitalize()
+            method = "Input." + direction_kw
             for each_count in range(0, int(repeat_count)):
                 self.kodi_payload = {
                     "jsonrpc": "2.0",
