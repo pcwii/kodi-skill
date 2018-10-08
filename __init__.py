@@ -579,18 +579,24 @@ class KodiSkill(MycroftSkill):
             self.play_normal()
 
     @intent_handler(IntentBuilder('CinemavisionRequestIntent').require('CinemaVisionContextKeyword')
-                    .require('DecisionKeyword').build())
+                    .require('YesKeyword').build())
+    @intent_handler(IntentBuilder('CinemavisionRequestIntent').require('CinemaVisionContextKeyword')
+                    .require('NoKeyword').build())
     def handle_cinemavision_request_intent(self, message):  # Yes was spoken to navigate the list
         self.set_context('CinemaVisionContextKeyword', '')
         # Todo: Need to modify this to support multiple languages
         # Todo: Possibly use yes or no Decision Keywords
         # Todo: There was a note on github that @intent_handler can be used more than once / intent
         # Todo: I could have two intent_handlers that ".require" yes or no then evaluate from there
-        decision_kw = message.data.get("DecisionKeyword")
-        LOG.info('User responded with: ' + decision_kw)
-        if decision_kw == 'yes':
+        # decision_kw = message.data.get("DecisionKeyword")
+        # LOG.info('User responded with: ' + decision_kw)
+        #if decision_kw == 'yes':
+        yes_kw = message.data.get("YesKeyword")
+        if yes_kw:
+            LOG.info('User responded with: ' + message.data.get("YesKeyword"))
             self.play_cinemavision()
         else:
+            LOG.info('User responded with: ' + message.data.get("NoKeyword"))
             self.play_normal()
 
     def play_film_by_search(self, kodi_id, film_search):  # called from, handle_play_film_intent
