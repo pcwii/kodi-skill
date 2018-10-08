@@ -546,6 +546,7 @@ class KodiSkill(MycroftSkill):
         self.set_context('CursorKeyword', 'cursor')  # in future the user does not have to say the cursor keyword
         # Todo: Need to correct this for multiple languages
         # Todo: The api requires english direction words but that can't be guaranteed with multi-language support
+        # Todo: This could be challenging....
         direction_kw = message.data.get("DirectionKeyword")
         repeat_count = self.repeat_regex(message.data.get('utterance'))
         LOG.info('utterance: ' + str(message.data.get('utterance')))
@@ -584,13 +585,6 @@ class KodiSkill(MycroftSkill):
                     .require('NoKeyword').build())
     def handle_cinemavision_request_intent(self, message):  # Yes was spoken to navigate the list
         self.set_context('CinemaVisionContextKeyword', '')
-        # Todo: Need to modify this to support multiple languages
-        # Todo: Possibly use yes or no Decision Keywords
-        # Todo: There was a note on github that @intent_handler can be used more than once / intent
-        # Todo: I could have two intent_handlers that ".require" yes or no then evaluate from there
-        # decision_kw = message.data.get("DecisionKeyword")
-        # LOG.info('User responded with: ' + decision_kw)
-        #if decision_kw == 'yes':
         yes_kw = message.data.get("YesKeyword")
         if yes_kw:
             LOG.info('User responded with: ' + message.data.get("YesKeyword"))
@@ -627,20 +621,20 @@ class KodiSkill(MycroftSkill):
             self.stop_navigation(msg_payload)
 
     @intent_handler(IntentBuilder('NavigateDecisionIntent').require('NavigateContextKeyword').
-                    require('DecisionKeyword').build())
+                    require('YesKeyword').build())
+    @intent_handler(IntentBuilder('NavigateDecisionIntent').require('NavigateContextKeyword').
+                    require('NoKeyword').build())
     def handle_navigate_Decision_intent(self, message):  # Yes was spoken to navigate the list, reading the first item
         self.set_context('NavigateContextKeyword', '')
-        # Todo: Need to modify this to support multiple languages
-        # Todo: Possibly use yes or no Decision Keywords
-        # Todo: There was a note on github that @intent_handler can be used more than once / intent
-        # Todo: I could have two intent_handlers that ".require" yes or no then evaluate from there
-        decision_kw = message.data.get('DecisionKeyword')
-        if decision_kw == 'yes':
+        yes_kw = message.data.get('YesKeyword')
+        if yes_kw:
+            LOG.info('User responded with...' + message.data.get('YesKeyword'))
             self.set_context('ListContextKeyword', 'ListContext')
             msg_payload = str(self.movie_list[self.movie_index]['label']) + ", To Skip, say Next, Say play, " \
                                                                             "to play, or Stop, to stop"
             self.speak_dialog('context', data={"result": msg_payload}, expect_response=True)
         else:
+            LOG.info('User responded with...' + message.data.get('NoKeyword'))
             msg_payload = 'Movie List Navigation Canceled'
             self.stop_navigation(msg_payload)
 
@@ -712,16 +706,15 @@ class KodiSkill(MycroftSkill):
             LOG.error(e)
 
     @intent_handler(IntentBuilder('SkipMovieIntent').require("NextKeyword").require('FilmKeyword').
-                    require('SkipDirectionKeyword').
+                    require('BackwardKeyword').
+                    build())
+    @intent_handler(IntentBuilder('SkipMovieIntent').require("NextKeyword").require('FilmKeyword').
+                    require('ForwardKeyword').
                     build())
     def handle_skip_movie_intent(self, message):
         method = "Player.Seek"
-        # Todo: Need to modify this to support multiple languages
-        # Todo: Possibly use forward or backward Decision Keywords
-        # Todo: There was a note on github that @intent_handler can be used more than once / intent
-        # Todo: I could have two intent_handlers that ".require" forward or backward then evaluate from there
-        dir_kw = message.data.get("SkipDirectionKeyword")
-        if dir_kw == "backward":
+        backward_kw = message.data.get("BackwardKeyword")
+        if backward_kw:
             dir_skip = "smallbackward"
         else:
             dir_skip = "smallforward"
@@ -1020,17 +1013,14 @@ class KodiSkill(MycroftSkill):
             self.speak_dialog('youtube.addon.error', expect_response=False)
 
     @intent_handler(IntentBuilder('YoutubePlayTypeDecisionIntent').require('PlaylistContextKeyword').
-                    require('DecisionKeyword').build())
+                    require('YesKeyword').build())
+    @intent_handler(IntentBuilder('YoutubePlayTypeDecisionIntent').require('PlaylistContextKeyword').
+                    require('NoKeyword').build())
     def handle_youtube_play_type_decision_intent(self, message):
         self.set_context('PlaylistContextKeyword', '')
-        # Todo: Need to modify this to support multiple languages
-        # Todo: Possibly use yes or noo Decision Keywords
-        # Todo: There was a note on github that @intent_handler can be used more than once / intent
-        # Todo: I could have two intent_handlers that ".require" yes or no then evaluate from there
-        decision_kw = message.data.get("DecisionKeyword")
-        LOG.info('user responded with: ' + decision_kw)
+        yes_kw = message.data.get("YesKeyword")
         self.speak_dialog('play.youtube', data={"result": self.youtube_search}, expect_response=False)
-        if decision_kw == 'yes':
+        if yes_kw:
             LOG.info('Playing youtube id: ' + str(self.youtube_id[1]))
             self.play_youtube_video(self.youtube_id[1])
         else:
