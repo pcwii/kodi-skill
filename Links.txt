@@ -2,3 +2,13 @@ https://kodi.wiki/index.php?title=JSON-RPC_API/v6
 https://kodi.wiki/view/JSON-RPC_API/v8
 https://mycroft.ai/documentation/skills/conversational-context/
 https://regex101.com/
+
+Options to turn on / off CEC from command
+~$ echo "on 0" | cec-client -d 1 -s #turn TV on
+log level set to 1
+opening a connection to the CEC adapter...
+
+
+~$ echo "standby 0" | cec-client -d 1 -s #turn TV off
+log level set to 1
+opening a connection to the CEC adapter...
