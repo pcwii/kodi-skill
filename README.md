@@ -85,3 +85,6 @@ Tested on platform_picroft (others untested)
 - ~~Add play "from youtube" option for videos / music~~ (Complete)
 - ~~Clean up decision tree, requires significant pruning~~ ;-)
 - Show a filtered list of movies when a play request returns multiple results (WIP)
+- Add support for the CommonPlay Skill Infrastructure (WIP)
+- Investigate other play functions for music / episodes / pvr
+- Investigate method to handle multiple KODI instances on network 
