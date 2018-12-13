@@ -58,7 +58,7 @@ playback of the movie that was selected.
 ## Category
 **Media**
 ## Tags
-'#kodi, #leia, #mycroft.ai, #python, #skills #youtube'
+'#kodi, #Krypton #Leia, #mycroft.ai, #python, #skills #youtube'
 ## Require 
 Tested on platform_picroft (others untested) 
 ## Other Requirements
