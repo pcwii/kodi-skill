@@ -1,4 +1,4 @@
-# <img src='https://rawgithub.com/FortAwesome/Font-Awesome/master/advanced-options/raw-svg/solid/tv.svg' card_color='#40dbb0' width='50' height='50' style='vertical-align:bottom'/> Kodi Control
+# <img src='https://raw.githack.com/FortAwesome/Font-Awesome/master/svgs/solid/tv.svg' card_color='#40DBB0' width='50' height='50' style='vertical-align:bottom'/> Kodi Control
 Control KODI open source media center with Mycroft.ai
 
 ## About 
@@ -53,10 +53,14 @@ playback of the movie that was selected.
 * Request: "Play the official captain marvel trailer from youtube"
 * Request: "Stop youtube"
 ## Credits 
-PCWii
+* PCWii
+* Original work forked from https://github.com/Cadair/mycroft-kodi
 
 ## Category
 **Media**
+
+## Tags
+'#kodi, #leia, #mycroft.ai, #python, #skills #youtube'
 
 ## Require 
 Tested on platform_picroft (others untested) 
