@@ -33,7 +33,7 @@ The Kodi Skill uses conversational dialog to help you to control your KODI insta
 * "list all movies"
 ## Conversational Context
 ** If mycroft.ai locates more than one movie that matches your request it will permit you to itterate through your requests
-* using conversational context.
+using conversational context.
 * eg. "hey mycroft:"
 * Request: "play the move Iron Man"
 * Response: "I have located 3 movies with the name Iron Man, would you like me to list them?"
@@ -55,13 +55,10 @@ playback of the movie that was selected.
 ## Credits 
 * PCWii
 * Original work forked from https://github.com/Cadair/mycroft-kodi
-
 ## Category
 **Media**
-
 ## Tags
 '#kodi, #leia, #mycroft.ai, #python, #skills #youtube'
-
 ## Require 
 Tested on platform_picroft (others untested) 
 ## Other Requirements
@@ -75,7 +72,6 @@ Tested on platform_picroft (others untested)
 - Configure Kodi to “allow remote control from applications on other systems”, under the Kodi settings:services
 - Under Kodi settings:services note the port number (8080)
 - Configure home.mycroft.ai to set your kodi instance ip address and port number
-
 ## Todo
 - Convert all kodipydent functions to json requests (WIP)
 - ~~Enable username and password support in webgui~~ (Complete)
