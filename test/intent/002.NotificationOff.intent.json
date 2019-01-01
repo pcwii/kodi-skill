@@ -2,7 +2,7 @@
     "utterance": "turn kodi notifications off",
     "intent_type": "NotifyOffIntent",
     "intent": {
-        "NotificationKeyword": "notifications",
+        "NotificationKeyword": "notification",
         "OnKeyword": "off",
         "KodiKeyword": "kodi"
     },
