@@ -88,3 +88,4 @@ Tested on platform_picroft (others untested)
 - Add support for the CommonPlay Skill Infrastructure (WIP)
 - Investigate other play functions for music / episodes / pvr
 - Investigate method to handle multiple KODI instances on network 
+- Add a single stop command for all playing items
