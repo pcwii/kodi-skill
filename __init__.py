@@ -543,8 +543,8 @@ class KodiSkill(MycroftSkill):
         try:
             LOG.info("movie: " + movie_name)
             # TODO - remove kodipydent usage
-            # self.play_film_by_search(movie_name)
-            self.play_film_with_search(movie_name)
+            self.play_film_by_search(movie_name)
+            # self.play_film_with_search(movie_name)
         except Exception as e:
             LOG.info('an error was detected')
             # LOG.error(e)
@@ -659,28 +659,32 @@ class KodiSkill(MycroftSkill):
         # Todo need to remove kodi_id (kodipydent) reference
         LOG.info("kodi ID: " + 1)
         LOG.info("film: " + search_for)
-        results = self.find_films_matching(1, film_search)
-        self.movie_list = results
-        self.movie_index = 0
-        if len(results) == 1:
-            self.play_film(results[0]['movieid'])
-        elif len(results):
-            self.set_context('NavigateContextKeyword', 'NavigateContext')
-            if self.notifier_bool:
-                try:
-                    self.post_kodi_notification(film_search + ' : '+ str(len(results)))
-                except Exception as e:
-                    LOG.error(e)
-                    self.on_websettings_changed()
-            self.speak_dialog('multiple.results', data={"result": str(len(results))}, expect_response=True)
-        else:
-            if self.notifier_bool:
-                try:
-                    self.post_kodi_notification(film_search + ' : '+ str(len(results)))
-                except Exception as e:
-                    LOG.error(e)
-                    self.on_websettings_changed()
-            self.speak_dialog('no.results', data={"result": film_search}, expect_response=False)
+        try:
+            results = self.find_films_matching(1, film_search)
+            self.movie_list = results
+            self.movie_index = 0
+            if len(results) == 1:
+                self.play_film(results[0]['movieid'])
+            elif len(results):
+                self.set_context('NavigateContextKeyword', 'NavigateContext')
+                if self.notifier_bool:
+                    try:
+                        self.post_kodi_notification(film_search + ' : '+ str(len(results)))
+                    except Exception as e:
+                        LOG.error(e)
+                        self.on_websettings_changed()
+                self.speak_dialog('multiple.results', data={"result": str(len(results))}, expect_response=True)
+            else:
+                if self.notifier_bool:
+                    try:
+                        self.post_kodi_notification(film_search + ' : '+ str(len(results)))
+                    except Exception as e:
+                        LOG.error(e)
+                        self.on_websettings_changed()
+                self.speak_dialog('no.results', data={"result": film_search}, expect_response=False)
+        except Exception as e:
+            LOG.error(e)
+
 
     # movie list navigation decision utterance
     @intent_handler(IntentBuilder('NavigateDecisionIntent').require('NavigateContextKeyword').
