@@ -652,7 +652,7 @@ class KodiSkill(MycroftSkill):
         # Todo need to remove kodi_id (kodipydent) reference
         LOG.info("kodi ID: " + 1)
         LOG.info("film: " + film_search)
-        results = self.find_films_matching(kodi_id, film_search)
+        results = self.find_films_matching(1, film_search)
         self.movie_list = results
         self.movie_index = 0
         if len(results) == 1:
