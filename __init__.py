@@ -543,7 +543,7 @@ class KodiSkill(MycroftSkill):
         try:
             LOG.info("movie: " + movie_name)
             # TODO - remove kodipydent usage
-            self.play_film_by_search(movie_name)
+            # self.play_film_by_search(movie_name)
         except Exception as e:
             LOG.error(e)
             self.on_websettings_changed()
