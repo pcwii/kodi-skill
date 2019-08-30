@@ -70,7 +70,7 @@ class KodiSkill(MycroftSkill):
 
         # eg. play the film iron man
         play_film_intent = IntentBuilder("PlayFilmIntent"). \
-            require("PlayKeyword").require("FilmKeyword").optionally("CinemaVisionKeyword").build()
+            require("AskKeyword").require("KodiKeyword").require("PlayKeyword").require("FilmKeyword").optionally("CinemaVisionKeyword").build()
         self.register_intent(play_film_intent, self.handle_play_film_intent)
 
         # eg. stop the movie
@@ -1048,8 +1048,8 @@ class KodiSkill(MycroftSkill):
             LOG.error(e)
 
     # user has requested to play a video from youtube
-    @intent_handler(IntentBuilder('PlayYoutubeIntent').require("PlayKeyword").require('FromYoutubeKeyword').
-                    build())
+    @intent_handler(IntentBuilder('PlayYoutubeIntent').require("AskKeyword").require("KodiKeyword").
+                    require("PlayKeyword").require('FromYoutubeKeyword').build())
     def handle_play_youtube_intent(self, message):
         self.youtube_search = self.youtube_query_regex(message.data.get('utterance'))
         self.youtube_id = self.get_youtube_links(self.youtube_search)

@@ -6,36 +6,36 @@ Utilize the kodi API and Python library for controlling the KODI open source med
 The Kodi Skill uses conversational dialog to help you to control your KODI instance more naturally. 
 
 ## Examples 
-* "play the movie guardians of the galaxy"
-* "play the film planet of the apes"
+* "ask kodi to play the movie guardians of the galaxy"
+* "ask kodi to play the film planet of the apes"
 * "turn kodi subtitles on"
 * "turn kodi subtitles off"
-* "skip movie forward"
-* "skip movie backward"
-* "pause the movie"
-* "re-start the movie"
-* "stop the movie"
-* "show the movie information"
-* "hide the movie information"
+* "skip kodi forward"
+* "skip kodi backward"
+* "pause kodi"
+* "re-start kodi"
+* "stop kodi"
+* "show kodi movie information"
+* "hide kodi movie information"
 * "turn kodi notifications on"
 * "turn kodi notifications off"
-* "move the cursor up / down / left / right / back / select / cancel"
-* "move the cursor right 3 times"
-* "move the cursor down twice"
+* "move the kodi cursor up / down / left / right / back / select / cancel"
+* "move the kodi cursor right 3 times"
+* "move the kodi cursor down twice"
 * "update the kodi library"
 * "clean the kodi library"
-* "list recently added movies"
-* "list the movies by genre"
-* "list the movies by studio"
-* "list movie sets"
-* "list movies by title"
-* "list movies by actor"
-* "list all movies"
+* "ask kodi to list recently added movies"
+* "ask kodi to list the movies by genre"
+* "ask kodi to list the movies by studio"
+* "list kodi movie sets"
+* "list kodi movies by title"
+* "list kodi movies by actor"
+* "list all kodi movies"
 ## Conversational Context
 ** If mycroft.ai locates more than one movie that matches your request it will permit you to itterate through your requests
 using conversational context.
 * eg. "hey mycroft:"
-* Request: "play the move Iron Man"
+* Request: "ask kodi to play the move Iron Man"
 * Response: "I have located 3 movies with the name Iron Man, would you like me to list them?"
 * Request: "yes" / "no"
 * Response: "Iron Man, to Skip, say Next, say play, to play, or Cancel, to stop"
@@ -49,9 +49,9 @@ playback of the movie that was selected.
 * Response: "Would you like to play the movie using cinemavision?"
 * Request: "yes / no"
 ## Youtube Addon
-* Request: "play some Elton John from youtube
-* Request: "Play the official captain marvel trailer from youtube"
-* Request: "Stop youtube"
+* Request: "ask kodi to play some Elton John from youtube
+* Request: "ask kodi to Play the official captain marvel trailer from youtube"
+* Request: "Stop kodi"
 ## Credits 
 * PCWii
 * Original work forked from https://github.com/Cadair/mycroft-kodi
@@ -89,3 +89,4 @@ Tested on platform_picroft (others untested)
 - Investigate other play functions for music / episodes / pvr
 - Investigate method to handle multiple KODI instances on network 
 - Add a single stop command for all playing items
+- Change skill call trigger words to reduce CommonPlay conflicts
