@@ -543,8 +543,8 @@ class KodiSkill(MycroftSkill):
         try:
             LOG.info("movie: " + movie_name)
             # TODO - remove kodipydent usage
-            # self.play_film_by_search(movie_name)
-            self.play_film_test_search(movie_name)
+            self.play_film_by_search(movie_name)
+            #self.play_film_test_search(movie_name)
         except Exception as e:
             LOG.info('an error was detected')
             # LOG.error(e)
@@ -653,10 +653,10 @@ class KodiSkill(MycroftSkill):
         LOG.info("film: " + search_for)
 
     # called from, handle_play_film_intent
-    def play_film_by_search(self, film_search):
+    def play_film_by_search(self, search_for):
         # Todo need to remove kodi_id (kodipydent) reference
         LOG.info("kodi ID: " + 1)
-        LOG.info("film: " + film_search)
+        LOG.info("film: " + search_for)
         results = self.find_films_matching(1, film_search)
         self.movie_list = results
         self.movie_index = 0
