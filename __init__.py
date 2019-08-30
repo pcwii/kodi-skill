@@ -543,7 +543,7 @@ class KodiSkill(MycroftSkill):
         try:
             LOG.info("movie: " + movie_name)
             # TODO - remove kodipydent usage
-            self.play_film_by_search(self.kodi_instance, movie_name)
+            self.play_film_by_search(movie_name)
         except Exception as e:
             LOG.error(e)
             self.on_websettings_changed()
@@ -648,9 +648,9 @@ class KodiSkill(MycroftSkill):
             self.play_normal()
 
     # called from, handle_play_film_intent
-    def play_film_by_search(self, kodi_id, film_search):
+    def play_film_by_search(self, film_search):
         # Todo need to remove kodi_id (kodipydent) reference
-        LOG.info("kodi ID: " + kodi_id)
+        LOG.info("kodi ID: " + 1)
         LOG.info("film: " + film_search)
         results = self.find_films_matching(kodi_id, film_search)
         self.movie_list = results
