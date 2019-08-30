@@ -70,10 +70,10 @@ class KodiSkill(MycroftSkill):
 
         # eg. play the film iron man
         # changed this intent to avoid the common-play-framework
-        play_film_intent = IntentBuilder("PlayFilmIntent"). \
-            require("AskKeyword").require("KodiKeyword").require("PlayKeyword").require("FilmKeyword"). \
-            optionally("CinemaVisionKeyword").build()
-        self.register_intent(play_film_intent, self.handle_play_film_intent)
+#        play_film_intent = IntentBuilder("PlayFilmIntent"). \
+#            require("AskKeyword").require("KodiKeyword").require("PlayKeyword").require("FilmKeyword"). \
+#            optionally("CinemaVisionKeyword").build()
+#        self.register_intent(play_film_intent, self.handle_play_film_intent)
 
         # eg. stop the movie
         stop_film_intent = IntentBuilder("StopFilmIntent"). \
@@ -526,8 +526,14 @@ class KodiSkill(MycroftSkill):
                 self.on_websettings_changed()
 
     # play file was requested in the utterance
+    #        play_film_intent = IntentBuilder("PlayFilmIntent"). \
+    #            require("AskKeyword").require("KodiKeyword").require("PlayKeyword").require("FilmKeyword"). \
+    #            optionally("CinemaVisionKeyword").build()
+    #        self.register_intent(play_film_intent, self.handle_play_film_intent)
+    @intent_handler(IntentBuilder('PlayFilmIntent').require("AskKeyword").require("KodiKeyword").
+                    require("PlayKeyword").build())
     def handle_play_film_intent(self, message):
-        log.info("Called Play Film Intent")
+        LOG.info("Called Play Film Intent")
         if message.data.get("CinemaVisionKeyword"):
             self.cv_request = True
         else:
