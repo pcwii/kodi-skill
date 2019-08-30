@@ -69,8 +69,10 @@ class KodiSkill(MycroftSkill):
         self.add_event('speak', self.handle_speak)
 
         # eg. play the film iron man
+        # changed this intent to avoid the common-play-framework
         play_film_intent = IntentBuilder("PlayFilmIntent"). \
-            require("AskKeyword").require("KodiKeyword").require("PlayKeyword").require("FilmKeyword").optionally("CinemaVisionKeyword").build()
+            require("AskKeyword").require("KodiKeyword").require("PlayKeyword").require("FilmKeyword").\
+            optionally("CinemaVisionKeyword").build()
         self.register_intent(play_film_intent, self.handle_play_film_intent)
 
         # eg. stop the movie
@@ -1048,6 +1050,7 @@ class KodiSkill(MycroftSkill):
             LOG.error(e)
 
     # user has requested to play a video from youtube
+    # changed this intent to avoid common-play-framework
     @intent_handler(IntentBuilder('PlayYoutubeIntent').require("AskKeyword").require("KodiKeyword").
                     require("PlayKeyword").require('FromYoutubeKeyword').build())
     def handle_play_youtube_intent(self, message):
