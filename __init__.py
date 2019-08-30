@@ -362,6 +362,7 @@ class KodiSkill(MycroftSkill):
                 group_id = "Film2"
                 my_movie = "{group}".format(group=film_match.group(group_id))
                 self.cv_request = True
+        LOG.info(my_movie)
         my_movie = re.sub('\W', ' ', my_movie)
         my_movie = re.sub(' +', ' ', my_movie)
         return my_movie.strip()
