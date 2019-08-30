@@ -649,6 +649,8 @@ class KodiSkill(MycroftSkill):
     # called from, handle_play_film_intent
     def play_film_by_search(self, kodi_id, film_search):
         # Todo need to remove kodi_id (kodipydent) reference
+        LOG.info("kodi ID: " + kodi_id)
+        LOG.info("film: " + film_search)
         results = self.find_films_matching(kodi_id, film_search)
         self.movie_list = results
         self.movie_index = 0
