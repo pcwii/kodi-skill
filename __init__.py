@@ -71,7 +71,7 @@ class KodiSkill(MycroftSkill):
         # eg. play the film iron man
         # changed this intent to avoid the common-play-framework
         play_film_intent = IntentBuilder("PlayFilmIntent"). \
-            require("AskKeyword").require("KodiKeyword").require("PlayKeyword").require("FilmKeyword").\
+            require("AskKeyword").require("KodiKeyword").require("PlayKeyword").require("FilmKeyword"). \
             optionally("CinemaVisionKeyword").build()
         self.register_intent(play_film_intent, self.handle_play_film_intent)
 
@@ -527,6 +527,7 @@ class KodiSkill(MycroftSkill):
 
     # play file was requested in the utterance
     def handle_play_film_intent(self, message):
+        log.info("Called Play Film Intent")
         if message.data.get("CinemaVisionKeyword"):
             self.cv_request = True
         else:
