@@ -295,9 +295,10 @@ class KodiSkill(MycroftSkill):
             LOG.error(e)
 
     # called from, play_film_by_search
-    def find_films_matching(self, kodi_id, search):
+    def find_films_matching(self, search):
         # Todo remove kodipydent reference (kodi_id)
-        my_movies = kodi_id.VideoLibrary.GetMovies()['result']['movies']
+        LOG.info("find films matching: " + search)
+        #my_movies = kodi_id.VideoLibrary.GetMovies()['result']['movies']
         results = []
         for m in my_movies:
             index_movie = re.sub('\W', ' ', m['label'].lower())
@@ -543,8 +544,8 @@ class KodiSkill(MycroftSkill):
         try:
             LOG.info("movie: " + movie_name)
             # TODO - remove kodipydent usage
-            self.play_film_by_search(movie_name)
-            # self.play_film_with_search(movie_name)
+            # self.play_film_by_search(movie_name)
+            self.play_film_with_search(movie_name)
         except Exception as e:
             LOG.info('an error was detected')
             # LOG.error(e)
@@ -651,7 +652,7 @@ class KodiSkill(MycroftSkill):
 
     def play_film_with_search(self, search_for):
         LOG.info("film: " + search_for)
-        results = self.find_films_matching(1, search_for)
+        results = self.find_films_matching(search_for)
         LOG.info("found qty: " + results)
 
     # called from, handle_play_film_intent
