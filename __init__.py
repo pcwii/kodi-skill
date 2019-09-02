@@ -17,7 +17,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from kodipydent import Kodi
+# from kodipydent import Kodi
 import requests
 import re
 import time
@@ -68,13 +68,6 @@ class KodiSkill(MycroftSkill):
         self.add_event('recognizer_loop:utterance', self.handle_utterance)
         self.add_event('speak', self.handle_speak)
 
-        # eg. play the film iron man
-        # changed this intent to avoid the common-play-framework
-#        play_film_intent = IntentBuilder("PlayFilmIntent"). \
-#            require("AskKeyword").require("KodiKeyword").require("PlayKeyword").require("FilmKeyword"). \
-#            optionally("CinemaVisionKeyword").build()
-#        self.register_intent(play_film_intent, self.handle_play_film_intent)
-
         # eg. stop the movie
         stop_film_intent = IntentBuilder("StopFilmIntent"). \
             require("StopKeyword").require("FilmKeyword").build()
@@ -115,10 +108,10 @@ class KodiSkill(MycroftSkill):
                     kodi_user = self.settings["kodi_user"]
                     kodi_pass = self.settings["kodi_pass"]
                     # TODO - remove kodipydent usage
-                    self.kodi_instance = Kodi(hostname=kodi_ip,
-                                              port=kodi_port,
-                                              username=kodi_user,
-                                              password=kodi_pass)
+#                    self.kodi_instance = Kodi(hostname=kodi_ip,
+#                                              port=kodi_port,
+#                                              username=kodi_user,
+#                                              password=kodi_pass)
                     self.kodi_path = "http://" + kodi_user + ":" + kodi_pass + "@" + kodi_ip + ":" + str(kodi_port) + \
                                      "/jsonrpc"
                     self._is_setup = True
@@ -223,7 +216,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    # add the movieid to the active playlist
+    # add the movieid to the active playlist movieid is an integer
     def add_playlist(self, movieid):
         method = "Playlist.Add"
         self.kodi_payload = {
@@ -243,7 +236,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    # stop any playing movie
+    # stop any playing movie not youtube
     def stop_movie(self):
         method = "Player.Stop"
         self.kodi_payload = {
@@ -260,7 +253,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    # pause any playing movie
+    # pause any playing movie not youtube
     def pause_movie(self):
         method = "Player.PlayPause"
         self.kodi_payload = {
@@ -277,7 +270,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    # resume any paused movies
+    # resume any paused movies not youtube
     def resume_movie(self):
         method = "Player.PlayPause"
         self.kodi_payload = {
@@ -294,7 +287,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    # called from, play_film_by_search
+    # called from, play_film_by_search search term is a string of the movie(s) to find
     def find_films_matching(self, search):
         # Todo remove kodipydent reference (kodi_id)
         LOG.info("find films matching: " + search)
@@ -527,13 +520,9 @@ class KodiSkill(MycroftSkill):
                 LOG.error(e)
                 self.on_websettings_changed()
 
-    # play file was requested in the utterance
-    #        play_film_intent = IntentBuilder("PlayFilmIntent"). \
-    #            require("AskKeyword").require("KodiKeyword").require("PlayKeyword").require("FilmKeyword"). \
-    #            optionally("CinemaVisionKeyword").build()
-    #        self.register_intent(play_film_intent, self.handle_play_film_intent)
+    # Primary Play Movie request
     @intent_handler(IntentBuilder('PlayFilmIntent').require("AskKeyword").require("KodiKeyword").
-                    require("PlayKeyword").build())
+                    require("PlayKeyword").optionally("CinemaVisionKeyword").build())
     def handle_play_film_intent(self, message):
         LOG.info("Called Play Film Intent")
         if message.data.get("CinemaVisionKeyword"):
@@ -544,12 +533,11 @@ class KodiSkill(MycroftSkill):
         try:
             LOG.info("movie: " + movie_name)
             # TODO - remove kodipydent usage
-            # self.play_film_by_search(movie_name)
-            self.play_film_with_search(movie_name)
+            self.play_film_by_search(movie_name)
         except Exception as e:
             LOG.info('an error was detected')
-            # LOG.error(e)
-            # self.on_websettings_changed()
+            LOG.error(e)
+            self.on_websettings_changed()
 
     # stop film was requested in the utterance
     def handle_stop_film_intent(self, message):
@@ -650,10 +638,6 @@ class KodiSkill(MycroftSkill):
             LOG.info('User responded with: ' + message.data.get("NoKeyword"))
             self.play_normal()
 
-    def play_film_with_search(self, search_for):
-        LOG.info("film: " + search_for)
-        results = self.find_films_matching(search_for)
-        LOG.info("found qty: " + results)
 
     # called from, handle_play_film_intent
     def play_film_by_search(self, search_for):
