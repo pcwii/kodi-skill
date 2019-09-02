@@ -134,7 +134,7 @@ class KodiSkill(MycroftSkill):
         return content
 
     # gets the current movie library returns movie properties including id and names
-    def get_all_movies():
+    def get_all_movies(self):
         method = "VideoLibrary.GetMovies"
         kodi_payload = {
             "jsonrpc": "2.0",
