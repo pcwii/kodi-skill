@@ -568,7 +568,7 @@ class KodiSkill(MycroftSkill):
         movie_name = self.movie_regex(message.data.get('utterance'))
         try:
             LOG.info("movie: " + movie_name)
-            movie_list = find_movie_match(movie_name, list_all_movies())
+            movie_list = self.find_movie_match(movie_name, list_all_movies())
             print("possible movies are: " + movie_list)
 
         except Exception as e:
