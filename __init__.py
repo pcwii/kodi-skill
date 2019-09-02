@@ -686,6 +686,7 @@ class KodiSkill(MycroftSkill):
         try:
             results = self.find_films_matching(1, movie_name)
             self.movie_list = results
+            LOG.info("found the following films: " + self.movie_list)
             self.movie_index = 0
             if len(results) == 1:
                 self.play_film(results[0]['movieid'])
