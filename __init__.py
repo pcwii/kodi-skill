@@ -575,8 +575,8 @@ class KodiSkill(MycroftSkill):
         try:
             LOG.info("movie: " + movie_name)
             # TODO - remove kodipydent usage
-            self.play_film_by_search(movie_name)
-            #self.search_film_to_play(movie_name)
+            #self.play_film_by_search(movie_name)
+            self.search_film_to_play(movie_name)
         except Exception as e:
             LOG.info('an error was detected')
             LOG.error(e)
@@ -683,6 +683,31 @@ class KodiSkill(MycroftSkill):
 
     def search_film_to_play(self, movie_name):
         LOG.info("searching for film: " + movie_name)
+        try:
+            results = self.find_films_matching(1, movie_name)
+            self.movie_list = results
+            self.movie_index = 0
+            if len(results) == 1:
+                self.play_film(results[0]['movieid'])
+            elif len(results):
+                self.set_context('NavigateContextKeyword', 'NavigateContext')
+                if self.notifier_bool:
+                    try:
+                        self.post_kodi_notification(film_search + ' : ' + str(len(results)))
+                    except Exception as e:
+                        LOG.error(e)
+                        self.on_websettings_changed()
+                self.speak_dialog('multiple.results', data={"result": str(len(results))}, expect_response=True)
+            else:
+                if self.notifier_bool:
+                    try:
+                        self.post_kodi_notification(film_search + ' : ' + str(len(results)))
+                    except Exception as e:
+                        LOG.error(e)
+                        self.on_websettings_changed()
+                self.speak_dialog('no.results', data={"result": film_search}, expect_response=False)
+        except Exception as e:
+            LOG.error(e)
 
     # called from, handle_play_film_intent
     def play_film_by_search(self, movie_name):
