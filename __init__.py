@@ -4,7 +4,7 @@ from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill, intent_handler, intent_file_handler
 from mycroft.util.log import getLogger
 from mycroft.util.log import LOG
-from mycroft.skills.context import adds_context, removes_context
+# from mycroft.skills.context import adds_context, removes_context
 '''
 also use self.remove_context(s, x)
 also use self.set_context(s,x)
@@ -107,17 +107,13 @@ class KodiSkill(MycroftSkill):
                     kodi_port = self.settings["kodi_port"]
                     kodi_user = self.settings["kodi_user"]
                     kodi_pass = self.settings["kodi_pass"]
-                    # TODO - remove kodipydent usage
-#                    self.kodi_instance = Kodi(hostname=kodi_ip,
-#                                              port=kodi_port,
-#                                              username=kodi_user,
-#                                              password=kodi_pass)
                     self.kodi_path = "http://" + kodi_user + ":" + kodi_pass + "@" + kodi_ip + ":" + str(kodi_port) + \
                                      "/jsonrpc"
                     self._is_setup = True
             except Exception as e:
                 LOG.error(e)
 
+    # Uses the retrieved list of movies to search for all possible move names returns a list of names
     def find_movie_match(self, movie_name):
         movie_list = self.list_all_movies()
         content = []  # this is a dict
@@ -137,7 +133,8 @@ class KodiSkill(MycroftSkill):
                 print(content)
         return content
 
-    def list_all_movies():
+    # gets the current movie library returns movie properties including id and names
+    def get_all_movies():
         method = "VideoLibrary.GetMovies"
         kodi_payload = {
             "jsonrpc": "2.0",
@@ -215,7 +212,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    # play the movie playlist with cinemavision addon
+    # play the movie playlist with cinemavision addon, assumes the playlist is already populated
     def play_cinemavision(self):
         method = "Addons.ExecuteAddon"
         self.cv_payload = {
@@ -236,7 +233,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    # play the movie playlist normally without any addons
+    # play the movie playlist normally without any addons, assumes there are movies in the playlist
     def play_normal(self):
         method = "player.open"
         self.kodi_payload = {
@@ -327,21 +324,6 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    # called from, play_film_by_search search term is a string of the movie(s) to find
-    def find_films_matching(self, search):
-        # Todo remove kodipydent reference (kodi_id)
-        LOG.info("find films matching: " + search)
-        #my_movies = kodi_id.VideoLibrary.GetMovies()['result']['movies']
-        my_movies = self.search_film_to_play(movie_name)
-        results = []
-        for m in my_movies:
-            index_movie = re.sub('\W', ' ', m['label'].lower())
-            index_movie = re.sub(' +', ' ', index_movie)
-            if search in index_movie:
-                results.append(m)
-        return results
-
-
     # check if the youtube addon exists
     def check_youtube_present(self):
         method = "Addons.GetAddons"
@@ -384,6 +366,20 @@ class KodiSkill(MycroftSkill):
             return True
         else:
             return False
+
+    # called from, play_film_by_search search term is a string of the movie(s) to find
+    def find_films_matching(self, search):
+        # Todo remove kodipydent reference (kodi_id)
+        LOG.info("find films matching: " + search)
+        # my_movies = kodi_id.VideoLibrary.GetMovies()['result']['movies']
+        my_movies = self.search_film_to_play(movie_name)
+        results = []
+        for m in my_movies:
+            index_movie = re.sub('\W', ' ', m['label'].lower())
+            index_movie = re.sub(' +', ' ', index_movie)
+            if search in index_movie:
+                results.append(m)
+        return results
 
     # use regex to find any movie names found in the utterance
     def movie_regex(self, message):
@@ -574,8 +570,6 @@ class KodiSkill(MycroftSkill):
         movie_name = self.movie_regex(message.data.get('utterance'))
         try:
             LOG.info("movie: " + movie_name)
-            # TODO - remove kodipydent usage
-            #self.play_film_by_search(movie_name)
             self.search_film_to_play(movie_name)
         except Exception as e:
             LOG.info('an error was detected')
@@ -688,38 +682,6 @@ class KodiSkill(MycroftSkill):
             self.movie_list = results
         except Exception as e:
             LOG.error(e)
-
-    # called from, handle_play_film_intent
-    def play_film_by_search(self, movie_name):
-        # Todo need to remove kodi_id (kodipydent) reference
-        LOG.info("kodi ID: " + 1)
-        LOG.info("film: " + movie_name)
-        try:
-            results = self.find_films_matching()
-            self.movie_list = results
-            self.movie_index = 0
-            if len(results) == 1:
-                self.play_film(results[0]['movieid'])
-            elif len(results):
-                self.set_context('NavigateContextKeyword', 'NavigateContext')
-                if self.notifier_bool:
-                    try:
-                        self.post_kodi_notification(film_search + ' : '+ str(len(results)))
-                    except Exception as e:
-                        LOG.error(e)
-                        self.on_websettings_changed()
-                self.speak_dialog('multiple.results', data={"result": str(len(results))}, expect_response=True)
-            else:
-                if self.notifier_bool:
-                    try:
-                        self.post_kodi_notification(film_search + ' : '+ str(len(results)))
-                    except Exception as e:
-                        LOG.error(e)
-                        self.on_websettings_changed()
-                self.speak_dialog('no.results', data={"result": film_search}, expect_response=False)
-        except Exception as e:
-            LOG.error(e)
-
 
     # movie list navigation decision utterance
     @intent_handler(IntentBuilder('NavigateDecisionIntent').require('NavigateContextKeyword').
