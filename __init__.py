@@ -676,10 +676,10 @@ class KodiSkill(MycroftSkill):
             self.play_normal()
 
     def search_film_to_play(self, movie_name):
-        LOG.info("searching for film: " + movie_name)
         try:
-            results = self.find_films_matching(movie_name)
-            self.movie_list = results
+            LOG.info("searching for film: " + movie_name)
+            #results = self.find_films_matching(movie_name)
+            #self.movie_list = results
         except Exception as e:
             LOG.error(e)
 
