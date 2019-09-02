@@ -533,7 +533,8 @@ class KodiSkill(MycroftSkill):
         try:
             LOG.info("movie: " + movie_name)
             # TODO - remove kodipydent usage
-            self.play_film_by_search(movie_name)
+            #self.play_film_by_search(movie_name)
+            self.search_film_to_play(movie_name)
         except Exception as e:
             LOG.info('an error was detected')
             LOG.error(e)
@@ -638,6 +639,8 @@ class KodiSkill(MycroftSkill):
             LOG.info('User responded with: ' + message.data.get("NoKeyword"))
             self.play_normal()
 
+    def search_film_to_play(self, movie_name):
+        LOG.info("searching for film: " + movie_name)
 
     # called from, handle_play_film_intent
     def play_film_by_search(self, search_for):
