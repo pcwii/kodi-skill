@@ -368,10 +368,8 @@ class KodiSkill(MycroftSkill):
             return False
 
     # called from, play_film_by_search search term is a string of the movie(s) to find
-    def find_films_matching(self, search):
-        # Todo remove kodipydent reference (kodi_id)
-        LOG.info("find films matching: " + search)
-        # my_movies = kodi_id.VideoLibrary.GetMovies()['result']['movies']
+    def find_films_matching(self, movie_name):
+        LOG.info("find films matching: " + movie_name)
         my_movies = self.search_film_to_play(movie_name)
         results = []
         for m in my_movies:
@@ -570,7 +568,9 @@ class KodiSkill(MycroftSkill):
         movie_name = self.movie_regex(message.data.get('utterance'))
         try:
             LOG.info("movie: " + movie_name)
-            self.search_film_to_play(movie_name)
+            movie_list = find_movie_match(movie_name, list_all_movies())
+            print("possible movies are: " + movie_list)
+
         except Exception as e:
             LOG.info('an error was detected')
             LOG.error(e)
