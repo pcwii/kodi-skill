@@ -118,6 +118,46 @@ class KodiSkill(MycroftSkill):
             except Exception as e:
                 LOG.error(e)
 
+    def find_movie_match(self, movie_name):
+        movie_list = self.list_all_movies()
+        content = []  # this is a dict
+        for movie in movie_list:
+            movie_title = str(movie['label'])
+            if movie_name.lower() in movie_title.lower():
+                # print(movie['label'])
+                info = {
+                    "label": movie['label'],
+                    "movieid": movie['movieid']
+                }
+                print('current movie: ' + movie['label'])
+                # print(content)
+                for entry in content:
+                    print(entry['label'])
+                content.append(info)
+                print(content)
+        return content
+
+    def list_all_movies():
+        method = "VideoLibrary.GetMovies"
+        kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "id": 1,
+            "params": {
+                "properties": [
+                ],
+            }
+        }
+        try:
+            kodi_response = requests.post(kodi_path, data=json.dumps(kodi_payload), headers=json_header)
+            print(kodi_response.text)
+            movie_list = json.loads(kodi_response.text)["result"]["movies"]
+            print(json.loads(kodi_response.text)["result"]["limits"]["total"])
+            return movie_list
+        except Exception as e:
+            print(e)
+            return "NONE"
+
     # check if kodi is currently playing, required for some functions
     def is_kodi_playing(self):
         method = "Player.GetActivePlayers"
@@ -292,6 +332,7 @@ class KodiSkill(MycroftSkill):
         # Todo remove kodipydent reference (kodi_id)
         LOG.info("find films matching: " + search)
         #my_movies = kodi_id.VideoLibrary.GetMovies()['result']['movies']
+        my_movies = self.search_film_to_play()
         results = []
         for m in my_movies:
             index_movie = re.sub('\W', ' ', m['label'].lower())
@@ -299,6 +340,7 @@ class KodiSkill(MycroftSkill):
             if search in index_movie:
                 results.append(m)
         return results
+
 
     # check if the youtube addon exists
     def check_youtube_present(self):
@@ -643,12 +685,12 @@ class KodiSkill(MycroftSkill):
         LOG.info("searching for film: " + movie_name)
 
     # called from, handle_play_film_intent
-    def play_film_by_search(self, search_for):
+    def play_film_by_search(self, movie_name):
         # Todo need to remove kodi_id (kodipydent) reference
         LOG.info("kodi ID: " + 1)
-        LOG.info("film: " + search_for)
+        LOG.info("film: " + movie_name)
         try:
-            results = self.find_films_matching(1, film_search)
+            results = self.find_films_matching(1, movie_name)
             self.movie_list = results
             self.movie_index = 0
             if len(results) == 1:
