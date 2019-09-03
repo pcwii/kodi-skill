@@ -119,7 +119,7 @@ class KodiSkill(MycroftSkill):
         temp_list = []
         method = "VideoLibrary.GetMovies"
         if movie_name == '':
-            kodi_payload = {
+            self.kodi_payload = {
                 "jsonrpc": "2.0",
                 "method": method,
                 "id": 1,
@@ -129,7 +129,7 @@ class KodiSkill(MycroftSkill):
                 }
             }
         else:
-            kodi_payload = {
+            self.kodi_payload = {
                 "jsonrpc": "2.0",
                 "params": {
                     "sort": {
@@ -147,7 +147,7 @@ class KodiSkill(MycroftSkill):
                 "id": 1
             }
         try:
-            kodi_response = requests.post(self.kodi_path, data=json.dumps(kodi_payload), headers=self.json_header)
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
             movie_list = json.loads(kodi_response.text)["result"]["movies"]
             LOG.info(movie_list)
             for each_movie in movie_list:
