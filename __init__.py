@@ -115,6 +115,7 @@ class KodiSkill(MycroftSkill):
 
     # find the movies in the library that match the optional search criteria
     def find_movies_with_filter(self, movie_name=""):
+        LOG.info('Library search began for the following movie:' + movie_name)
         temp_list = []
         method = "VideoLibrary.GetMovies"
         if movie_name == '':
