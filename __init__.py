@@ -169,28 +169,6 @@ class KodiSkill(MycroftSkill):
             print(e)
             return "NONE"
 
-    # gets the current movie library returns movie properties including id and names
-    def get_all_movies(self):
-        method = "VideoLibrary.GetMovies"
-        kodi_payload = {
-            "jsonrpc": "2.0",
-            "method": method,
-            "id": 1,
-            "params": {
-                "properties": [
-                ],
-            }
-        }
-        try:
-            kodi_response = requests.post(self.kodi_path, data=json.dumps(kodi_payload), headers=self.json_header)
-            print(kodi_response.text)
-            movie_list = json.loads(kodi_response.text)["result"]["movies"]
-            print(json.loads(kodi_response.text)["result"]["limits"]["total"])
-            return movie_list
-        except Exception as e:
-            print(e)
-            return "NONE"
-
     # check if kodi is currently playing, required for some functions
     def is_kodi_playing(self):
         method = "Player.GetActivePlayers"
