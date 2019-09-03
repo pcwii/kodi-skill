@@ -113,25 +113,60 @@ class KodiSkill(MycroftSkill):
             except Exception as e:
                 LOG.error(e)
 
-    # Uses the retrieved list of movies to search for all possible move names returns a list of names
-    def find_movie_match(self, movie_name):
-        movie_list = self.list_all_movies()
-        content = []  # this is a dict
-        for movie in movie_list:
-            movie_title = str(movie['label'])
-            if movie_name.lower() in movie_title.lower():
-                # print(movie['label'])
-                info = {
-                    "label": movie['label'],
-                    "movieid": movie['movieid']
+    # find the movies in the library that match the optional search criteria
+    def find_movies_with_filter(self, movie_name=""):
+        temp_list = []
+        method = "VideoLibrary.GetMovies"
+        if movie_name == '':
+            kodi_payload = {
+                "jsonrpc": "2.0",
+                "method": method,
+                "id": 1,
+                "params": {
+                    "properties": [
+                    ],
                 }
-                print('current movie: ' + movie['label'])
-                # print(content)
-                for entry in content:
-                    print(entry['label'])
-                content.append(info)
-                print(content)
-        return content
+            }
+        else:
+            kodi_payload = {
+                "jsonrpc": "2.0",
+                "params": {
+                    "sort": {
+                        "order": "ascending",
+                        "method": "title"},
+                    "filter": {
+                        "operator": "contains",
+                        "field": "title",
+                        "value": movie_name
+                    },
+                    "properties": [
+                    ]
+                },
+                "method": method,
+                "id": 1
+            }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(kodi_payload), headers=self.json_header)
+            movie_list = json.loads(kodi_response.text)["result"]["movies"]
+            print(movie_list)
+            for each_movie in movie_list:
+                movie_title = str(each_movie['label'])
+                info = {
+                    "label": each_movie['label'],
+                    "movieid": each_movie['movieid']
+                }
+                if movie_title not in str(temp_list):
+                    temp_list.append(info)
+                else:
+                    if len(each_movie['label']) == len(movie_title):
+                        print('found duplicate')
+                    else:
+                        temp_list.append(info)
+            movie_list = temp_list
+            return movie_list
+        except Exception as e:
+            print(e)
+            return "NONE"
 
     # gets the current movie library returns movie properties including id and names
     def get_all_movies(self):
@@ -568,7 +603,7 @@ class KodiSkill(MycroftSkill):
         movie_name = self.movie_regex(message.data.get('utterance'))
         try:
             LOG.info("movie: " + movie_name)
-            movie_list = self.find_movie_match(movie_name, self.get_all_movies())
+            movie_list = self.find_movies_with_filter(movie_name)
             print("possible movies are: " + movie_list)
 
         except Exception as e:
