@@ -148,7 +148,6 @@ class KodiSkill(MycroftSkill):
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(kodi_payload), headers=self.json_header)
             movie_list = json.loads(kodi_response.text)["result"]["movies"]
-            print(movie_list)
             for each_movie in movie_list:
                 movie_title = str(each_movie['label'])
                 info = {
@@ -159,10 +158,11 @@ class KodiSkill(MycroftSkill):
                     temp_list.append(info)
                 else:
                     if len(each_movie['label']) == len(movie_title):
-                        print('found duplicate')
+                        LOG.info('Search Returned Duplicate Movies Name: ' + movie_title)
                     else:
                         temp_list.append(info)
             movie_list = temp_list
+            LOG.info(movie_list)
             return movie_list
         except Exception as e:
             print(e)
