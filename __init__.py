@@ -149,6 +149,7 @@ class KodiSkill(MycroftSkill):
                 "id": 1
             }
         try:
+            LOG.info('Posting Request')
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
             movie_list = json.loads(kodi_response.text)["result"]["movies"]
             LOG.info(movie_list)
