@@ -587,7 +587,7 @@ class KodiSkill(MycroftSkill):
         try:
             LOG.info("movie: " + movie_name)
             movie_list = self.find_movies_with_filter(movie_name)
-            print("possible movies are: " + movie_list)
+            print("possible movies are: " + str(movie_list))
 
         except Exception as e:
             LOG.info('an error was detected')
