@@ -115,7 +115,7 @@ class KodiSkill(MycroftSkill):
 
     # find the movies in the library that match the optional search criteria
     def find_movies_with_filter(self, movie_name=""):
-
+        self.movie_list = []
         temp_list = []
         method = "VideoLibrary.GetMovies"
         if movie_name == '':
@@ -151,9 +151,9 @@ class KodiSkill(MycroftSkill):
         try:
             LOG.info('Posting Request')
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
-            movie_list = json.loads(kodi_response.text)["result"]["movies"]
-            LOG.info(movie_list)
-            for each_movie in movie_list:
+            self.movie_list = json.loads(kodi_response.text)["result"]["movies"]
+            LOG.info(self.movie_list)
+            for each_movie in self.movie_list:
                 movie_title = str(each_movie['label'])
                 info = {
                     "label": each_movie['label'],
@@ -166,9 +166,9 @@ class KodiSkill(MycroftSkill):
                         LOG.info('Search Returned Duplicate Movies Name: ' + movie_title)
                     else:
                         temp_list.append(info)
-            movie_list = temp_list
-            LOG.info(movie_list)
-            return movie_list
+            self.movie_list = temp_list
+            LOG.info(self.movie_list)
+            return self.movie_list
         except Exception as e:
             print(e)
             return "NONE"
