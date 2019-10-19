@@ -35,7 +35,7 @@ class KodiSkill(MycroftSkill):
     """
     def __init__(self):
         super(KodiSkill, self).__init__(name="KodiSkill")
-        self.settings["kodi_ip"  ] = "127.0.0.1"
+        self.settings["kodi_ip"  ] = "192.168.0.32"
         self.settings["kodi_port"] = "8080"
         self.settings["kodi_user"] = ""
         self.settings["kodi_pass"] = ""
@@ -97,7 +97,7 @@ class KodiSkill(MycroftSkill):
 
     def on_websettings_changed(self):  # called when updating mycroft home page
         if not self._is_setup:
-            kodi_ip = self.settings.get("kodi_ip", "127.0.0.1")
+            kodi_ip = self.settings.get("kodi_ip", "192.168.0.32")
             kodi_port = self.settings.get("kodi_port", "8080")
             kodi_user = self.settings.get("kodi_user", "")
             kodi_pass = self.settings.get("kodi_pass", "")
