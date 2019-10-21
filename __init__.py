@@ -21,6 +21,7 @@ import requests
 import re
 import time
 import json
+import random
 
 _author__ = 'PCWii'
 # Release - 20181213
@@ -561,34 +562,38 @@ class KodiSkill(MycroftSkill):
 
     # Primary Play Movie request
     @intent_handler(IntentBuilder('PlayFilmIntent').require("AskKeyword").require("KodiKeyword").
-                    require("PlayKeyword").optionally("CinemaVisionKeyword").build())
+                    require("PlayKeyword").optionally("CinemaVisionKeyword").optionally('RandomKeyword').build())
     def handle_play_film_intent(self, message):
         LOG.info("Called Play Film Intent")
         if message.data.get("CinemaVisionKeyword"):
             self.cv_request = True
         else:
             self.cv_request = False
-        movie_name = self.movie_regex(message.data.get('utterance'))
-        try:
-            LOG.info("movie: " + movie_name)
-            self.speak_dialog("please.wait")
-            results = self.find_movies_with_filter(movie_name)
-            self.movie_list = results
-            self.movie_index = 0
-            LOG.info("possible movies are: " + str(results))
-            ######
-            if len(results) == 1:
-                self.play_film(results[0]['movieid'])
-            elif len(results):
-                self.set_context('NavigateContextKeyword', 'NavigateContext')
-                self.speak_dialog('multiple.results', data={"result": str(len(results))}, expect_response=True)
-            else:
-                self.speak_dialog('no.results', data={"result": movie_name}, expect_response=False)
-            #####
-        except Exception as e:
-            LOG.info('an error was detected')
-            LOG.error(e)
-            self.on_websettings_changed()
+        if message.data.get("RandomKeyword"):
+            self.handle_random_movie_select_intent()
+        else:
+            # Proceed normally
+            movie_name = self.movie_regex(message.data.get('utterance'))
+            try:
+                LOG.info("movie: " + movie_name)
+                self.speak_dialog("please.wait")
+                results = self.find_movies_with_filter(movie_name)
+                self.movie_list = results
+                self.movie_index = 0
+                LOG.info("possible movies are: " + str(results))
+                ######
+                if len(results) == 1:
+                    self.play_film(results[0]['movieid'])
+                elif len(results):
+                    self.set_context('NavigateContextKeyword', 'NavigateContext')
+                    self.speak_dialog('multiple.results', data={"result": str(len(results))}, expect_response=True)
+                else:
+                    self.speak_dialog('no.results', data={"result": movie_name}, expect_response=False)
+                #####
+            except Exception as e:
+                LOG.info('an error was detected')
+                LOG.error(e)
+                self.on_websettings_changed()
 
     # stop film was requested in the utterance
     def handle_stop_film_intent(self, message):
@@ -1103,6 +1108,20 @@ class KodiSkill(MycroftSkill):
         else:
             LOG.info('Playing youtube id: ' + str(self.youtube_id[0]))
             self.play_youtube_video(self.youtube_id[0])
+
+    def handle_random_movie_select_intent(self):
+        full_list = self.list_all_movies()
+        random_id = random.randint(1, len(full_list))
+        selected_entry = full_list[random_id]
+        selected_name = selected_entry['label']
+        selected_id = selected_entry['movieid']
+        LOG.info(selected_name, selected_id)
+        self.speak_dialog('play.film', data={"result": selected_name}, expect_response=False)
+        try:
+            self.play_film(selected_id)
+        except Exception as e:
+            LOG.error(e)
+            self.on_websettings_changed()
 
     def stop(self):
         pass

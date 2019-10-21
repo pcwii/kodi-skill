@@ -8,6 +8,7 @@ The Kodi Skill uses conversational dialog to help you to control your KODI insta
 ## Examples 
 * "ask kodi to play the movie guardians of the galaxy"
 * "ask kodi to play the film planet of the apes"
+* "ask kodi to play a random movie"
 * "turn kodi subtitles on"
 * "turn kodi subtitles off"
 * "skip kodi forward"
@@ -82,7 +83,7 @@ Tested on platform_picroft (others untested)
 - ~~Correct cinemavision dialog control~~ (Complete)
 - Enable kodi Volume Control (WIP)
 - ~~Enable movie skip fwd/rev~~ (Complete)
-- Enable random movie selection (WIP)
+- ~~Enable random movie selection~~ (Completed 20191021)
 - ~~Add play "from youtube" option for videos / music~~ (Complete)
 - ~~Clean up decision tree, requires significant pruning~~ ;-)
 - Show a filtered list of movies when a play request returns multiple results (WIP)
