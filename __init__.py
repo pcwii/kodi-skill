@@ -562,7 +562,8 @@ class KodiSkill(MycroftSkill):
 
     # Primary Play Movie request
     @intent_handler(IntentBuilder('PlayFilmIntent').require("AskKeyword").require("KodiKeyword").
-                    require("PlayKeyword").optionally("CinemaVisionKeyword").optionally('RandomKeyword').build())
+                    require("PlayKeyword").require("FilmKeyword").
+                    optionally("CinemaVisionKeyword").optionally('RandomKeyword').build())
     def handle_play_film_intent(self, message):
         LOG.info("Called Play Film Intent")
         if message.data.get("CinemaVisionKeyword"):
