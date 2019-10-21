@@ -17,7 +17,6 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-# from kodipydent import Kodi
 import requests
 import re
 import time
@@ -70,7 +69,7 @@ class KodiSkill(MycroftSkill):
 
         # eg. stop the movie
         stop_film_intent = IntentBuilder("StopFilmIntent"). \
-            require("StopKeyword").require("FilmKeyword").build()
+            require("StopKeyword").one_of("FilmKeyword", "KodiKeyword").build()
         self.register_intent(stop_film_intent, self.handle_stop_film_intent)
 
         # eg. pause the movie
@@ -113,24 +112,23 @@ class KodiSkill(MycroftSkill):
             except Exception as e:
                 LOG.error(e)
 
-
     # find the movies in the library that match the optional search criteria
     def find_movies_with_filter(self, title=""):
-        foundList = []  # this is a dict
-        movieList = self.list_all_movies()
-        titleList = title.replace("-", "").lower().split()
-        for each_movie in movieList:
-            movieName = each_movie["label"].replace("-", "")
-            LOG.info(movieName)
-            if all(words in movieName.lower() for words in titleList):
-                LOG.info("Found " + movieName + " : " + "MovieID: " + str(each_movie["movieid"]))
+        found_list = []  # this is a dict
+        movie_list = self.list_all_movies()
+        title_list = title.replace("-", "").lower().split()
+        for each_movie in movie_list:
+            movie_name = each_movie["label"].replace("-", "")
+            LOG.info(movie_name)
+            if all(words in movie_name.lower() for words in title_list):
+                LOG.info("Found " + movie_name + " : " + "MovieID: " + str(each_movie["movieid"]))
                 info = {
                     "label": each_movie['label'],
                     "movieid": each_movie['movieid']
                 }
-                foundList.append(info)
+                found_list.append(info)
         temp_list = []  # this is a dict
-        for each_movie in foundList:
+        for each_movie in found_list:
             movie_title = str(each_movie['label'])
             info = {
                 "label": each_movie['label'],
@@ -143,8 +141,8 @@ class KodiSkill(MycroftSkill):
                     LOG.info('found duplicate')
                 else:
                     temp_list.append(info)
-        foundList = temp_list
-        return foundList  # returns a dictionary of matched movies
+        found_list = temp_list
+        return found_list  # returns a dictionary of matched movies
 
     # check if kodi is currently playing, required for some functions
     def is_kodi_playing(self):
@@ -185,7 +183,6 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.info(e)
             return "NONE"
-
 
     # activate the kodi root menu system
     def show_root(self):
@@ -278,23 +275,6 @@ class KodiSkill(MycroftSkill):
                     "movieid": movieid
                 }
             }
-        }
-        try:
-            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
-            LOG.info(kodi_response.text)
-        except Exception as e:
-            LOG.error(e)
-
-    # stop any playing movie not youtube
-    def stop_movie(self):
-        method = "Player.Stop"
-        self.kodi_payload = {
-            "jsonrpc": "2.0",
-            "method": method,
-            "params": {
-                "playerid": 1
-            },
-            "id": 1
         }
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
@@ -456,6 +436,25 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
+    # stop any playing movie not youtube
+    def stop_movie(self):
+        method = "Player.Stop"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": {
+                "playerid": 1
+            },
+            "id": 1
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
+        except Exception as e:
+            LOG.error(e)
+
+
+
     # extract the requested youtube item from the utterance
     def youtube_query_regex(self, req_string):
         return_list = []
@@ -580,7 +579,7 @@ class KodiSkill(MycroftSkill):
                 self.set_context('NavigateContextKeyword', 'NavigateContext')
                 self.speak_dialog('multiple.results', data={"result": str(len(results))}, expect_response=True)
             else:
-                self.speak_dialog('no.results', data={"result": film_search}, expect_response=False)
+                self.speak_dialog('no.results', data={"result": movie_name}, expect_response=False)
             #####
         except Exception as e:
             LOG.info('an error was detected')

@@ -14,6 +14,7 @@ The Kodi Skill uses conversational dialog to help you to control your KODI insta
 * "skip kodi backward"
 * "pause kodi"
 * "re-start kodi"
+* "stop the movie"
 * "stop kodi"
 * "show kodi movie information"
 * "hide kodi movie information"
@@ -63,7 +64,6 @@ playback of the movie that was selected.
 Tested on platform_picroft (others untested) 
 ## Other Requirements
 - [Mycroft](https://docs.mycroft.ai/installing.and.running/installation)
-- kodipydent
 ## Further Reading
 - [KODI API](https://kodi.wiki/index.php?title=JSON-RPC_API/v8)
 - [CinemaVision](https://kodi.wiki/view/Add-on:CinemaVision)
@@ -73,7 +73,7 @@ Tested on platform_picroft (others untested)
 - Under Kodi settings:services note the port number (8080)
 - Configure home.mycroft.ai to set your kodi instance ip address and port number
 ## Todo
-- Convert all kodipydent functions to json requests (WIP)
+- ~~Convert all kodipydent functions to json requests~~ (Completed 20191021)
 - ~~Enable username and password support in webgui~~ (Complete)
 - ~~Enable subtitle control~~ (Complete)
 - ~~Enable library scanning / cleaning~~ (Complete)
@@ -85,8 +85,8 @@ Tested on platform_picroft (others untested)
 - ~~Add play "from youtube" option for videos / music~~ (Complete)
 - ~~Clean up decision tree, requires significant pruning~~ ;-)
 - Show a filtered list of movies when a play request returns multiple results (WIP)
-- Add support for the CommonPlay Skill Infrastructure (WIP)
+- Add support for the CommonPlay Skill Infrastructure (Changed verbal requests 20191021)
 - Investigate other play functions for music / episodes / pvr
 - Investigate method to handle multiple KODI instances on network 
 - Add a single stop command for all playing items
-- Change skill call trigger words to reduce CommonPlay conflicts
+- ~~Change skill call trigger words to reduce CommonPlay conflicts~~ (Completed 20191021)
