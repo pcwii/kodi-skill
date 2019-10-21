@@ -34,10 +34,10 @@ class KodiSkill(MycroftSkill):
     """
     def __init__(self):
         super(KodiSkill, self).__init__(name="KodiSkill")
-        self.settings["kodi_ip"  ] = "192.168.0.32"
-        self.settings["kodi_port"] = "8080"
-        self.settings["kodi_user"] = ""
-        self.settings["kodi_pass"] = ""
+        #self.settings["kodi_ip"  ] = "192.168.0.32"
+        #self.settings["kodi_port"] = "8080"
+        #self.settings["kodi_user"] = ""
+        #self.settings["kodi_pass"] = ""
         self.kodi_path = ""
         self.youtube_id = []
         self.youtube_search = ""
@@ -95,22 +95,24 @@ class KodiSkill(MycroftSkill):
         self.register_intent(notification_off_intent, self.handle_notification_off_intent)
 
     def on_websettings_changed(self):  # called when updating mycroft home page
-        if not self._is_setup:
-            kodi_ip = self.settings.get("kodi_ip", "192.168.0.32")
-            kodi_port = self.settings.get("kodi_port", "8080")
-            kodi_user = self.settings.get("kodi_user", "")
-            kodi_pass = self.settings.get("kodi_pass", "")
-            try:
-                if kodi_ip and kodi_port:
-                    kodi_ip = self.settings["kodi_ip"  ]
-                    kodi_port = self.settings["kodi_port"]
-                    kodi_user = self.settings["kodi_user"]
-                    kodi_pass = self.settings["kodi_pass"]
-                    self.kodi_path = "http://" + kodi_user + ":" + kodi_pass + "@" + kodi_ip + ":" + str(kodi_port) + \
-                                     "/jsonrpc"
-                    self._is_setup = True
-            except Exception as e:
-                LOG.error(e)
+        # if not self._is_setup:
+        LOG.info('Websettings have changed! Updating path data')
+        kodi_ip = self.settings.get("kodi_ip", "192.168.0.32")
+        kodi_port = self.settings.get("kodi_port", "8080")
+        kodi_user = self.settings.get("kodi_user", "")
+        kodi_pass = self.settings.get("kodi_pass", "")
+        try:
+            if kodi_ip and kodi_port:
+                kodi_ip = self.settings["kodi_ip"  ]
+                kodi_port = self.settings["kodi_port"]
+                kodi_user = self.settings["kodi_user"]
+                kodi_pass = self.settings["kodi_pass"]
+                self.kodi_path = "http://" + kodi_user + ":" + kodi_pass + "@" + kodi_ip + ":" + str(kodi_port) + \
+                                 "/jsonrpc"
+                LOG.info(self.kodi_path)
+                self._is_setup = True
+        except Exception as e:
+            LOG.error(e)
 
     # find the movies in the library that match the optional search criteria
     def find_movies_with_filter(self, title=""):
