@@ -113,66 +113,38 @@ class KodiSkill(MycroftSkill):
             except Exception as e:
                 LOG.error(e)
 
+
     # find the movies in the library that match the optional search criteria
-    def find_movies_with_filter(self, movie_name=""):
-        self.movie_list = []
-        temp_list = []
-        method = "VideoLibrary.GetMovies"
-        if movie_name == '':
-            LOG.info('Retrieving entire LLibrary')
-            self.kodi_payload = {
-                "jsonrpc": "2.0",
-                "method": method,
-                "id": 1,
-                "params": {
-                    "properties": [
-                    ],
-                }
-            }
-        else:
-            LOG.info('Library search began for the following movie: ' + movie_name)
-            self.kodi_payload = {
-                "jsonrpc": "2.0",
-                "params": {
-                    "sort": {
-                        "order": "ascending",
-                        "method": "title"},
-                    "filter": {
-                        "operator": "contains",
-                        "field": "title",
-                        "value": movie_name
-                    },
-                    "properties": [
-                    ]
-                },
-                "method": method,
-                "id": 1
-            }
-        try:
-            LOG.info('Posting Request') # , self.kodi_path)
-            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
-            LOG.info(kodi_response.text)
-            self.movie_list = json.loads(kodi_response.text)["result"]["movies"]
-            LOG.info(self.movie_list)
-            for each_movie in self.movie_list:
-                movie_title = str(each_movie['label'])
+    def find_movies_with_filter(self, title=""):
+        foundList = []  # this is a dict
+        movieList = self.list_all_movies()
+        titleList = title.replace("-", "").lower().split()
+        for each_movie in movieList:
+            movieName = each_movie["label"].replace("-", "")
+            print(movieName)
+            if all(words in movieName.lower() for words in titleList):
+                print("Found " + movieName + " : " + "MovieID: " + str(each_movie["movieid"]))
                 info = {
                     "label": each_movie['label'],
                     "movieid": each_movie['movieid']
                 }
-                if movie_title not in str(temp_list):
-                    temp_list.append(info)
+                foundList.append(info)
+        temp_list = []  # this is a dict
+        for each_movie in foundList:
+            movie_title = str(each_movie['label'])
+            info = {
+                "label": each_movie['label'],
+                "movieid": each_movie['movieid']
+            }
+            if movie_title not in str(temp_list):
+                temp_list.append(info)
+            else:
+                if len(each_movie['label']) == len(movie_title):
+                    print('found duplicate')
                 else:
-                    if len(each_movie['label']) == len(movie_title):
-                        LOG.info('Search Returned Duplicate Movies Name: ' + movie_title)
-                    else:
-                        temp_list.append(info)
-            self.movie_list = temp_list
-            LOG.info(self.movie_list)
-            return self.movie_list
-        except Exception as e:
-            print(e)
-            return "NONE"
+                    temp_list.append(info)
+        foundList = temp_list
+        return foundList  # returns a dictionary of matched movies
 
     # check if kodi is currently playing, required for some functions
     def is_kodi_playing(self):
@@ -193,6 +165,27 @@ class KodiSkill(MycroftSkill):
             LOG.error(e)
         LOG.info("Is Kodi Playing?...", str(self.playing_status))
         return self.playing_status
+
+    def list_all_movies(self):
+        method = "VideoLibrary.GetMovies"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "id": 1,
+            "params": {
+                "properties": [
+                ],
+            }
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            print(kodi_response.text)
+            movie_list = json.loads(kodi_response.text)["result"]["movies"]
+            return movie_list
+        except Exception as e:
+            print(e)
+            return "NONE"
+
 
     # activate the kodi root menu system
     def show_root(self):
@@ -385,18 +378,6 @@ class KodiSkill(MycroftSkill):
             return True
         else:
             return False
-
-    # called from, play_film_by_search search term is a string of the movie(s) to find
-    def find_films_matching(self, movie_name):
-        LOG.info("find films matching: " + movie_name)
-        my_movies = self.search_film_to_play(movie_name)
-        results = []
-        for m in my_movies:
-            index_movie = re.sub('\W', ' ', m['label'].lower())
-            index_movie = re.sub(' +', ' ', index_movie)
-            if search in index_movie:
-                results.append(m)
-        return results
 
     # use regex to find any movie names found in the utterance
     def movie_regex(self, message):
@@ -693,14 +674,6 @@ class KodiSkill(MycroftSkill):
         else:  # No was spoken to navigate the list
             LOG.info('User responded with: ' + message.data.get("NoKeyword"))
             self.play_normal()
-
-    def search_film_to_play(self, movie_name):
-        try:
-            LOG.info("searching for film: " + movie_name)
-            #results = self.find_films_matching(movie_name)
-            #self.movie_list = results
-        except Exception as e:
-            LOG.error(e)
 
     # movie list navigation decision utterance
     @intent_handler(IntentBuilder('NavigateDecisionIntent').require('NavigateContextKeyword').
