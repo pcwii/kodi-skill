@@ -88,5 +88,5 @@ Tested on platform_picroft (others untested)
 - Add support for the CommonPlay Skill Infrastructure (Changed verbal requests 20191021)
 - Investigate other play functions for music / episodes / pvr
 - Investigate method to handle multiple KODI instances on network 
-- Add a single stop command for all playing items
+- ~~Add a single stop command for all playing items~~ (Completed 20191021)
 - ~~Change skill call trigger words to reduce CommonPlay conflicts~~ (Completed 20191021)

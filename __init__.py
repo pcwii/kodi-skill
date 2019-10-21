@@ -69,7 +69,7 @@ class KodiSkill(MycroftSkill):
 
         # eg. stop the movie
         stop_film_intent = IntentBuilder("StopFilmIntent"). \
-            require("StopKeyword").one_of("FilmKeyword", "KodiKeyword").build()
+            require("StopKeyword").one_of("FilmKeyword", "KodiKeyword", "YoutubeKeyword").build()
         self.register_intent(stop_film_intent, self.handle_stop_film_intent)
 
         # eg. pause the movie
@@ -154,6 +154,7 @@ class KodiSkill(MycroftSkill):
         }
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            print(kodi_response.text)
             parse_response = json.loads(kodi_response.text)["result"]
             if not parse_response:
                 self.playing_status = False
@@ -418,23 +419,23 @@ class KodiSkill(MycroftSkill):
             LOG.error(e)
 
     # issue a stop command to the youtube addon
-    @intent_handler(IntentBuilder('StopYoutubeIntent').require('StopKeyword').require('YoutubeKeyword').
-                    build())
-    def handle_stop_youtube_intent(self, message):
-        method = "Player.Stop"
-        self.kodi_payload = {
-            "jsonrpc": "2.0",
-            "method": method,
-            "params": {
-                "playerid": 1
-            },
-            "id": "libPlayer"
-        }
-        try:
-            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
-            LOG.info(str(kodi_response.text))
-        except Exception as e:
-            LOG.error(e)
+    # @intent_handler(IntentBuilder('StopYoutubeIntent').require('StopKeyword').require('YoutubeKeyword').
+    #                 build())
+    # def handle_stop_youtube_intent(self, message):
+    #     method = "Player.Stop"
+    #     self.kodi_payload = {
+    #         "jsonrpc": "2.0",
+    #         "method": method,
+    #         "params": {
+    #             "playerid": 1
+    #         },
+    #         "id": "libPlayer"
+    #     }
+    #     try:
+    #         kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+    #         LOG.info(str(kodi_response.text))
+    #     except Exception as e:
+    #         LOG.error(e)
 
     # stop any playing movie not youtube
     def stop_movie(self):
