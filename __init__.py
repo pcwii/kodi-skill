@@ -121,9 +121,9 @@ class KodiSkill(MycroftSkill):
         titleList = title.replace("-", "").lower().split()
         for each_movie in movieList:
             movieName = each_movie["label"].replace("-", "")
-            print(movieName)
+            LOG.info(movieName)
             if all(words in movieName.lower() for words in titleList):
-                print("Found " + movieName + " : " + "MovieID: " + str(each_movie["movieid"]))
+                LOG.info("Found " + movieName + " : " + "MovieID: " + str(each_movie["movieid"]))
                 info = {
                     "label": each_movie['label'],
                     "movieid": each_movie['movieid']
@@ -140,7 +140,7 @@ class KodiSkill(MycroftSkill):
                 temp_list.append(info)
             else:
                 if len(each_movie['label']) == len(movie_title):
-                    print('found duplicate')
+                    LOG.info('found duplicate')
                 else:
                     temp_list.append(info)
         foundList = temp_list
@@ -179,11 +179,11 @@ class KodiSkill(MycroftSkill):
         }
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
-            print(kodi_response.text)
+            LOG.info(kodi_response.text)
             movie_list = json.loads(kodi_response.text)["result"]["movies"]
             return movie_list
         except Exception as e:
-            print(e)
+            LOG.info(e)
             return "NONE"
 
 
@@ -351,7 +351,7 @@ class KodiSkill(MycroftSkill):
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
         except Exception as e:
-            print(e)
+            LOG.info(e)
             return False
         if "plugin.video.youtube" in kodi_response.text:
             return True
@@ -372,7 +372,7 @@ class KodiSkill(MycroftSkill):
             self.list_response = requests.post(self.kodi_path, data=json.dumps(self.list_payload), headers=self.json_header)
             LOG.info(self.list_response.text)
         except Exception as e:
-            print(e)
+            LOG.info(e)
             return False
         if "script.cinemavision" in self.list_response.text:
             return True
@@ -569,7 +569,7 @@ class KodiSkill(MycroftSkill):
         try:
             LOG.info("movie: " + movie_name)
             movie_list = self.find_movies_with_filter(movie_name)
-            print("possible movies are: " + str(movie_list))
+            LOG.info("possible movies are: " + str(movie_list))
 
         except Exception as e:
             LOG.info('an error was detected')
