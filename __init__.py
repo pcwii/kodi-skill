@@ -418,6 +418,7 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
+    #### Removed 20191021
     # issue a stop command to the youtube addon
     # @intent_handler(IntentBuilder('StopYoutubeIntent').require('StopKeyword').require('YoutubeKeyword').
     #                 build())
