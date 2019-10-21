@@ -568,9 +568,18 @@ class KodiSkill(MycroftSkill):
         movie_name = self.movie_regex(message.data.get('utterance'))
         try:
             LOG.info("movie: " + movie_name)
-            movie_list = self.find_movies_with_filter(movie_name)
-            LOG.info("possible movies are: " + str(movie_list))
-
+            self.speak_dialog("please.wait")
+            results = self.find_movies_with_filter(movie_name)
+            LOG.info("possible movies are: " + str(results))
+            ######
+            if len(results) == 1:
+                self.play_film(results[0]['movieid'])
+            elif len(results):
+                self.set_context('NavigateContextKeyword', 'NavigateContext')
+                self.speak_dialog('multiple.results', data={"result": str(len(results))}, expect_response=True)
+            else:
+                self.speak_dialog('no.results', data={"result": film_search}, expect_response=False)
+            #####
         except Exception as e:
             LOG.info('an error was detected')
             LOG.error(e)
