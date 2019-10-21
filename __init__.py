@@ -570,6 +570,8 @@ class KodiSkill(MycroftSkill):
             LOG.info("movie: " + movie_name)
             self.speak_dialog("please.wait")
             results = self.find_movies_with_filter(movie_name)
+            self.movie_list = results
+            self.movie_index = 0
             LOG.info("possible movies are: " + str(results))
             ######
             if len(results) == 1:
