@@ -774,7 +774,7 @@ class KodiSkill(MycroftSkill):
                 LOG.info("Kodi Volume Now: " + str(new_volume))
                 self.speak_dialog('volume.set', data={'result': str(new_volume)}, expect_response=False)
             else:
-                self.speak_dialog('volume.error', data={'result': int(volume_level[0]}, expect_response=False)
+                self.speak_dialog('volume.error', data={'result': int(volume_level[0])}, expect_response=False)
 
     def set_volume(self, level):
         method = "Application.SetVolume"
