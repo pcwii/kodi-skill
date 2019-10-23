@@ -786,8 +786,8 @@ class KodiSkill(MycroftSkill):
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
             LOG.info(kodi_response.text)
-            #  return json.loads(kodi_response.text)["result"]
-            return level
+            return json.loads(kodi_response.text)["result"]
+            # return level
         except Exception as e:
             return e
 
