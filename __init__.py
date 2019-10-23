@@ -763,6 +763,32 @@ class KodiSkill(MycroftSkill):
         self.speak_dialog('context', data={"result": message}, expect_response=False)
 
     # the movie information dialog was requested in the utterance
+    @intent_handler(IntentBuilder('SetVolumeIntent').require('SetsKeyword').require('KodiKeyword').
+                    require('VolumeKeyword').build())
+    def handle_set_volume_intent(self, message):
+        str_remainder = str(message.utterance_remainder())
+        volume_level = re.findall('\d+', str_remainder)
+        if volume_level:
+            new_volume = self.set_volume(volume_level)
+            self.speak_dialog('volume.set', data={"result": str(new_volume)}, expect_response=False)
+
+    def set_volume(self, level):
+        method = "Application.SetVolume"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": {
+                "volume": level
+            },
+            "id": 1
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            return json.loads(kodi_response.text)["result"]
+        except Exception as e:
+            return e
+
+    # the movie information dialog was requested in the utterance
     @intent_handler(IntentBuilder('ShowMovieInfoIntent').require('VisibilityKeyword').require('InfoKeyword').
                     optionally('KodiKeyword').optionally('FilmKeyword').
                     build())

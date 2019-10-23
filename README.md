@@ -17,6 +17,8 @@ The Kodi Skill uses conversational dialog to help you to control your KODI insta
 * "re-start kodi"
 * "stop the movie"
 * "stop kodi"
+* "set kodi volume to 100"
+* "set kodi volume to 25"
 * "show kodi movie information"
 * "hide kodi movie information"
 * "turn kodi notifications on"
@@ -81,7 +83,7 @@ Tested on platform_picroft (others untested)
 - ~~Enable library scanning / cleaning~~ (Complete)
 - ~~Enable Support for cinemavision~~ (Complete)
 - ~~Correct cinemavision dialog control~~ (Complete)
-- Enable kodi Volume Control (WIP)
+- ~~Enable kodi Volume Control~~ (Completed 20191023)
 - ~~Enable movie skip fwd/rev~~ (Complete)
 - ~~Enable random movie selection~~ (Completed 20191021)
 - ~~Add play "from youtube" option for videos / music~~ (Complete)
