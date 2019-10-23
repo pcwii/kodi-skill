@@ -157,7 +157,7 @@ class KodiSkill(MycroftSkill):
         }
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
-            print(kodi_response.text)
+            LOG.info(kodi_response.text)
             parse_response = json.loads(kodi_response.text)["result"]
             if not parse_response:
                 self.playing_status = False
@@ -785,7 +785,9 @@ class KodiSkill(MycroftSkill):
         }
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
-            return json.loads(kodi_response.text)["result"]
+            LOG.info(kodi_response.text)
+            #  return json.loads(kodi_response.text)["result"]
+            return level
         except Exception as e:
             return e
 
