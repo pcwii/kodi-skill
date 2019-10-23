@@ -767,11 +767,14 @@ class KodiSkill(MycroftSkill):
                     require('VolumeKeyword').build())
     def handle_set_volume_intent(self, message):
         str_remainder = str(message.utterance_remainder())
-        volume_level =re.findall('\d+', str_remainder)
+        volume_level = re.findall('\d+', str_remainder)
         if volume_level:
-            new_volume = self.set_volume(int(volume_level[0]))
-            LOG.info("Kodi Volume Now: " + str(new_volume))
-            self.speak_dialog('volume.set', data={'result': str(new_volume)}, expect_response=False)
+            if int(volume_level[0]) < 101:
+                new_volume = self.set_volume(int(volume_level[0]))
+                LOG.info("Kodi Volume Now: " + str(new_volume))
+                self.speak_dialog('volume.set', data={'result': str(new_volume)}, expect_response=False)
+            else:
+                self.speak_dialog('volume.error', data={'result': int(volume_level[0]}, expect_response=False)
 
     def set_volume(self, level):
         method = "Application.SetVolume"
