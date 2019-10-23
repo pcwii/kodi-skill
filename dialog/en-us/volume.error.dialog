@@ -1,3 +1,2 @@
-I was unable to complete your request
-I could not set the volume to, {{result}}
-The attempt to set the volume level to, {{result}}, has failed
+I could not set the volume to, {{result}}, on Kodi
+The attempt to set the Kodi volume level to, {{result}}, has failed
