@@ -769,7 +769,7 @@ class KodiSkill(MycroftSkill):
         str_remainder = str(message.utterance_remainder())
         volume_level = re.findall('\d+', str_remainder)
         if volume_level:
-            new_volume = self.set_volume(volume_level)
+            new_volume = self.set_volume(int(volume_level))
             LOG.info("Kodi Volume Now: " + str(new_volume))
             self.speak_dialog('volume.set', data={'result': str(new_volume)}, expect_response=False)
 
