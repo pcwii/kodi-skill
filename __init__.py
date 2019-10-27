@@ -115,13 +115,28 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
+    def numeric_replace(self, in_words=""):
+        word_list = in_words.split()
+        return_list = []
+        for each_word in word_list:
+            try:
+                new_word = w2n.word_to_num(each_word)
+            except Exception as e:
+                # print(e)
+                new_word = each_word
+            return_list.append(new_word)
+            return_string = ' '.join(str(e) for e in return_list)
+        return return_string
+
     # find the movies in the library that match the optional search criteria
     def find_movies_with_filter(self, title=""):
+        title = self.numeric_replace(title)
         found_list = []  # this is a dict
         movie_list = self.list_all_movies()
         title_list = title.replace("-", "").lower().split()
         for each_movie in movie_list:
             movie_name = each_movie["label"].replace("-", "")
+            movie_name = self.numeric_replace(movie_name)
             LOG.info(movie_name)
             if all(words in movie_name.lower() for words in title_list):
                 LOG.info("Found " + movie_name + " : " + "MovieID: " + str(each_movie["movieid"]))
