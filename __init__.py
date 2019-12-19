@@ -413,6 +413,7 @@ class KodiSkill(MycroftSkill):
             repeat_value = 1
         return repeat_value
 
+    # send a URI to Chromecast and play
     def cast_link(self, source_link, device_ip):
         cast = pychromecast.Chromecast(device_ip)
         cast.wait()
@@ -422,14 +423,74 @@ class KodiSkill(MycroftSkill):
         time.sleep(7) #wait for CC to be ready to play
         mc.block_until_active()
         mc.play()
-        mc.stop()
+        #mc.stop()
 
+    # send a youtube videoID and play
     def cast_youtube(self, video_id, device_ip):
         cast = pychromecast.Chromecast(device_ip)
         cast.wait()
         yt = YouTubeController()
         cast.register_handler(yt)
         yt.play_video(video_id)
+
+    # return the id of a movie from the kodi library based on its name
+    def get_kodi_movie_id(self, movie_name):
+        found_list = self.find_movies_with_filter(movie_name)
+        my_id = found_list[0]["movieid"]
+        return my_id
+
+    # returns the full URI of a movie from the kodi library
+    def get_kodi_movie_path(self, movie_name):
+        movie_id = self.get_kodi_movie_id(movie_name)
+        method = "VideoLibrary.GetMovieDetails"
+        kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "id": 1,
+            "params": {"movieid": movie_id,
+                       "properties": [
+                           # "art",
+                           # "cast",
+                           # "dateadded",
+                           # "director",
+                           # "fanart",
+                           "file",
+                           # "genre",
+                           # "imdbnumber",
+                           # "lastplayed",
+                           # "mpaa",
+                           # "originaltitle",
+                           # "playcount",
+                           # "plot",
+                           # "plotoutline",
+                           # "premiered",
+                           # "rating",
+                           # "runtime",
+                           # "resume",
+                           # "setid",
+                           # "sorttitle",
+                           # "streamdetails",
+                           # "studio",
+                           # "tagline",
+                           # "thumbnail",
+                           # "title",
+                           # "trailer",
+                           # "userrating",
+                           # "votes",
+                           # "writer"
+                       ],
+                       }
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            movie_path = json.loads(kodi_response.text)["result"]["moviedetails"]["file"]
+            base_path = 'http://' + self.kodi_ip + ':' + self.kodi_port + '/vfs/'
+            url_path = base_path + urllib.parse.quote(movie_path, safe='')
+            LOG.info('Found Kodi Movie Path ' + url_path)
+            return url_path
+        except Exception as e:
+            print(e)
+            return "NONE"
 
     # play the supplied video_id with the youtube addon
     def play_youtube_video(self, video_id):
