@@ -94,3 +94,4 @@ Tested on platform_picroft (others untested)
 - Investigate method to handle multiple KODI instances on network 
 - ~~Add a single stop command for all playing items~~ (Completed 20191021)
 - ~~Change skill call trigger words to reduce CommonPlay conflicts~~ (Completed 20191021)
+- Add the ability to cast any Kodi Library item to a chromecast enabled device (WIP 20191219)

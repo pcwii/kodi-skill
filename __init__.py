@@ -13,6 +13,10 @@ Note: the @adds_context / @removes_context can't be used with the Remove / set c
 from mycroft.util.parse import extract_number
 from mycroft.audio import wait_while_speaking
 
+import pafy
+import pychromecast
+from pychromecast.controllers.youtube import YouTubeController
+
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -409,6 +413,24 @@ class KodiSkill(MycroftSkill):
             repeat_value = 1
         return repeat_value
 
+    def cast_link(self, source_link, device_ip):
+        cast = pychromecast.Chromecast(device_ip)
+        cast.wait()
+        mc = cast.media_controller
+        LOG.info(source_link)
+        mc.play_media(source_link, 'video/mp4')
+        time.sleep(7) #wait for CC to be ready to play
+        mc.block_until_active()
+        mc.play()
+        mc.stop()
+
+    def cast_youtube(self, video_id, device_ip):
+        cast = pychromecast.Chromecast(device_ip)
+        cast.wait()
+        yt = YouTubeController()
+        cast.register_handler(yt)
+        yt.play_video(video_id)
+
     # play the supplied video_id with the youtube addon
     def play_youtube_video(self, video_id):
         LOG.info('play youtube ID: ' + str(video_id))
@@ -436,25 +458,15 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
-    #### Removed 20191021
-    # issue a stop command to the youtube addon
-    # @intent_handler(IntentBuilder('StopYoutubeIntent').require('StopKeyword').require('YoutubeKeyword').
-    #                 build())
-    # def handle_stop_youtube_intent(self, message):
-    #     method = "Player.Stop"
-    #     self.kodi_payload = {
-    #         "jsonrpc": "2.0",
-    #         "method": method,
-    #         "params": {
-    #             "playerid": 1
-    #         },
-    #         "id": "libPlayer"
-    #     }
-    #     try:
-    #         kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
-    #         LOG.info(str(kodi_response.text))
-    #     except Exception as e:
-    #         LOG.error(e)
+    def get_yt_audio_url(self, youtube_url):
+        base_url = 'https://www.youtube.com'
+        abs_url = base_url + youtube_url
+        LOG.debug('pafy processing: ' + abs_url)
+        streams = pafy.new(abs_url)
+        LOG.debug('audiostreams found: ' + str(streams.audiostreams));
+        bestaudio = streams.getbestaudio()
+        LOG.debug('audiostream selected: ' + str(bestaudio));
+        return bestaudio.url
 
     # stop any playing movie not youtube
     def stop_movie(self):
