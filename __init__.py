@@ -39,10 +39,6 @@ class KodiSkill(MycroftSkill):
     """
     def __init__(self):
         super(KodiSkill, self).__init__(name="KodiSkill")
-        #self.settings["kodi_ip"  ] = "192.168.0.32"
-        #self.settings["kodi_port"] = "8080"
-        #self.settings["kodi_user"] = ""
-        #self.settings["kodi_pass"] = ""
         self.kodi_path = ""
         self.youtube_id = []
         self.youtube_search = ""
