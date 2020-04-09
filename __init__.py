@@ -61,7 +61,8 @@ class KodiSkill(MycroftSkill):
         self.load_data_files(dirname(__file__))
 
         #  Check and then monitor for credential changes
-        self.settings.set_changed_callback(self.on_websettings_changed)
+        #self.settings.set_changed_callback(self.on_websettings_changed)
+        self.settings_change_callback = self.on_websettings_changed
         self.on_websettings_changed()
 
         self.add_event('recognizer_loop:wakeword', self.handle_listen)
