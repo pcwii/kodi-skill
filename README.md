@@ -14,6 +14,7 @@ The Kodi Skill uses conversational dialog to help you to control your KODI insta
 * "skip kodi forward"
 * "skip kodi backward"
 * "pause kodi"
+* "pause the film"
 * "re-start kodi"
 * "stop the movie"
 * "stop kodi"

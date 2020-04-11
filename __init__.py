@@ -76,7 +76,7 @@ class KodiSkill(MycroftSkill):
 
         # eg. pause the movie
         pause_film_intent = IntentBuilder("PauseFilmIntent"). \
-            require("PauseKeyword").require("FilmKeyword").build()
+            require("PauseKeyword").one_of("FilmKeyword", "KodiKeyword").build()
         self.register_intent(pause_film_intent, self.handle_pause_film_intent)
 
         # eg. resume the movie
