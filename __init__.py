@@ -64,25 +64,24 @@ class KodiSkill(MycroftSkill):
         #self.settings.set_changed_callback(self.on_websettings_changed)
         self.settings_change_callback = self.on_websettings_changed
         self.on_websettings_changed()
-
         self.add_event('recognizer_loop:wakeword', self.handle_listen)
         self.add_event('recognizer_loop:utterance', self.handle_utterance)
         self.add_event('speak', self.handle_speak)
 
         # eg. stop the movie
-        stop_film_intent = IntentBuilder("StopFilmIntent"). \
-            require("StopKeyword").one_of("FilmKeyword", "KodiKeyword", "YoutubeKeyword").build()
-        self.register_intent(stop_film_intent, self.handle_stop_film_intent)
+        stop_intent = IntentBuilder("StopIntent"). \
+            require("StopKeyword").one_of("FilmKeyword", "KodiKeyword", "YoutubeKeyword", "MusicKeyword").build()
+        self.register_intent(stop_intent, self.handle_stop_intent)
 
         # eg. pause the movie
-        pause_film_intent = IntentBuilder("PauseFilmIntent"). \
-            require("PauseKeyword").one_of("FilmKeyword", "KodiKeyword").build()
-        self.register_intent(pause_film_intent, self.handle_pause_film_intent)
+        pause_intent = IntentBuilder("PauseIntent"). \
+            require("PauseKeyword").one_of("FilmKeyword", "KodiKeyword", "YoutubeKeyword", "MusicKeyword").build()
+        self.register_intent(pause_intent, self.handle_pause_intent)
 
         # eg. resume the movie
-        resume_film_intent = IntentBuilder("ResumeFilmIntent"). \
-            require("ResumeKeyword").require("FilmKeyword").build()
-        self.register_intent(resume_film_intent, self.handle_resume_film_intent)
+        resume_intent = IntentBuilder("ResumeIntent"). \
+            require("ResumeKeyword").one_of("FilmKeyword", "KodiKeyword", "YoutubeKeyword", "MusicKeyword").build()
+        self.register_intent(resume_intent, self.handle_resume_intent)
 
         # eg. turn kodi notifications on
         notification_on_intent = IntentBuilder("NotifyOnIntent"). \
@@ -123,7 +122,7 @@ class KodiSkill(MycroftSkill):
             try:
                 new_word = w2n.word_to_num(each_word)
             except Exception as e:
-                # print(e)
+                # LOG.info(e)
                 new_word = each_word
             return_list.append(new_word)
             return_string = ' '.join(str(e) for e in return_list)
@@ -204,6 +203,163 @@ class KodiSkill(MycroftSkill):
             LOG.info(e)
             return "NONE"
 
+# Added Music Functions here 20200514 #
+    # add the songid to the active playlist songid is an integer
+    def add_song_playlist(self, songid):
+        method = "Playlist.Add"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": method,
+            "params": {
+                "playlistid": 1,
+                "item": {
+                    "songid": songid
+                }
+            }
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
+        except Exception as e:
+            LOG.error(e)
+
+    def list_all_music(self):
+        method = "AudioLibrary.GetSongs"
+        self.kodi_payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "id": 1,
+            "params": {
+                "properties": [
+                    "artist",
+                    "duration",
+                    "album",
+                    "track"
+                ],
+            }
+        }
+        try:
+            kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
+            LOG.info(kodi_response.text)
+            music_list = json.loads(kodi_response.text)["result"]
+            return music_list
+        except Exception as e:
+            LOG.info(e)
+            return "NONE"
+
+    def search_music_item(self, search_item, exact_match=False, category="label"):
+        # category options: label, artist, album
+        search_item = self.numeric_replace(search_item)
+        found_list = []  # this is a dict
+        music_list = self.list_all_music()
+        search_words = search_item.replace("-", "").lower().split()
+        search_length = len(search_words)
+        # check each movie in the list for strings that match all the words in the search
+        LOG.info('mycategory: ' + category)
+        for each_song in music_list:
+            if category == "artist":
+                item_name = each_song[category][0].replace("-", "")
+            else:
+                item_name = each_song[category].replace("-", "")
+            if len(item_name) > 0:
+                # print(item_name.lower())
+                item_name = self.numeric_replace(item_name)
+                if all(words in item_name.lower() for words in search_words):
+                    found_length = len(each_song['label'].split())
+                    if exact_match:
+                        if found_length == search_length:
+                            # print("Found Item: " + item_name + " : " + "SongID: " + str(each_song["songid"]))
+                            info = {
+                                "label": each_song['label'],
+                                "songid": each_song['songid'],
+                                "artist": each_song['artist']
+                            }
+                            found_list.append(info)
+                    else:
+                        # print("Found Item: " + item_name + " : " + "SongID: " + str(each_song["songid"]))
+                        info = {
+                            "label": each_song['label'],
+                            "songid": each_song['songid'],
+                            "artist": each_song['artist']
+                        }
+                        found_list.append(info)
+        # remove duplicates
+        temp_list = []  # this is a dict
+        for each_song in found_list:
+            song_title = str(each_song['label'])
+            info = {
+                "label": each_song['label'],
+                "songid": each_song['songid'],
+                "artist": each_song['artist']
+            }
+            if song_title not in str(temp_list):
+                temp_list.append(info)
+            else:
+                if len(each_song['label']) == len(song_title):
+                    LOG.info('found duplicate')
+                else:
+                    temp_list.append(info)
+                found_list = temp_list
+        return found_list  # returns a dictionary of matched movies
+
+    def search_music_library(self, search_string, category="any"):
+        found_list = []  # this is a dict
+        if category == "any":
+            found_list = self.search_music_item(search_string, category="label")
+            if len(found_list) > 0:
+                return found_list
+            LOG.info("Label: " + search_string + ", Not Found!")
+            found_list = self.search_music_item(search_string, category="artist")
+            if len(found_list) > 0:
+                return found_list
+            LOG.info("Artist: " + search_string + ", Not Found!")
+            found_list = self.search_music_item(search_string, category="album")
+            if len(found_list) == 0:
+                LOG.info("Album: " + search_string + ", Not Found!")
+                return
+        else:
+            found_list = self.earch_music(search_string, category=str(category))
+        if len(found_list) > 0:
+            return found_list
+
+    def queue_and_play_music(self, music_list):
+        self.clear_playlist()
+        for each_song in music_list:
+            LOG.info(each_song["label"], each_song["songid"])
+            self.add_song_playlist(each_song["songid"])
+        self.play_normal()
+
+    def parse_music_utterance(self, message):
+        return_type = "any"
+        primary_regex = r"((?<=album) (?P<album>.*$))|((?<=artist) (?P<artist>.*$))|((?<=song) (?P<label>.*$))"
+        if message.find('some') != -1:
+            secondary_regex = r"((?<=some) (?P<any>.*$))"
+        else:
+            secondary_regex = r"((?<=play) (?P<any>.*$))"
+        key_found = re.search(primary_regex, message)
+        if key_found:
+            if key_found.group("label"):
+                LOG.info("found label")
+                return_item = key_found.group("label")
+                return_type = "label"
+            elif key_found.group("artist"):
+                LOG.info("found artist")
+                return_item = key_found.group("artist")
+                return_type = "artist"
+            elif key_found.group("album"):
+                LOG.info("found album")
+                return_item = key_found.group("album")
+                return_type = "album"
+        else:
+            key_found = re.search(secondary_regex, message)
+            if key_found.group("any"):
+                return_item = key_found.group("any")
+                return_type = "any"
+        return return_item, return_type
+
+# End of Added Music Functions here 20200514 #
+
     # activate the kodi root menu system
     def show_root(self):
         method = "GUI.ActivateWindow"
@@ -283,7 +439,7 @@ class KodiSkill(MycroftSkill):
             LOG.error(e)
 
     # add the movieid to the active playlist movieid is an integer
-    def add_playlist(self, movieid):
+    def add_movie_playlist(self, movieid):
         method = "Playlist.Add"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -302,8 +458,9 @@ class KodiSkill(MycroftSkill):
         except Exception as e:
             LOG.error(e)
 
+
     # pause any playing movie not youtube
-    def pause_movie(self):
+    def pause_all(self):
         method = "Player.PlayPause"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -320,7 +477,7 @@ class KodiSkill(MycroftSkill):
             LOG.error(e)
 
     # resume any paused movies not youtube
-    def resume_movie(self):
+    def resume_all(self):
         method = "Player.PlayPause"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -486,7 +643,7 @@ class KodiSkill(MycroftSkill):
             LOG.info('Found Kodi Movie Path ' + url_path)
             return url_path
         except Exception as e:
-            print(e)
+            LOG.info(e)
             return "NONE"
 
     # play the supplied video_id with the youtube addon
@@ -527,7 +684,7 @@ class KodiSkill(MycroftSkill):
         return bestaudio.url
 
     # stop any playing movie not youtube
-    def stop_movie(self):
+    def stop_all(self):
         method = "Player.Stop"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -645,12 +802,27 @@ class KodiSkill(MycroftSkill):
                 LOG.error(e)
                 self.on_websettings_changed()
 
-    # Primary Play Movie request
-    @intent_handler(IntentBuilder('PlayFilmIntent').require("AskKeyword").require("KodiKeyword").
-                    require("PlayKeyword").require("FilmKeyword").
+    # Primary Play Movie request - now handles music and films with optionally
+    @intent_handler(IntentBuilder('PlayLocalIntent').require("AskKeyword").require("KodiKeyword").
+                    require("PlayKeyword").optionally("FilmKeyword").
                     optionally("CinemaVisionKeyword").optionally('RandomKeyword').build())
-    def handle_play_film_intent(self, message):
+    def handle_play_local_intent(self, message):
         LOG.info("Called Play Film Intent")
+        if message.data.get("FilmKeyword"):
+            LOG.info("Continue with Play Film intent")
+            self.continue_play_film_intent(message)
+        else:
+            LOG.info("Continue with Play Music intent")
+            self.continue_play_music_intent(message)
+
+    def continue_play_music_intent(self, message):
+        play_request = self.parse_music_utterance(message)
+        music_list = self.search_music_library(play_request[0], category=play_request[1])
+        self.speak_dialog('play.music', data={"title": play_request[0], "category": play_request[1]},
+                          expect_response=False)
+        self.queue_and_play_music(music_list)
+
+    def continue_play_film_intent(self, message):
         if message.data.get("CinemaVisionKeyword"):
             self.cv_request = True
         else:
@@ -682,25 +854,25 @@ class KodiSkill(MycroftSkill):
                 self.on_websettings_changed()
 
     # stop film was requested in the utterance
-    def handle_stop_film_intent(self, message):
+    def handle_stop_intent(self, message):
         try:
-            self.stop_movie()
+            self.stop_all()
         except Exception as e:
             LOG.error(e)
             self.on_websettings_changed()
 
     # pause film was requested in the utterance
-    def handle_pause_film_intent(self, message):
+    def handle_pause_intent(self, message):
         try:
-            self.pause_movie()
+            self.pause_all()
         except Exception as e:
             LOG.error(e)
             self.on_websettings_changed()
 
     # resume the film was requested in the utterance
-    def handle_resume_film_intent(self, message):
+    def handle_resume_intent(self, message):
         try:
-            self.resume_movie()
+            self.resume_all()
         except Exception as e:
             LOG.error(e)
             self.on_websettings_changed()
@@ -761,7 +933,7 @@ class KodiSkill(MycroftSkill):
     # play the movie based on movie ID
     def play_film(self, movieid):
         self.clear_playlist()
-        self.add_playlist(movieid)
+        self.add_movie_playlist(movieid)
         if self.check_cinemavision_present():  # Cinemavision is installed
             self.set_context('CinemaVisionContextKeyword', 'CinemaVisionContext')
             self.speak_dialog('cinema.vision', expect_response=True)

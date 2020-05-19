@@ -2,10 +2,16 @@
 Control KODI open source media center with Mycroft.ai
 
 ## About 
+###*New - Now Supports Music Playback (20200519)
 Utilize the kodi API and Python library for controlling the KODI open source media center with Mycroft.ai. The control is mostly geared towards videos/movies but is capable of handling cursor navigation as well.
 The Kodi Skill uses conversational dialog to help you to control your KODI instance more naturally. 
 
-## Examples 
+## Examples
+###Music
+* "ask kodi to play the artist elvis Presley"
+* "ask kodi to play all shook up"
+* "ask kodi to play the album appeal to reason"
+###Movies
 * "ask kodi to play the movie guardians of the galaxy"
 * "ask kodi to play the film planet of the apes"
 * "ask kodi to play a random movie"
@@ -96,3 +102,4 @@ Tested on platform_picroft (others untested)
 - ~~Add a single stop command for all playing items~~ (Completed 20191021)
 - ~~Change skill call trigger words to reduce CommonPlay conflicts~~ (Completed 20191021)
 - Add the ability to cast any Kodi Library item to a chromecast enabled device (WIP 20191219)
+- Add Music Library playback functions (WIP 20200514) **currently testing
