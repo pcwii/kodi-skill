@@ -319,7 +319,7 @@ class KodiSkill(MycroftSkill):
                 LOG.info("Album: " + search_string + ", Not Found!")
                 return
         else:
-            found_list = self.search_music(search_string, category=str(category))
+            found_list = self.search_music_item(search_string, category=str(category))
         if len(found_list) > 0:
             return found_list
 
