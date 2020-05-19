@@ -333,7 +333,7 @@ class KodiSkill(MycroftSkill):
     def parse_music_utterance(self, message):
         return_type = "any"
         str_request = str(message.data.get('utterance'))
-        LOG.info("Parse Music Recieved: " + str_request)
+        LOG.info("Parse Music Received: " + str_request)
         primary_regex = r"((?<=album) (?P<album>.*$))|((?<=artist) (?P<artist>.*$))|((?<=song) (?P<label>.*$))"
         if str_request.find('some') != -1:
             secondary_regex = r"((?<=some) (?P<any>.*$))"
