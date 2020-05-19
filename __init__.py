@@ -333,6 +333,7 @@ class KodiSkill(MycroftSkill):
     def parse_music_utterance(self, message):
         return_type = "any"
         str_message = str(message)
+        LOG.info("Parse Music Recieved: " + str_message)
         primary_regex = r"((?<=album) (?P<album>.*$))|((?<=artist) (?P<artist>.*$))|((?<=song) (?P<label>.*$))"
         if str_message.find('some') != -1:
             secondary_regex = r"((?<=some) (?P<any>.*$))"
@@ -340,6 +341,7 @@ class KodiSkill(MycroftSkill):
             secondary_regex = r"((?<=play) (?P<any>.*$))"
         key_found = re.search(primary_regex, str_message)
         if key_found:
+            LOG.info("Primary Regex Key Found")
             if key_found.group("label"):
                 LOG.info("found label")
                 return_item = key_found.group("label")
@@ -353,10 +355,17 @@ class KodiSkill(MycroftSkill):
                 return_item = key_found.group("album")
                 return_type = "album"
         else:
+            LOG.info("Primary Regex Key Not Found")
             key_found = re.search(secondary_regex, str_message)
             if key_found.group("any"):
+                LOG.info("Secondary Regex Key Found")
                 return_item = key_found.group("any")
                 return_type = "any"
+            else:
+                LOG.info("Secondary Regex Key Not Found")
+                return_item = "none"
+                return_type = "none"
+
         return return_item, return_type
 
 # End of Added Music Functions here 20200514 #
@@ -818,6 +827,7 @@ class KodiSkill(MycroftSkill):
 
     def continue_play_music_intent(self, message):
         play_request = self.parse_music_utterance(message)
+        LOG.info("Parse Routine Returned: "+str(play_request))
         music_list = self.search_music_library(play_request[0], category=play_request[1])
         self.speak_dialog('play.music', data={"title": play_request[0], "category": play_request[1]},
                           expect_response=False)
