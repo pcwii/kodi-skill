@@ -248,7 +248,7 @@ class KodiSkill(MycroftSkill):
             LOG.info(e)
             return "NONE"
 
-    def search_music_item(self, search_item, exact_match=False, category="label"):
+    def search_music_item(self, search_item, exact_match=False, filter="label"):
         # category options: label, artist, album
         search_item = self.numeric_replace(search_item)
         found_list = []  # this is a dict
@@ -256,13 +256,14 @@ class KodiSkill(MycroftSkill):
         search_words = search_item.replace("-", "").lower().split()
         search_length = len(search_words)
         # check each movie in the list for strings that match all the words in the search
-        LOG.info('mycategory: ' + category)
+        LOG.info('mycategory: ' + filter)
         for each_song in music_list:
-            LOG.info("Category Items length: "+ str(len(each_song[category])))
-            if category == "artist":
-                item_name = each_song[category][0].replace("-", "")
+            #LOG.info("Category Items length: " + str(len(each_song[category])))
+            if filter == "artist":
+                item_name = each_song[filter][0].replace("-", "")
             else:
-                item_name = each_song[category].replace("-", "")
+                LOG.info('Not Filtered by Artist')
+                item_name = each_song[filter].replace("-", "")
             if len(item_name) > 0:
                 # print(item_name.lower())
                 item_name = self.numeric_replace(item_name)
