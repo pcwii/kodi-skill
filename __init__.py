@@ -332,14 +332,14 @@ class KodiSkill(MycroftSkill):
 
     def parse_music_utterance(self, message):
         return_type = "any"
-        str_message = str(message)
-        LOG.info("Parse Music Recieved: " + str_message)
+        str_request = str(message.data.get('utterance'))
+        LOG.info("Parse Music Recieved: " + str_request)
         primary_regex = r"((?<=album) (?P<album>.*$))|((?<=artist) (?P<artist>.*$))|((?<=song) (?P<label>.*$))"
-        if str_message.find('some') != -1:
+        if str_request.find('some') != -1:
             secondary_regex = r"((?<=some) (?P<any>.*$))"
         else:
             secondary_regex = r"((?<=play) (?P<any>.*$))"
-        key_found = re.search(primary_regex, str_message)
+        key_found = re.search(primary_regex, str_request)
         if key_found:
             LOG.info("Primary Regex Key Found")
             if key_found.group("label"):
@@ -356,7 +356,7 @@ class KodiSkill(MycroftSkill):
                 return_type = "album"
         else:
             LOG.info("Primary Regex Key Not Found")
-            key_found = re.search(secondary_regex, str_message)
+            key_found = re.search(secondary_regex, str_request)
             if key_found.group("any"):
                 LOG.info("Secondary Regex Key Found")
                 return_item = key_found.group("any")
