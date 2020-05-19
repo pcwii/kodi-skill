@@ -258,6 +258,7 @@ class KodiSkill(MycroftSkill):
         # check each movie in the list for strings that match all the words in the search
         LOG.info('mycategory: ' + category)
         for each_song in music_list:
+            LOG.info("Category Items length: "+ str(len(each_song[category])))
             if category == "artist":
                 item_name = each_song[category][0].replace("-", "")
             else:
