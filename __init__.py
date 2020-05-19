@@ -308,20 +308,20 @@ class KodiSkill(MycroftSkill):
     def search_music_library(self, search_string, category="any"):
         found_list = []  # this is a dict
         if category == "any":
-            found_list = self.search_music_item(search_string, category="label")
+            found_list = self.search_music_item(search_string, filter="label")
             if len(found_list) > 0:
                 return found_list
             LOG.info("Label: " + search_string + ", Not Found!")
-            found_list = self.search_music_item(search_string, category="artist")
+            found_list = self.search_music_item(search_string, filter="artist")
             if len(found_list) > 0:
                 return found_list
             LOG.info("Artist: " + search_string + ", Not Found!")
-            found_list = self.search_music_item(search_string, category="album")
+            found_list = self.search_music_item(search_string, filter="album")
             if len(found_list) == 0:
                 LOG.info("Album: " + search_string + ", Not Found!")
                 return
         else:
-            found_list = self.search_music_item(search_string, category=str(category))
+            found_list = self.search_music_item(search_string, filter=str(category))
         if len(found_list) > 0:
             return found_list
 
