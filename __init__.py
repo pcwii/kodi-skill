@@ -365,7 +365,6 @@ class KodiSkill(MycroftSkill):
                 LOG.info("Secondary Regex Key Not Found")
                 return_item = "none"
                 return_type = "none"
-
         return return_item, return_type
 
 # End of Added Music Functions here 20200514 #
