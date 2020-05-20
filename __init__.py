@@ -28,7 +28,7 @@ import json
 import random
 
 _author__ = 'PCWii'
-# Release - 20181213
+this_release = "20190519"
 
 LOGGER = getLogger(__name__)
 
@@ -59,7 +59,7 @@ class KodiSkill(MycroftSkill):
 
     def initialize(self):
         self.load_data_files(dirname(__file__))
-
+        LOG.info("Running Kodi-Skill Version: " + str(this_release))
         #  Check and then monitor for credential changes
         #self.settings.set_changed_callback(self.on_websettings_changed)
         self.settings_change_callback = self.on_websettings_changed
