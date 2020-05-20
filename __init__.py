@@ -241,8 +241,7 @@ class KodiSkill(MycroftSkill):
         }
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
-            #LOG.info(kodi_response.text)
-            music_list = json.loads(kodi_response.text)["result"]
+            music_list = json.loads(kodi_response.text)["result"]["songs"]
             return music_list
         except Exception as e:
             LOG.info(e)
