@@ -260,7 +260,7 @@ class KodiSkill(MycroftSkill):
             if category == "artist":  # artist is an array element so need to specify the index
                 item_name = each_song[category][0].replace("-", "")
             else:
-                LOG.info('Not Filtered by Artist: ' + str(each_song))
+                #LOG.info('Not Filtered by Artist: ' + str(each_song))
                 item_name = each_song[category].replace("-", "")
             if len(item_name) > 0:
                 # print(item_name.lower())
@@ -832,7 +832,7 @@ class KodiSkill(MycroftSkill):
         play_request = self.parse_music_utterance(message)  # get the requested Music Item
         LOG.info("Parse Routine Returned: "+str(play_request))
         music_list = self.search_music_library(play_request[0], category=play_request[1])  # search for the item in the library
-        self.speak_dialog('play.music', data={"title": play_request[0], "category": play_request[1]},
+        self.speak_dialog('play.music', data={"title": str(play_request[0]), "category": str(play_request[1])},
                           expect_response=False)
         self.queue_and_play_music(music_list)
 
