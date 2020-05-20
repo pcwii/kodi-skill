@@ -256,12 +256,11 @@ class KodiSkill(MycroftSkill):
         search_words = search_item.replace("-", "").lower().split()
         search_length = len(search_words)
         # check each movie in the list for strings that match all the words in the search
-        LOG.info('mycategory: ' + category)
         for each_song in music_list:  # check each song in the list for the one we are looking for
             if category == "artist":  # artist is an array element so need to specify the index
                 item_name = each_song[category][0].replace("-", "")
             else:
-                LOG.info('Not Filtered by Artist')
+                LOG.info('Not Filtered by Artist: ' + str(each_song))
                 item_name = each_song[category].replace("-", "")
             if len(item_name) > 0:
                 # print(item_name.lower())
