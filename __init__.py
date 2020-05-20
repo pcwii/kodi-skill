@@ -327,7 +327,7 @@ class KodiSkill(MycroftSkill):
     def queue_and_play_music(self, music_list):
         self.clear_playlist()
         for each_song in music_list:
-            LOG.info(each_song["label"], each_song["songid"])
+            LOG.info("Adding to Kodi Playlist: " + str(each_song["label"]) +", ID: "+ str(each_song["songid"]))
             self.add_song_playlist(each_song["songid"])
         self.play_normal()
 
