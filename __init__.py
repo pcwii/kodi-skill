@@ -248,7 +248,7 @@ class KodiSkill(MycroftSkill):
             LOG.info(e)
             return "NONE"
 
-    def search_music_item(self, search_item, exact_match=False, filter="label"):
+    def search_music_item(self, search_item, exact_match=False, category="label"):
         # category options: label, artist, album
         search_item = self.numeric_replace(search_item)
         found_list = []  # this is a dict
@@ -256,14 +256,13 @@ class KodiSkill(MycroftSkill):
         search_words = search_item.replace("-", "").lower().split()
         search_length = len(search_words)
         # check each movie in the list for strings that match all the words in the search
-        LOG.info('mycategory: ' + filter)
-        for each_song in music_list:
-            #LOG.info("Category Items length: " + str(len(each_song[category])))
-            if filter == "artist":
-                item_name = each_song[filter][0].replace("-", "")
+        LOG.info('mycategory: ' + category)
+        for each_song in music_list:  # check each song in the list for the one we are looking for
+            if category == "artist":  # artist is an array element so need to specify the index
+                item_name = each_song[category][0].replace("-", "")
             else:
                 LOG.info('Not Filtered by Artist')
-                item_name = each_song[filter].replace("-", "")
+                item_name = each_song[category].replace("-", "")
             if len(item_name) > 0:
                 # print(item_name.lower())
                 item_name = self.numeric_replace(item_name)
@@ -306,22 +305,23 @@ class KodiSkill(MycroftSkill):
         return found_list  # returns a dictionary of matched movies
 
     def search_music_library(self, search_string, category="any"):
-        found_list = []  # this is a dict
+        found_list = []  # this is a dict that will contain all the items found in the library
+        LOG.info("searching the music library for: " + search_string + ", " + category)
         if category == "any":
-            found_list = self.search_music_item(search_string, filter="label")
+            found_list = self.search_music_item(search_string, category="label")
             if len(found_list) > 0:
                 return found_list
             LOG.info("Label: " + search_string + ", Not Found!")
-            found_list = self.search_music_item(search_string, filter="artist")
+            found_list = self.search_music_item(search_string, category="artist")
             if len(found_list) > 0:
                 return found_list
             LOG.info("Artist: " + search_string + ", Not Found!")
-            found_list = self.search_music_item(search_string, filter="album")
+            found_list = self.search_music_item(search_string, category="album")
             if len(found_list) == 0:
                 LOG.info("Album: " + search_string + ", Not Found!")
                 return
         else:
-            found_list = self.search_music_item(search_string, filter=str(category))
+            found_list = self.search_music_item(search_string, category=str(category))
         if len(found_list) > 0:
             return found_list
 
@@ -333,6 +333,7 @@ class KodiSkill(MycroftSkill):
         self.play_normal()
 
     def parse_music_utterance(self, message):
+        # returns what was spoken in the utterance
         return_type = "any"
         str_request = str(message.data.get('utterance'))
         LOG.info("Parse Music Received: " + str_request)
@@ -367,6 +368,7 @@ class KodiSkill(MycroftSkill):
                 LOG.info("Secondary Regex Key Not Found")
                 return_item = "none"
                 return_type = "none"
+        # Returns the item that was requested and the type of the requested item ie. artist, album, label
         return return_item, return_type
 
 # End of Added Music Functions here 20200514 #
@@ -823,13 +825,14 @@ class KodiSkill(MycroftSkill):
             LOG.info("Continue with Play Film intent")
             self.continue_play_film_intent(message)
         else:
+            # Play Music Added here
             LOG.info("Continue with Play Music intent")
             self.continue_play_music_intent(message)
 
     def continue_play_music_intent(self, message):
-        play_request = self.parse_music_utterance(message)
+        play_request = self.parse_music_utterance(message)  # get the requested Music Item
         LOG.info("Parse Routine Returned: "+str(play_request))
-        music_list = self.search_music_library(play_request[0], category=play_request[1])
+        music_list = self.search_music_library(play_request[0], category=play_request[1])  # search for the item in the library
         self.speak_dialog('play.music', data={"title": play_request[0], "category": play_request[1]},
                           expect_response=False)
         self.queue_and_play_music(music_list)
