@@ -251,7 +251,7 @@ class KodiSkill(MycroftSkill):
     def search_music_item(self, search_item, exact_match=False, category="label"):
         # category options: label, artist, album
         search_item = self.numeric_replace(search_item)
-        found_list = []  # this is a dict
+        found_list = []  # this is a dict of all the items found that match the search
         music_list = self.list_all_music()
         search_words = search_item.replace("-", "").lower().split()
         search_length = len(search_words)
