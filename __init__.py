@@ -253,6 +253,7 @@ class KodiSkill(MycroftSkill):
         search_item = self.numeric_replace(search_item)
         found_list = []  # this is a dict of all the items found that match the search
         music_list = self.list_all_music()
+        LOG.info("Music List: " + str(music_list))
         search_words = search_item.replace("-", "").lower().split()
         search_length = len(search_words)
         # check each movie in the list for strings that match all the words in the search
