@@ -1,4 +1,5 @@
 from os.path import dirname
+import datetime
 
 from adapt.intent import IntentBuilder
 from mycroft.skills.core import MycroftSkill, intent_handler, intent_file_handler
@@ -56,6 +57,9 @@ class KodiSkill(MycroftSkill):
         self.movie_index = 0
         self.cv_request = False
         self.use_cv = False
+        self.start_time = ""
+        self.end_time = ""
+        self.music_dict = []
 
     def initialize(self):
         self.load_data_files(dirname(__file__))
@@ -225,6 +229,7 @@ class KodiSkill(MycroftSkill):
             LOG.error(e)
 
     def list_all_music(self):
+        LOG.info('Refreshing Music List!...')
         method = "AudioLibrary.GetSongs"
         self.kodi_payload = {
             "jsonrpc": "2.0",
@@ -241,8 +246,8 @@ class KodiSkill(MycroftSkill):
         }
         try:
             kodi_response = requests.post(self.kodi_path, data=json.dumps(self.kodi_payload), headers=self.json_header)
-            music_list = json.loads(kodi_response.text)["result"]["songs"]
-            return music_list
+            ret_music_list = json.loads(kodi_response.text)["result"]["songs"]
+            return ret_music_list
         except Exception as e:
             LOG.info(e)
             return "NONE"
@@ -251,12 +256,14 @@ class KodiSkill(MycroftSkill):
         # category options: label, artist, album
         search_item = self.numeric_replace(search_item)
         found_list = []  # this is a dict of all the items found that match the search
-        music_list = self.list_all_music()
-        #LOG.info("Music List: " + str(music_list))
+        if len(self.music_dict) < 1:
+            self.music_dict = self.list_all_music()
+        #LOG.info("Music List: " + str(self.music_dict))
         search_words = search_item.replace("-", "").lower().split()
         search_length = len(search_words)
         # check each movie in the list for strings that match all the words in the search
-        for each_song in music_list:  # check each song in the list for the one we are looking for
+        self.start_time = datetime.datetime.now()
+        for each_song in self.music_dict:  # check each song in the list for the one we are looking for
             if category == "artist":  # artist is an array element so need to specify the index
                 item_name = each_song[category][0].replace("-", "")
             else:
@@ -301,6 +308,9 @@ class KodiSkill(MycroftSkill):
                 else:
                     temp_list.append(info)
                 found_list = temp_list
+        self.end_time = datetime.datetime.now()
+        delta_time_s = self.end_time - self.start_time
+        LOG.info("Searching and preparing the requested music list took: " + str(delta_time_s) + ", seconds")
         return found_list  # returns a dictionary of matched movies
 
     def search_music_library(self, search_string, category="any"):
@@ -324,9 +334,10 @@ class KodiSkill(MycroftSkill):
         if len(found_list) > 0:
             return found_list
 
-    def queue_and_play_music(self, music_list):
+    def queue_and_play_music(self, music_playlist):
         self.clear_playlist()
-        for each_song in music_list:
+        self.music_dict = []
+        for each_song in music_playlist:
             LOG.info("Adding to Kodi Playlist: " + str(each_song["label"]) +", ID: "+ str(each_song["songid"]))
             self.add_song_playlist(each_song["songid"])
         self.play_normal()
@@ -831,10 +842,10 @@ class KodiSkill(MycroftSkill):
     def continue_play_music_intent(self, message):
         play_request = self.parse_music_utterance(message)  # get the requested Music Item
         LOG.info("Parse Routine Returned: "+str(play_request))
-        music_list = self.search_music_library(play_request[0], category=play_request[1])  # search for the item in the library
+        music_playlist = self.search_music_library(play_request[0], category=play_request[1])  # search for the item in the library
         self.speak_dialog('play.music', data={"title": str(play_request[0]), "category": str(play_request[1])},
                           expect_response=False)
-        self.queue_and_play_music(music_list)
+        self.queue_and_play_music(music_playlist)
 
     def continue_play_film_intent(self, message):
         if message.data.get("CinemaVisionKeyword"):
