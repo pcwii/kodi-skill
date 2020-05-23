@@ -307,7 +307,7 @@ class KodiSkill(MycroftSkill):
                     LOG.info('found duplicate')
                 else:
                     temp_list.append(info)
-                found_list = temp_list
+        found_list = temp_list
         self.end_time = datetime.datetime.now()
         delta_time_s = self.end_time - self.start_time
         LOG.info("Searching and preparing the requested music list took: " + str(delta_time_s) + ", seconds")
