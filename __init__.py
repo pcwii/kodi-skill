@@ -252,11 +252,11 @@ class KodiSkill(MycroftSkill):
             LOG.info(e)
             return "NONE"
 
-    def search_music_item(self, search_item, exact_match=False, category="label"):
+    def search_music_item(self, search_item, category="label"):
         # category options: label, artist, album
         search_item = self.numeric_replace(search_item)
         found_list = []  # this is a dict of all the items found that match the search
-        if len(self.music_dict) < 1:
+        if len(self.music_dict) < 1:  # Only read the music library if it is empty
             self.music_dict = self.list_all_music()
         #LOG.info("Music List: " + str(self.music_dict))
         search_words = search_item.replace("-", "").lower().split()
@@ -274,32 +274,22 @@ class KodiSkill(MycroftSkill):
                 item_name = self.numeric_replace(item_name)
                 if all(words in item_name.lower() for words in search_words):
                     found_length = len(each_song['label'].split())
-                    if exact_match:
-                        if found_length == search_length:
-                            # print("Found Item: " + item_name + " : " + "SongID: " + str(each_song["songid"]))
-                            info = {
-                                "label": each_song['label'],
-                                "songid": each_song['songid'],
-                                "artist": each_song['artist']
-                            }
-                            found_list.append(info)
-                    else:
-                        # print("Found Item: " + item_name + " : " + "SongID: " + str(each_song["songid"]))
-                        info = {
-                            "label": each_song['label'],
-                            "songid": each_song['songid'],
-                            "artist": each_song['artist']
-                        }
-                        found_list.append(info)
+                    # print("Found Item: " + item_name + " : " + "SongID: " + str(each_song["songid"]))
+                    info = {
+                        "label": each_song['label'],
+                        "songid": each_song['songid'],
+                        "artist": each_song['artist']
+                    }
+                    found_list.append(info)
         # remove duplicates
         temp_list = []  # this is a dict
         for each_song in found_list:
-            song_title = str(each_song['label'])
             info = {
                 "label": each_song['label'],
                 "songid": each_song['songid'],
                 "artist": each_song['artist']
             }
+            song_title = str(each_song['label'])
             if song_title not in str(temp_list):
                 temp_list.append(info)
             else:
